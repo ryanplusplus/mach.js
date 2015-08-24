@@ -1,13 +1,60 @@
-module.exports = {
-  mockFunction: function mockFunction() {
-    var thing = function theMock() {}
+function defaultMockHandler() {
+    var mock = this;
+    throw new Error('unexpected function call ' + mock._name + '()');
+}
 
-    thing.shouldBeCalled = function shouldBeCalledWith() {
+var mockHandler = defaultMockHandler
+
+module.exports = {
+  mockFunction: function mockFunction(name) {
+    var expectations = [];
+
+    var theMock = function theMock() {
+      mockHandler.call(theMock, arguments);
+    }
+
+    theMock._name = name;
+
+    theMock.shouldBeCalled = function shouldBeCalled() {
+      expectations.push({
+        mock: theMock,
+        met: false
+      })
+
       return {
-        when: function when() {}
+        when: function when(thunk) {
+          mockHandler = function mockHandler() {
+            var mock = this;
+            var foundExpectation = false;
+
+            expectations.some(function(expectation) {
+              if (mock === expectation.mock) {
+                expectation.met = true;
+                foundExpectation = true;
+                return false;
+              }
+
+              return true;
+            });
+
+            if (!foundExpectation) {
+              throw new Error('unexpected function call ' + mock._name + '()');
+            }
+          }
+
+          thunk();
+
+          mockHandler = defaultMockHandler;
+
+          expectations.forEach(function(expectation) {
+            if (expectation.met == false) {
+              throw new Error('not all calls occurred');
+            }
+          });
+        }
       }
     }
 
-    return thing;
+    return theMock;
   }
 }

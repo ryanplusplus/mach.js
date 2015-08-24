@@ -17,7 +17,7 @@ describe('the mach library', function() {
     });
   });
 
-  xit('should alert you when the wrong function is called', function() {
+  it('should alert you when the wrong function is called', function() {
     var f1 = mach.mockFunction('f1')
     var f2 = mach.mockFunction('f2')
 
@@ -28,7 +28,7 @@ describe('the mach library', function() {
     });
   });
 
-  xit('should alert you when a function is called unexpectedly', function() {
+  it('should alert you when a function is called unexpectedly', function() {
     var f = mach.mockFunction('f')
 
     shouldFailWith('unexpected function call f()', function() {
@@ -36,13 +36,25 @@ describe('the mach library', function() {
     });
   });
 
-  xit('should allow you to verify that a function has been called with the correct arguments', function() {
+  it('should alert you when a function is called unexpectedly after a successful expectation', function() {
     var f = mach.mockFunction('f')
 
-    f.shouldBeCalledWith(1, '2').when(function() {
-      f(1, '2');
+    f.shouldBeCalled().when(function() {
+      f();
+    });
+
+    shouldFailWith('unexpected function call f()', function() {
+      f();
     });
   });
+
+  // xit('should allow you to verify that a function has been called with the correct arguments', function() {
+  //   var f = mach.mockFunction('f')
+  //
+  //   f.shouldBeCalledWith(1, '2').when(function() {
+  //     f(1, '2');
+  //   });
+  // });
 
   // it('should alert you when a function has been called with incorrect arguments', function()
   //   local f = mach.mock_function('f')
