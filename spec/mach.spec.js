@@ -2,7 +2,7 @@ describe('the mach library', function() {
   var mach = require('./../index.js');
 
   it('should allow you to verify that a function is called', function() {
-    var f = mach.mockFunction('f')
+    var f = mach.mockFunction('f');
 
     f.shouldBeCalled().when(function() {
       f();
@@ -18,8 +18,8 @@ describe('the mach library', function() {
   });
 
   it('should alert you when the wrong function is called', function() {
-    var f1 = mach.mockFunction('f1')
-    var f2 = mach.mockFunction('f2')
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
 
     shouldFailWith('unexpected function call f2()', function() {
       f1.shouldBeCalled().when(function() {
@@ -29,7 +29,7 @@ describe('the mach library', function() {
   });
 
   it('should alert you when a function is called unexpectedly', function() {
-    var f = mach.mockFunction('f')
+    var f = mach.mockFunction('f');
 
     shouldFailWith('unexpected function call f()', function() {
       f();
@@ -37,7 +37,7 @@ describe('the mach library', function() {
   });
 
   it('should alert you when a function is called unexpectedly after a successful expectation', function() {
-    var f = mach.mockFunction('f')
+    var f = mach.mockFunction('f');
 
     f.shouldBeCalled().when(function() {
       f();
