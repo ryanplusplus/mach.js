@@ -1,6 +1,9 @@
+function unexpectedFunctionCall(mock) {
+  return new Error('unexpected function call ' + mock._name + '()');
+}
+
 function defaultMockHandler() {
-    var mock = this;
-    throw new Error('unexpected function call ' + mock._name + '()');
+  throw unexpectedFunctionCall(this);
 }
 
 var mockHandler = defaultMockHandler
@@ -38,7 +41,7 @@ module.exports = {
             });
 
             if (!foundExpectation) {
-              throw new Error('unexpected function call ' + mock._name + '()');
+              throw unexpectedFunctionCall(mock);
             }
           }
 
