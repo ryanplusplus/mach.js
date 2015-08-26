@@ -11,7 +11,7 @@ beforeEach(function() {
       thunk();
       fail('expected failure did not occur');
     } catch (e) {
-      expect(e.message).toMatch(expectedFailure);
+      expect(e.message).toBe(expectedFailure);
     }
   }
 });

@@ -48,22 +48,24 @@ describe('the mach library', function() {
     });
   });
 
-  // xit('should allow you to verify that a function has been called with the correct arguments', function() {
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.shouldBeCalledWith(1, '2').when(function() {
-  //     f(1, '2');
-  //   });
-  // });
+  it('should allow you to verify that a function has been called with the correct arguments', function() {
+    var f = mach.mockFunction('f');
 
-  // it('should alert you when a function has been called with incorrect arguments', function()
-  //   local f = mach.mock_function('f')
-  //
-  //   should_fail(function()
-  //     f:should_be_called_with(1, '2'):when(function() f(1, '3') end)
-  //   end)
-  // end)
-  //
+    f.shouldBeCalledWith(1, '2').when(function() {
+      f(1, '2');
+    });
+  });
+
+  it('should alert you when a function has been called with incorrect arguments', function() {
+    var f = mach.mockFunction('f');
+
+    shouldFailWith('unexpected function call f(1, \'3\')', function() {
+      f.shouldBeCalledWith(1, '2').when(function() {
+        f(1, '3');
+      });
+    });
+  });
+
   // it('should allow you to specify the return value of a mocked function', function()
   //   local f = mach.mock_function('f')
   //
@@ -440,4 +442,6 @@ describe('the mach library', function() {
   //     mach.mock_function('f')(a)
   //   end)
   // end)
+
+  // match object arguments (non-primitive equality)
 });
