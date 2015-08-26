@@ -66,24 +66,14 @@ describe('the mach library', function() {
     });
   });
 
-  // it('should allow you to specify the return value of a mocked function', function()
-  //   local f = mach.mock_function('f')
-  //
-  //   f:should_be_called():and_will_return(4):when(function()
-  //     assert.is.equal(f(), 4)
-  //   end)
-  // end)
-  //
-  // it('should allow you to specify multiple return values for a mocked function', function()
-  //   local f = mach.mock_function('f')
-  //
-  //   f:should_be_called():and_will_return(1, 2):when(function()
-  //     r1, r2 = f()
-  //     assert.is.equal(r1, 1)
-  //     assert.is.equal(r2, 2)
-  //   end)
-  // end)
-  //
+  it('should allow you to specify the return value of a mocked function', function() {
+    var f = mach.mockFunction('f');
+
+    f.shouldBeCalled().andWillReturn(4).when(function() {
+      expect(f()).toBe(4);
+    });
+  });
+
   // it('should allow you to check that a function has been called multiple times', function()
   //   local f = mach.mock_function('f')
   //

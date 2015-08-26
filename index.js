@@ -29,7 +29,7 @@ module.exports = {
     function when(thunk) {
       mockHandler = function mockHandler() {
         var mock = this;
-        var foundExpectation = false;
+        var matchedExpectation;
         var args = Array.prototype.slice.call(arguments);
 
         expectations.some(function(expectation) {
@@ -45,16 +45,18 @@ module.exports = {
             }
 
             expectation.met = true;
-            foundExpectation = true;
+            matchedExpectation = expectation;
             return false;
           }
 
           return true;
         });
 
-        if (!foundExpectation) {
+        if (!matchedExpectation) {
           throw unexpectedFunctionCall(mock, args);
         }
+
+        return matchedExpectation.returnValue;
       }
 
       thunk();
@@ -68,22 +70,33 @@ module.exports = {
       });
     }
 
+    function andWillReturn(returnValue) {
+      this.returnValue = returnValue;
+
+      return {
+        when: when
+      };
+    }
+
     var theMock = function theMock() {
-      mockHandler.apply(theMock, Array.prototype.slice.call(arguments));
+      return mockHandler.apply(theMock, Array.prototype.slice.call(arguments));
     }
 
     theMock._name = name;
 
     theMock.shouldBeCalled = function shouldBeCalled() {
-      expectations.push({
+      var expectation = {
         mock: theMock,
         met: false,
         args: []
-      })
+      };
+
+      expectations.push(expectation);
 
       return {
-        when: when
-      }
+        when: when,
+        andWillReturn: andWillReturn.bind(expectation)
+      };
     }
 
     theMock.shouldBeCalledWith = function shouldBeCalledWith() {
