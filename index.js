@@ -20,7 +20,23 @@ function defaultMockHandler() {
   throw unexpectedFunctionCall(this, Array.prototype.slice.call(arguments));
 }
 
-var mockHandler = defaultMockHandler
+var mockHandler = defaultMockHandler;
+
+function callMatchesExpectation(mock, args, expectation) {
+  if (mock === expectation.mock) {
+    if (args.length !== expectation.args.length) {
+      return false;
+    }
+
+    for (i = 0; i < args.length; i++) {
+      if (args[i] !== expectation.args[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
 
 module.exports = {
   mockFunction: function mockFunction(name) {
@@ -33,17 +49,7 @@ module.exports = {
         var args = Array.prototype.slice.call(arguments);
 
         expectations.some(function(expectation) {
-          if (mock === expectation.mock) {
-            if (args.length !== expectation.args.length) {
-              return true;
-            }
-
-            for (i = 0; i < args.length; i++) {
-              if (args[i] !== expectation.args[i]) {
-                return true;
-              }
-            }
-
+          if (callMatchesExpectation(mock, args, expectation)) {
             expectation.met = true;
             matchedExpectation = expectation;
             return false;
@@ -78,9 +84,13 @@ module.exports = {
       };
     }
 
+    function andAlso() {
+      return this;
+    }
+
     var theMock = function theMock() {
       return mockHandler.apply(theMock, Array.prototype.slice.call(arguments));
-    }
+    };
 
     theMock._name = name;
 
@@ -95,9 +105,12 @@ module.exports = {
 
       return {
         when: when,
-        andWillReturn: andWillReturn.bind(expectation)
+        andWillReturn: andWillReturn.bind(expectation),
+        andAlso: andAlso.bind({
+          when: when
+        })
       };
-    }
+    };
 
     theMock.shouldBeCalledWith = function shouldBeCalledWith() {
       expectations.push({
@@ -109,8 +122,9 @@ module.exports = {
       return {
         when: when
       }
+
     }
 
     return theMock;
   }
-}
+};
