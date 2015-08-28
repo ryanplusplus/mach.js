@@ -22,25 +22,38 @@ function defaultMockHandler() {
 
 var mockHandler = defaultMockHandler;
 
-function callMatchesExpectation(mock, args, expectation) {
-  if (mock === expectation.mock) {
-    if (args.length !== expectation.args.length) {
-      return false;
-    }
+function ExpectedCall(mock, args) {
+  return expectedCall = {
+    mock: mock,
+    met: false,
+    args: args || [],
+    complete: function() {
+      this.met = true;
+    },
+    isComplete: function() {
+      return this.met;
+    },
+    matches: function(mock, args) {
+      if (mock === expectedCall.mock) {
+        if (args.length !== expectedCall.args.length) {
+          return false;
+        }
 
-    for (i = 0; i < args.length; i++) {
-      if (args[i] !== expectation.args[i]) {
-        return false;
+        for (i = 0; i < args.length; i++) {
+          if (args[i] !== expectedCall.args[i]) {
+            return false;
+          }
+        }
+
+        return true;
       }
     }
-
-    return true;
-  }
+  };
 }
 
 module.exports = {
   mockFunction: function mockFunction(name) {
-    var expectations = [];
+    var expectedCalls = [];
 
     function when(thunk) {
       mockHandler = function mockHandler() {
@@ -48,10 +61,10 @@ module.exports = {
         var matchedExpectation;
         var args = Array.prototype.slice.call(arguments);
 
-        expectations.some(function(expectation) {
-          if (callMatchesExpectation(mock, args, expectation)) {
-            expectation.met = true;
-            matchedExpectation = expectation;
+        expectedCalls.some(function(expectedCall) {
+          if (expectedCall.matches(mock, args)) {
+            expectedCall.complete();
+            matchedExpectation = expectedCall;
             return false;
           }
 
@@ -69,8 +82,8 @@ module.exports = {
 
       mockHandler = defaultMockHandler;
 
-      expectations.forEach(function(expectation) {
-        if (expectation.met == false) {
+      expectedCalls.forEach(function(expectedCall) {
+        if (expectedCall.isComplete() == false) {
           throw new Error('not all calls occurred');
         }
       });
@@ -95,17 +108,13 @@ module.exports = {
     theMock._name = name;
 
     theMock.shouldBeCalled = function shouldBeCalled() {
-      var expectation = {
-        mock: theMock,
-        met: false,
-        args: []
-      };
+      var expectedCall = ExpectedCall(theMock);
 
-      expectations.push(expectation);
+      expectedCalls.push(expectedCall);
 
       return {
         when: when,
-        andWillReturn: andWillReturn.bind(expectation),
+        andWillReturn: andWillReturn.bind(expectedCall),
         andAlso: andAlso.bind({
           when: when
         })
@@ -113,16 +122,13 @@ module.exports = {
     };
 
     theMock.shouldBeCalledWith = function shouldBeCalledWith() {
-      expectations.push({
-        mock: theMock,
-        met: false,
-        args: Array.prototype.slice.call(arguments)
-      })
+      var expectedCall = ExpectedCall(theMock, Array.prototype.slice.call(arguments));
+
+      expectedCalls.push(expectedCall);
 
       return {
         when: when
       }
-
     }
 
     return theMock;
