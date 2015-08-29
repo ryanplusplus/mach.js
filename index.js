@@ -23,7 +23,7 @@ function defaultMockHandler() {
 var mockHandler = defaultMockHandler;
 
 function ExpectedCall(mock, args) {
-  return expectedCall = {
+  return {
     mock: mock,
     met: false,
     args: args || [],
@@ -34,13 +34,13 @@ function ExpectedCall(mock, args) {
       return this.met;
     },
     matches: function(mock, args) {
-      if (mock === expectedCall.mock) {
-        if (args.length !== expectedCall.args.length) {
+      if (mock === this.mock) {
+        if (args.length !== this.args.length) {
           return false;
         }
 
         for (i = 0; i < args.length; i++) {
-          if (args[i] !== expectedCall.args[i]) {
+          if (args[i] !== this.args[i]) {
             return false;
           }
         }
@@ -65,10 +65,10 @@ module.exports = {
           if (expectedCall.matches(mock, args)) {
             expectedCall.complete();
             matchedExpectation = expectedCall;
-            return false;
+            return true;
           }
 
-          return true;
+          return false;
         });
 
         if (!matchedExpectation) {
@@ -97,11 +97,10 @@ module.exports = {
 
     function andWillReturn(returnValue) {
       expectedCalls[expectedCalls.length - 1].returnValue = returnValue;
-
       return api;
     }
 
-    function andAlso() {
+    function andAlso(expectation) {
       return api;
     }
 

@@ -74,7 +74,7 @@ describe('the mach library', function() {
     });
   });
 
-  xit('should allow you to specify that a function should be called multiple times', function() {
+  it('should allow you to specify that multiple functions should be called', function() {
     var f = mach.mockFunction('f');
 
     f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
@@ -83,12 +83,11 @@ describe('the mach library', function() {
     });
   });
 
-  xit('should allow you to check that a function has been called multiple times', function() {
+  it('should allow you to check that multiple functions have been called', function() {
     var f = mach.mockFunction('f');
 
     shouldFailWith('not all calls occurred', function() {
       f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
-        f();
         f(1, 2, 3);
       });
     });
