@@ -103,6 +103,15 @@ describe('the mach library', function() {
     });
   });
 
+  it('should allow an existing function to be mocked', function() {
+    function f() {};
+    var fMock = mach.mockFunction(f);
+
+    shouldFailWith('unexpected function call f()', function() {
+      fMock();
+    });
+  });
+
   it('should allow functions to be used to improve readability', function() {
     var f1 = mach.mockFunction('f1');
     var f2 = mach.mockFunction('f1');
@@ -121,8 +130,8 @@ describe('the mach library', function() {
     }
 
     somethingShouldHappen().
-      andAlso(anotherThingShouldHappen()).
-      when(theCodeUnderTestRuns)
+    andAlso(anotherThingShouldHappen()).
+    when(theCodeUnderTestRuns)
   })
 
   it('should allow an object containing functions to be mocked', function() {

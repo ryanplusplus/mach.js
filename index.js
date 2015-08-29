@@ -137,14 +137,19 @@ function Mock(name) {
 }
 
 module.exports = {
-  mockFunction: function mockFunction(name) {
-    return Mock(name);
+  mockFunction: function mockFunction() {
+    if(typeof arguments[0] == 'function') {
+      return Mock(arguments[0].name);
+    }
+    else {
+      return Mock(arguments[0]);
+    }
   },
   mockObject: function mockObject(obj, name) {
     var mockedObject = {};
 
     for(property in obj) {
-      mockedObject[property] = this.mockFunction(obj[property], name + '.' + property);
+      mockedObject[property] = this.mockFunction(name + '.' + property);
     }
 
     return mockedObject;
