@@ -1,7 +1,7 @@
 describe('the mach library', function() {
   var mach = require('./../index.js');
 
-  it('should allow you to verify that a function is called', function() {
+  it('should be able to verify that a function is called', function() {
     var f = mach.mockFunction('f');
 
     f.shouldBeCalled().when(function() {
@@ -9,7 +9,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should alert you when a function is not called', function() {
+  it('should fail when an expected function call does not occur', function() {
     var f = mach.mockFunction('f');
 
     shouldFailWith('not all calls occurred', function() {
@@ -17,7 +17,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should alert you when the wrong function is called', function() {
+  it('should fail when a different mock is called instead of the expected mock', function() {
     var f1 = mach.mockFunction('f1');
     var f2 = mach.mockFunction('f2');
 
@@ -28,7 +28,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should alert you when a function is called unexpectedly', function() {
+  it('should fail when a function is called unexpectedly', function() {
     var f = mach.mockFunction('f');
 
     shouldFailWith('unexpected function call f()', function() {
@@ -36,7 +36,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should alert you when a function is called unexpectedly after a successful expectation', function() {
+  it('should fail when a function is called unexpectedly after a successful expectation', function() {
     var f = mach.mockFunction('f');
 
     f.shouldBeCalled().when(function() {
@@ -48,7 +48,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should allow you to verify that a function has been called with the correct arguments', function() {
+  it('should be able to verify that a function has been called with the correct arguments', function() {
     var f = mach.mockFunction('f');
 
     f.shouldBeCalledWith(1, '2').when(function() {
@@ -56,7 +56,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should alert you when a function has been called with incorrect arguments', function() {
+  it('should fail when a function iss been called with incorrect arguments', function() {
     var f = mach.mockFunction('f');
 
     shouldFailWith('unexpected function call f(1, \'3\')', function() {
@@ -66,7 +66,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should allow you to specify the return value of a mocked function', function() {
+  it('should allow the return value of a mocked function to be specified', function() {
     var f = mach.mockFunction('f');
 
     f.shouldBeCalled().andWillReturn(4).when(function() {
@@ -74,7 +74,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should allow you to specify that multiple functions should be called', function() {
+  it('should allow multiple function calls to be expected', function() {
     var f = mach.mockFunction('f');
 
     f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
@@ -83,7 +83,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should allow you to check that multiple functions have been called', function() {
+  it('should fail if multiplle function calls are expected but not all occur', function() {
     var f = mach.mockFunction('f');
 
     shouldFailWith('not all calls occurred', function() {
@@ -93,7 +93,7 @@ describe('the mach library', function() {
     });
   });
 
-  it('should allow you to check that multiple functions are called', function() {
+  it('should be able to verify that multiple functions are called', function() {
     var f1 = mach.mockFunction('f1');
     var f2 = mach.mockFunction('f2');
 
@@ -101,20 +101,6 @@ describe('the mach library', function() {
       f1();
       f2(1, 2, 3);
     });
-  });
-
-  xit('should allow you to mix and match call types', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
-    f1.shouldBeCalled()
-      .andAlso(f2.shouldBeCalledWith(1, 2, 3))
-      .andThen(f2.shouldBeCalledWith(1).andWillReturn(4))
-      .when(function() {
-        f1();
-        f2(1, 2, 3);
-        expect(f2(1)).ToBe(4);
-      });
   });
 
   it('should allow functions to be used to improve readability', function() {
@@ -306,6 +292,20 @@ describe('the mach library', function() {
   //       f(3)
   //     })
   // })
+  //
+  // xit('should allow you to mix and match call types', function() {
+  //   var f1 = mach.mockFunction('f1');
+  //   var f2 = mach.mockFunction('f2');
+  //
+  //   f1.shouldBeCalled()
+  //     .andAlso(f2.shouldBeCalledWith(1, 2, 3))
+  //     .andThen(f2.shouldBeCalledWith(1).andWillReturn(4))
+  //     .when(function() {
+  //       f1();
+  //       f2(1, 2, 3);
+  //       expect(f2(1)).ToBe(4);
+  //     });
+  // });
   //
   // it('should allow soft expectations to be called', function()
   //   var f = mach.mockFunction('f')
