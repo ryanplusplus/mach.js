@@ -101,11 +101,16 @@ function Expectation() {
     return this;
   }
 
+  function expectCallTo(mock, args) {
+    expectation._expectedCalls.push(ExpectedCall(theMock), args);
+  }
+
   return {
     when: when,
     andWillReturn: andWillReturn,
     andAlso: andAlso,
-    _expectedCalls: expectedCalls
+    _expectedCalls: expectedCalls,
+    _expectCallTo: expectCallTo
   };
 }
 
@@ -119,13 +124,13 @@ module.exports = {
 
     theMock.shouldBeCalled = function shouldBeCalled() {
       var expectation = Expectation();
-      expectation._expectedCalls.push(ExpectedCall(theMock));
+      expectation.expectCallTo(theMock);
       return expectation;
     };
 
     theMock.shouldBeCalledWith = function shouldBeCalledWith() {
       var expectation = Expectation();
-      expectation._expectedCalls.push(ExpectedCall(theMock, Array.prototype.slice.call(arguments)));
+      expectation.expectCallTo(theMock, Array.prototype.slice.call(arguments));
       return expectation;
     }
 
