@@ -89,16 +89,20 @@ module.exports = {
       });
     }
 
-    function andWillReturn(returnValue) {
-      this.returnValue = returnValue;
+    var api = {
+      when: when,
+      andWillReturn: andWillReturn,
+      andAlso: andAlso
+    };
 
-      return {
-        when: when
-      };
+    function andWillReturn(returnValue) {
+      expectedCalls[expectedCalls.length - 1].returnValue = returnValue;
+
+      return api;
     }
 
     function andAlso() {
-      return this;
+      return api;
     }
 
     var theMock = function theMock() {
@@ -108,27 +112,13 @@ module.exports = {
     theMock._name = name;
 
     theMock.shouldBeCalled = function shouldBeCalled() {
-      var expectedCall = ExpectedCall(theMock);
-
-      expectedCalls.push(expectedCall);
-
-      return {
-        when: when,
-        andWillReturn: andWillReturn.bind(expectedCall),
-        andAlso: andAlso.bind({
-          when: when
-        })
-      };
+      expectedCalls.push(ExpectedCall(theMock));
+      return api;
     };
 
     theMock.shouldBeCalledWith = function shouldBeCalledWith() {
-      var expectedCall = ExpectedCall(theMock, Array.prototype.slice.call(arguments));
-
-      expectedCalls.push(expectedCall);
-
-      return {
-        when: when
-      }
+      expectedCalls.push(ExpectedCall(theMock, Array.prototype.slice.call(arguments)));
+      return api;
     }
 
     return theMock;
