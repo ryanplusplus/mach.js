@@ -150,21 +150,21 @@ describe('the mach library', function() {
       });
   });
 
-  // it('should let you expect a function to be called multiple times', function()
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.shouldBeCalledWith(2).andWillReturn(1).multiple_times(3).when(function()
-  //     assert(f(2) == 1)
-  //     assert(f(2) == 1)
-  //     assert(f(2) == 1)
-  //   })
-  // })
-  //
+  it('should let you expect a function to be called multiple times', function() {
+    var f = mach.mockFunction('f');
+
+    f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(function() {
+      expect(f(2)).toBe(1);
+      expect(f(2)).toBe(1);
+      expect(f(2)).toBe(1);
+    });
+  });
+
   // it('should fail if a function is not called enough times', function()
   //   shouldFail(function()
   //     var f = mach.mockFunction()
   //
-  //     f.shouldBeCalledWith(2).andWillReturn(1).multiple_times(3).when(function()
+  //     f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(function()
   //       assert(f(2) == 1)
   //       assert(f(2) == 1)
   //     })
@@ -181,7 +181,7 @@ describe('the mach library', function() {
   //   shouldFail(function()
   //     var f = mach.mockFunction('f')
   //
-  //     f.shouldBeCalledWith(2).andWillReturn(1).multiple_times(2).when(function()
+  //     f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(2).when(function()
   //       assert(f(2) == 1)
   //       assert(f(2) == 1)
   //       assert(f(2) == 1)

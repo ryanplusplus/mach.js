@@ -105,10 +105,19 @@ function Expectation() {
     this._expectedCalls.push(ExpectedCall(mock, args));
   }
 
+  function multipleTimes(count) {
+    for (var i = 0; i < count - 2; i++) {
+      this._expectedCalls.push(this._expectedCalls[this._expectedCalls.length - 1]);
+    }
+
+    return this;
+  }
+
   return {
     when: when,
     andWillReturn: andWillReturn,
     andAlso: andAlso,
+    multipleTimes: multipleTimes,
     _expectedCalls: expectedCalls,
     _expectCallTo: expectCallTo
   };
@@ -138,17 +147,16 @@ function Mock(name) {
 
 module.exports = {
   mockFunction: function mockFunction() {
-    if(typeof arguments[0] == 'function') {
+    if (typeof arguments[0] == 'function') {
       return Mock(arguments[0].name);
-    }
-    else {
+    } else {
       return Mock(arguments[0]);
     }
   },
   mockObject: function mockObject(obj, name) {
     var mockedObject = {};
 
-    for(property in obj) {
+    for (property in obj) {
       mockedObject[property] = this.mockFunction(name + '.' + property);
     }
 
