@@ -102,7 +102,7 @@ function Expectation() {
   }
 
   function expectCallTo(mock, args) {
-    expectation._expectedCalls.push(ExpectedCall(theMock), args);
+    this._expectedCalls.push(ExpectedCall(mock, args));
   }
 
   return {
@@ -114,26 +114,30 @@ function Expectation() {
   };
 }
 
+function Mock(name) {
+  var mock = function mock() {
+    return mockHandler.apply(mock, Array.prototype.slice.call(arguments));
+  };
+
+  mock._name = name;
+
+  mock.shouldBeCalled = function shouldBeCalled() {
+    var expectation = Expectation();
+    expectation._expectCallTo(mock);
+    return expectation;
+  };
+
+  mock.shouldBeCalledWith = function shouldBeCalledWith() {
+    var expectation = Expectation();
+    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments));
+    return expectation;
+  }
+
+  return mock;
+}
+
 module.exports = {
   mockFunction: function mockFunction(name) {
-    var theMock = function theMock() {
-      return mockHandler.apply(theMock, Array.prototype.slice.call(arguments));
-    };
-
-    theMock._name = name;
-
-    theMock.shouldBeCalled = function shouldBeCalled() {
-      var expectation = Expectation();
-      expectation.expectCallTo(theMock);
-      return expectation;
-    };
-
-    theMock.shouldBeCalledWith = function shouldBeCalledWith() {
-      var expectation = Expectation();
-      expectation.expectCallTo(theMock, Array.prototype.slice.call(arguments));
-      return expectation;
-    }
-
-    return theMock;
+    return Mock(name);
   }
 };
