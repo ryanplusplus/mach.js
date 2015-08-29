@@ -51,59 +51,66 @@ function ExpectedCall(mock, args) {
   };
 }
 
-module.exports = {
-  mockFunction: function mockFunction(name) {
-    var expectedCalls = [];
+function Expectation() {
+  var expectedCalls = [];
 
-    function when(thunk) {
-      mockHandler = function mockHandler() {
-        var mock = this;
-        var matchedExpectation;
-        var args = Array.prototype.slice.call(arguments);
+  function when(thunk) {
+    mockHandler = function mockHandler() {
+      var mock = this;
+      var matchedExpectation;
+      var args = Array.prototype.slice.call(arguments);
 
-        expectedCalls.some(function(expectedCall) {
-          if (expectedCall.matches(mock, args)) {
-            expectedCall.complete();
-            matchedExpectation = expectedCall;
-            return true;
-          }
-
-          return false;
-        });
-
-        if (!matchedExpectation) {
-          throw unexpectedFunctionCall(mock, args);
+      expectedCalls.some(function(expectedCall) {
+        if (expectedCall.matches(mock, args)) {
+          expectedCall.complete();
+          matchedExpectation = expectedCall;
+          return true;
         }
 
-        return matchedExpectation.returnValue;
+        return false;
+      });
+
+      if (!matchedExpectation) {
+        throw unexpectedFunctionCall(mock, args);
       }
 
-      thunk();
-
-      mockHandler = defaultMockHandler;
-
-      expectedCalls.forEach(function(expectedCall) {
-        if (expectedCall.isComplete() == false) {
-          throw new Error('not all calls occurred');
-        }
-      });
+      return matchedExpectation.returnValue;
     }
 
-    var api = {
-      when: when,
-      andWillReturn: andWillReturn,
-      andAlso: andAlso
-    };
+    thunk();
 
-    function andWillReturn(returnValue) {
-      expectedCalls[expectedCalls.length - 1].returnValue = returnValue;
-      return api;
-    }
+    mockHandler = defaultMockHandler;
 
-    function andAlso(expectation) {
-      return api;
-    }
+    expectedCalls.forEach(function(expectedCall) {
+      if (expectedCall.isComplete() == false) {
+        throw new Error('not all calls occurred');
+      }
+    });
+  }
 
+  function andWillReturn(returnValue) {
+    expectedCalls[expectedCalls.length - 1].returnValue = returnValue;
+    return this;
+  }
+
+  function andAlso(expectation) {
+    expectation._expectedCalls.forEach(function(expectedCall) {
+      expectedCalls.push(expectedCall);
+    });
+
+    return this;
+  }
+
+  return {
+    when: when,
+    andWillReturn: andWillReturn,
+    andAlso: andAlso,
+    _expectedCalls: expectedCalls
+  };
+}
+
+module.exports = {
+  mockFunction: function mockFunction(name) {
     var theMock = function theMock() {
       return mockHandler.apply(theMock, Array.prototype.slice.call(arguments));
     };
@@ -111,13 +118,15 @@ module.exports = {
     theMock._name = name;
 
     theMock.shouldBeCalled = function shouldBeCalled() {
-      expectedCalls.push(ExpectedCall(theMock));
-      return api;
+      var expectation = Expectation();
+      expectation._expectedCalls.push(ExpectedCall(theMock));
+      return expectation;
     };
 
     theMock.shouldBeCalledWith = function shouldBeCalledWith() {
-      expectedCalls.push(ExpectedCall(theMock, Array.prototype.slice.call(arguments)));
-      return api;
+      var expectation = Expectation();
+      expectation._expectedCalls.push(ExpectedCall(theMock, Array.prototype.slice.call(arguments)));
+      return expectation;
     }
 
     return theMock;
