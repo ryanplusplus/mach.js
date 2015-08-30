@@ -201,28 +201,29 @@ describe('mach', function() {
   });
 
   it('should fail if andWillReturn is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
+    var f = mach.mockFunction('f');
+
     shouldFail(function() {
-      var f = mach.mockFunction('f');
       f.andWillReturn(1);
     });
-  })
+  });
 
-  // it('should fail if when is not preceeded by shouldBeCalled or shouldBeCalledWith', function()
-  //   shouldFailWith('incomplete expectation', function()
-  //     var f = mach.mockFunction('f')
-  //
-  //     f.when(function() })
-  //   })
-  // })
-  //
-  // it('should fail if after is not preceeded by shouldBeCalled or shouldBeCalledWith', function()
-  //   shouldFailWith('incomplete expectation', function()
-  //     var f = mach.mockFunction('f')
-  //
-  //     f.after(function() })
-  //   })
-  // })
-  //
+  it('should fail if when is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
+    var f = mach.mockFunction('f');
+
+    shouldFail(function() {
+      f.when(function() {});
+    });
+  });
+
+  it('should fail if after is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
+    var f = mach.mockFunction('f');
+
+    shouldFail(function() {
+      f.after(function() {});
+    });
+  });
+
   // it('should fail if shouldBeCalled is used after a call has already been specified', function()
   //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
