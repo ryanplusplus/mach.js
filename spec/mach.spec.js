@@ -365,15 +365,15 @@ describe('mach', function() {
   // it('should allow soft expectations with arguments to be called', function()
   //   var f = mach.mockFunction('f')
   //
-  //   f.may_be_called_with(4).when(function() f(4) })
+  //   f.mayBeCalledWith(4).when(function() f(4) })
   //
-  //   f.may_be_called_with(4).when(function() f(4) })
+  //   f.mayBeCalledWith(4).when(function() f(4) })
   // })
   //
   // it('should allow soft expectations with arguments to be omitted', function()
   //   var f = mach.mockFunction('f')
   //
-  //   f.may_be_called_with(4).when(function() })
+  //   f.mayBeCalledWith(4).when(function() })
   // })
   //
   // it('should fail if may_be_called is used after a call has already been specified', function()
@@ -384,17 +384,11 @@ describe('mach', function() {
   //   })
   // })
   //
-  // it('should fail if may_be_called_with is used after a call has already been specified', function()
+  // it('should fail if mayBeCalledWith is used after a call has already been specified', function()
   //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
   //
-  //     f.shouldBeCalled().may_be_called_with(4)
-  //   })
-  // })
-  //
-  // it('should handle unexpected calls outside of an expectation', function()
-  //   shouldFailWith('unexpected function call f(1, 2, 3)', function()
-  //     mach.mockFunction('f')(1, 2, 3)
+  //     f.shouldBeCalled().mayBeCalledWith(4)
   //   })
   // })
   //
