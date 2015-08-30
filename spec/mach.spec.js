@@ -282,20 +282,20 @@ describe('mach', function() {
     });
   });
 
-  // it('should allow then to be used as a synonym for andThen', function() {
-  //   var f1 = mach.mockFunction('f1');
-  //   var f2 = mach.mockFunction('f2');
-  //
-  //   shouldFailWith('unexpected function call f2()', function() {
-  //     f1.shouldBeCalled()
-  //       .then(f2.shouldBeCalled())
-  //       .when(function() {
-  //         f2();
-  //         f1();
-  //       });
-  //   });
-  // });
-  //
+  it('should allow then to be used as a synonym for andThen', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    shouldFailWith('unexpected function call f2()', function() {
+      f1.shouldBeCalled()
+        .then(f2.shouldBeCalled())
+        .when(function() {
+          f2();
+          f1();
+        });
+    });
+  });
+
   // it('should catch out of order calls when mixed with unordered calls', function()
   //   var f1 = mach.mockFunction('f1')
   //   var f2 = mach.mockFunction('f2')

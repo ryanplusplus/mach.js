@@ -172,6 +172,7 @@ function Expectation() {
     andAlso: andAlso,
     and: andAlso,
     andThen: andThen,
+    then: andThen,
     multipleTimes: multipleTimes,
     _expectedCalls: expectedCalls,
     _expectCallTo: expectCallTo
