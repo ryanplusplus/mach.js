@@ -34,6 +34,10 @@ function ExpectedCall(mock, args) {
       return this.met;
     },
     matches: function(mock, args) {
+      if (this.met) {
+        return false;
+      }
+
       if (mock === this.mock) {
         if (args.length !== this.args.length) {
           return false;
@@ -47,6 +51,14 @@ function ExpectedCall(mock, args) {
 
         return true;
       }
+    },
+    setReturnValue: function(returnValue) {
+      this.returnValue = returnValue;
+    },
+    clone: function() {
+      var clone = ExpectedCall(this.mock, this.args);
+      clone.setReturnValue(this.returnValue);
+      return clone;
     }
   };
 }
@@ -89,7 +101,7 @@ function Expectation() {
   }
 
   function andWillReturn(returnValue) {
-    expectedCalls[expectedCalls.length - 1].returnValue = returnValue;
+    expectedCalls[expectedCalls.length - 1].setReturnValue(returnValue);
     return this;
   }
 
@@ -106,8 +118,8 @@ function Expectation() {
   }
 
   function multipleTimes(count) {
-    for (var i = 0; i < count - 2; i++) {
-      this._expectedCalls.push(this._expectedCalls[this._expectedCalls.length - 1]);
+    for (var i = 0; i < count - 1; i++) {
+      this._expectedCalls.push(this._expectedCalls[this._expectedCalls.length - 1].clone());
     }
 
     return this;

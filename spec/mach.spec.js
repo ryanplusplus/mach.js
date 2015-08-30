@@ -1,4 +1,4 @@
-describe('the mach library', function() {
+describe('mach', function() {
   var mach = require('./../index.js');
 
   it('should be able to verify that a function is called', function() {
@@ -160,17 +160,29 @@ describe('the mach library', function() {
     });
   });
 
-  // it('should fail if a function is not called enough times', function()
-  //   shouldFail(function()
-  //     var f = mach.mockFunction()
-  //
-  //     f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(function()
-  //       assert(f(2) == 1)
-  //       assert(f(2) == 1)
-  //     })
-  //   })
-  // })
-  //
+  it('should fail if a function is not called enough times', function() {
+    shouldFailWith('not all calls occurred', function() {
+      var f = mach.mockFunction();
+
+      f.shouldBeCalledWith(2).multipleTimes(3).when(function() {
+        f(2);
+        f(2);
+      });
+    });
+  });
+
+  it('should fail if a function is called too many times', function() {
+    shouldFailWith('unexpected function call f(2)', function() {
+      var f = mach.mockFunction('f');
+
+      f.shouldBeCalledWith(2).multipleTimes(2).when(function() {
+        f(2);
+        f(2);
+        f(2);
+      });
+    });
+  });
+
   // it('should allow after to be used as an alias for when', function()
   //   var f = mach.mockFunction()
   //
