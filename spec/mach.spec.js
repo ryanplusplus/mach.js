@@ -328,20 +328,20 @@ describe('mach', function() {
       });
   });
 
-  // xit('should allow you to mix and match call types', function() {
-  //   var f1 = mach.mockFunction('f1');
-  //   var f2 = mach.mockFunction('f2');
-  //
-  //   f1.shouldBeCalled()
-  //     .andAlso(f2.shouldBeCalledWith(1, 2, 3))
-  //     .andThen(f2.shouldBeCalledWith(1).andWillReturn(4))
-  //     .when(function() {
-  //       f1();
-  //       f2(1, 2, 3);
-  //       expect(f2(1)).ToBe(4);
-  //     });
-  // });
-  //
+  it('should allow you to mix and match call types', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    f1.shouldBeCalled()
+      .andAlso(f2.shouldBeCalledWith(1, 2, 3))
+      .andThen(f2.shouldBeCalledWith(1).andWillReturn(4))
+      .when(function() {
+        f1();
+        f2(1, 2, 3);
+        expect(f2(1)).toBe(4);
+      });
+  });
+
   // it('should allow soft expectations to be called', function()
   //   var f = mach.mockFunction('f')
   //
