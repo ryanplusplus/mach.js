@@ -342,6 +342,16 @@ describe('mach', function() {
       });
   });
 
+  it('should maintain independent expectations', function() {
+    var f = mach.mockFunction('f');
+
+    f.shouldBeCalled();
+
+    f.shouldBeCalled().when(function() {
+      f();
+    });
+  });
+
   // it('should allow soft expectations to be called', function()
   //   var f = mach.mockFunction('f')
   //
