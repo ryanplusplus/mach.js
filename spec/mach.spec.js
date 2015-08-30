@@ -296,38 +296,38 @@ describe('mach', function() {
     });
   });
 
-  // it('should catch out of order calls when mixed with unordered calls', function()
-  //   var f1 = mach.mockFunction('f1')
-  //   var f2 = mach.mockFunction('f2')
-  //   var f3 = mach.mockFunction('f3')
-  //
-  //   shouldFailWith('unexpected function call f3()', function()
-  //     f1.shouldBeCalled().
-  //       andAlso(f2.shouldBeCalled()).
-  //       andThen(f3.shouldBeCalled()).
-  //       when(function()
-  //         f2()
-  //         f3()
-  //         f1()
-  //       })
-  //   })
-  // })
-  //
-  // it('should allow ordered and unordered calls to be mixed', function()
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.shouldBeCalledWith(1).
-  //     andAlso(f.shouldBeCalledWith(2)).
-  //     andThen(f.shouldBeCalledWith(3)).
-  //     andAlso(f.shouldBeCalledWith(4)).
-  //     when(function()
-  //       f(2)
-  //       f(1)
-  //       f(4)
-  //       f(3)
-  //     })
-  // })
-  //
+  it('should catch out of order calls when mixed with unordered calls', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+    var f3 = mach.mockFunction('f3');
+
+    shouldFailWith('unexpected function call f3()', function() {
+      f1.shouldBeCalled()
+        .and(f2.shouldBeCalled())
+        .then(f3.shouldBeCalled())
+        .when(function() {
+          f2();
+          f3();
+          f1();
+        });
+    });
+  });
+
+  it('should allow ordered and unordered calls to be mixed', function() {
+    var f = mach.mockFunction('f');
+
+    f.shouldBeCalledWith(1)
+      .andAlso(f.shouldBeCalledWith(2))
+      .andThen(f.shouldBeCalledWith(3))
+      .andAlso(f.shouldBeCalledWith(4))
+      .when(function() {
+        f(2);
+        f(1);
+        f(4);
+        f(3);
+      });
+  });
+
   // xit('should allow you to mix and match call types', function() {
   //   var f1 = mach.mockFunction('f1');
   //   var f2 = mach.mockFunction('f2');
