@@ -59,7 +59,7 @@ describe('mach', function() {
   it('should fail when a function iss been called with incorrect arguments', function() {
     var f = mach.mockFunction('f');
 
-    shouldFailWith('unexpected function call f(1, \'3\')', function() {
+    shouldFailWith('unexpected arguments (1, \'3\') provided to function f', function() {
       f.shouldBeCalledWith(1, '2').when(function() {
         f(1, '3');
       });
@@ -259,29 +259,29 @@ describe('mach', function() {
       });
   });
 
-  // it('should not allow calls to happen out of order when andThen is used', function() {
-  //   var f1 = mach.mockFunction('f1');
-  //   var f2 = mach.mockFunction('f2');
-  //
-  //   shouldFailWith('unexpected function call f2()', function() {
-  //     f1.shouldBeCalled()
-  //       .andThen(f2.shouldBeCalled())
-  //       .when(function() {
-  //         f2();
-  //         f1();
-  //       });
-  //   });
-  //
-  //   shouldFailWith('unexpected arguments (2) provided to function f1', function() {
-  //     f1.shouldBeCalledWith(1)
-  //       .andThen(f2.shouldBeCalled(2))
-  //       .when(function() {
-  //         f1(2)
-  //         f1(1)
-  //       });
-  //   });
-  // });
-  //
+  it('should not allow calls to happen out of order when andThen is used', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    shouldFailWith('unexpected function call f2()', function() {
+      f1.shouldBeCalled()
+        .andThen(f2.shouldBeCalled())
+        .when(function() {
+          f2();
+          f1();
+        });
+    });
+
+    shouldFailWith('unexpected arguments (2) provided to function f1', function() {
+      f1.shouldBeCalledWith(1)
+        .andThen(f2.shouldBeCalled(2))
+        .when(function() {
+          f1(2)
+          f1(1)
+        });
+    });
+  });
+
   // it('should allow then to be used as a synonym for andThen', function() {
   //   var f1 = mach.mockFunction('f1');
   //   var f2 = mach.mockFunction('f2');
