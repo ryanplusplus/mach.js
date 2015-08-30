@@ -224,22 +224,22 @@ describe('mach', function() {
     });
   });
 
-  // it('should fail if shouldBeCalled is used after a call has already been specified', function()
-  //   shouldFailWith('call already specified', function()
-  //     var f = mach.mockFunction('f')
-  //
-  //     f.shouldBeCalled().shouldBeCalled()
-  //   })
-  // })
-  //
-  // it('should fail if shouldBeCalledWith is used after a call has already been specified', function()
-  //   shouldFailWith('call already specified', function()
-  //     var f = mach.mockFunction('f')
-  //
-  //     f.shouldBeCalled().shouldBeCalledWith(4)
-  //   })
-  // })
-  //
+  it('should fail if shouldBeCalled is used after a call has already been specified', function() {
+    var f = mach.mockFunction('f');
+
+    shouldFail(function() {
+      f.shouldBeCalled().shouldBeCalled();
+    });
+  });
+
+  it('should fail if shouldBeCalledWith is used after a call has already been specified', function() {
+    var f = mach.mockFunction('f');
+
+    shouldFail(function() {
+      f.shouldBeCalled().shouldBeCalledWith(4);
+    });
+  });
+
   // it('should allow calls to happen out of order when andAlso is used', function()
   //   var f1 = mach.mockFunction('f1')
   //   var f2 = mach.mockFunction('f2')
