@@ -127,6 +127,7 @@ function Expectation() {
 
   return {
     when: when,
+    after: when,
     andWillReturn: andWillReturn,
     andAlso: andAlso,
     multipleTimes: multipleTimes,

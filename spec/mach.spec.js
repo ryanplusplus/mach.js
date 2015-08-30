@@ -183,12 +183,14 @@ describe('mach', function() {
     });
   });
 
-  // it('should allow after to be used as an alias for when', function()
-  //   var f = mach.mockFunction()
-  //
-  //   f.shouldBeCalled().after(function() f() })
-  // })
-  //
+  it('should allow after to be used as an alias for when', function() {
+    var f = mach.mockFunction();
+
+    f.shouldBeCalled().after(function() {
+      f()
+    });
+  });
+
   // it('should fail if a function is called too many times', function()
   //   shouldFail(function()
   //     var f = mach.mockFunction('f')
