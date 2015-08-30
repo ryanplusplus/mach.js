@@ -191,6 +191,15 @@ describe('mach', function() {
     });
   });
 
+  it('should allow and to be used as an alias for andAlso', function() {
+    var f = mach.mockFunction('f');
+
+    f.shouldBeCalled().and(f.shouldBeCalledWith(1, 2, 3)).when(function() {
+      f();
+      f(1, 2, 3);
+    });
+  });
+
   // it('should fail if a function is called too many times', function()
   //   shouldFail(function()
   //     var f = mach.mockFunction('f')

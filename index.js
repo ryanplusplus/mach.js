@@ -130,6 +130,7 @@ function Expectation() {
     after: when,
     andWillReturn: andWillReturn,
     andAlso: andAlso,
+    and: andAlso,
     multipleTimes: multipleTimes,
     _expectedCalls: expectedCalls,
     _expectCallTo: expectCallTo
