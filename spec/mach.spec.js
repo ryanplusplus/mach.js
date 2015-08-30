@@ -240,47 +240,61 @@ describe('mach', function() {
     });
   });
 
-  // it('should allow calls to happen out of order when andAlso is used', function()
-  //   var f1 = mach.mockFunction('f1')
-  //   var f2 = mach.mockFunction('f2')
+  it('should allow calls to happen out of order when andAlso is used', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    f1.shouldBeCalled()
+      .andAlso(f2.shouldBeCalled())
+      .when(function() {
+        f2();
+        f1();
+      });
+
+    f1.shouldBeCalledWith(1)
+      .andAlso(f1.shouldBeCalledWith(2))
+      .when(function() {
+        f1(2);
+        f1(1);
+      });
+  });
+
+  // it('should not allow calls to happen out of order when andThen is used', function() {
+  //   var f1 = mach.mockFunction('f1');
+  //   var f2 = mach.mockFunction('f2');
   //
-  //   f1.shouldBeCalled().
-  //     andAlso(f2.shouldBeCalled()).
-  //     when(function()
-  //       f2()
-  //       f1()
-  //     })
+  //   shouldFailWith('unexpected function call f2()', function() {
+  //     f1.shouldBeCalled()
+  //       .andThen(f2.shouldBeCalled())
+  //       .when(function() {
+  //         f2();
+  //         f1();
+  //       });
+  //   });
   //
-  //   f1.shouldBeCalledWith(1).
-  //     andAlso(f1.shouldBeCalledWith(2)).
-  //     when(function()
-  //       f1(2)
-  //       f1(1)
-  //     })
-  // })
-  //
-  // it('should not allow calls to happen out of order when andThen is used', function()
-  //   var f1 = mach.mockFunction('f1')
-  //   var f2 = mach.mockFunction('f2')
-  //
-  //   shouldFailWith('unexpected function call f2()', function()
-  //     f1.shouldBeCalled().
-  //       andThen(f2.shouldBeCalled()).
-  //       when(function()
-  //         f2()
-  //         f1()
-  //       })
-  //   })
-  //
-  //   shouldFailWith('unexpected arguments (2) provided to function f1', function()
-  //     f1.shouldBeCalledWith(1).
-  //       andThen(f2.shouldBeCalled(2)).
-  //       when(function()
+  //   shouldFailWith('unexpected arguments (2) provided to function f1', function() {
+  //     f1.shouldBeCalledWith(1)
+  //       .andThen(f2.shouldBeCalled(2))
+  //       .when(function() {
   //         f1(2)
   //         f1(1)
-  //       })
-  //   })
-  // })
+  //       });
+  //   });
+  // });
+  //
+  // it('should allow then to be used as a synonym for andThen', function() {
+  //   var f1 = mach.mockFunction('f1');
+  //   var f2 = mach.mockFunction('f2');
+  //
+  //   shouldFailWith('unexpected function call f2()', function() {
+  //     f1.shouldBeCalled()
+  //       .then(f2.shouldBeCalled())
+  //       .when(function() {
+  //         f2();
+  //         f1();
+  //       });
+  //   });
+  // });
   //
   // it('should catch out of order calls when mixed with unordered calls', function()
   //   var f1 = mach.mockFunction('f1')
