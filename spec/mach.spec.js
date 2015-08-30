@@ -200,27 +200,15 @@ describe('mach', function() {
     });
   });
 
-  // it('should fail if a function is called too many times', function()
-  //   shouldFail(function()
-  //     var f = mach.mockFunction('f')
-  //
-  //     f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(2).when(function()
-  //       assert(f(2) == 1)
-  //       assert(f(2) == 1)
-  //       assert(f(2) == 1)
-  //     })
-  //   })
-  // })
-  //
-  // it('should fail if andWillReturn is not preceeded by shouldBeCalled or shouldBeCalledWith', function()
-  //   should_fail_with('cannot set return value for an unspecified call', function()
-  //     var f = mach.mockFunction('f')
-  //     f.andWillReturn(1)
-  //   })
-  // })
-  //
+  it('should fail if andWillReturn is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
+    shouldFail(function() {
+      var f = mach.mockFunction('f');
+      f.andWillReturn(1);
+    });
+  })
+
   // it('should fail if when is not preceeded by shouldBeCalled or shouldBeCalledWith', function()
-  //   should_fail_with('incomplete expectation', function()
+  //   shouldFailWith('incomplete expectation', function()
   //     var f = mach.mockFunction('f')
   //
   //     f.when(function() })
@@ -228,7 +216,7 @@ describe('mach', function() {
   // })
   //
   // it('should fail if after is not preceeded by shouldBeCalled or shouldBeCalledWith', function()
-  //   should_fail_with('incomplete expectation', function()
+  //   shouldFailWith('incomplete expectation', function()
   //     var f = mach.mockFunction('f')
   //
   //     f.after(function() })
@@ -236,7 +224,7 @@ describe('mach', function() {
   // })
   //
   // it('should fail if shouldBeCalled is used after a call has already been specified', function()
-  //   should_fail_with('call already specified', function()
+  //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
   //
   //     f.shouldBeCalled().shouldBeCalled()
@@ -244,7 +232,7 @@ describe('mach', function() {
   // })
   //
   // it('should fail if shouldBeCalledWith is used after a call has already been specified', function()
-  //   should_fail_with('call already specified', function()
+  //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
   //
   //     f.shouldBeCalled().shouldBeCalledWith(4)
@@ -274,7 +262,7 @@ describe('mach', function() {
   //   var f1 = mach.mockFunction('f1')
   //   var f2 = mach.mockFunction('f2')
   //
-  //   should_fail_with('unexpected function call f2()', function()
+  //   shouldFailWith('unexpected function call f2()', function()
   //     f1.shouldBeCalled().
   //       andThen(f2.shouldBeCalled()).
   //       when(function()
@@ -283,7 +271,7 @@ describe('mach', function() {
   //       })
   //   })
   //
-  //   should_fail_with('unexpected arguments (2) provided to function f1', function()
+  //   shouldFailWith('unexpected arguments (2) provided to function f1', function()
   //     f1.shouldBeCalledWith(1).
   //       andThen(f2.shouldBeCalled(2)).
   //       when(function()
@@ -298,7 +286,7 @@ describe('mach', function() {
   //   var f2 = mach.mockFunction('f2')
   //   var f3 = mach.mockFunction('f3')
   //
-  //   should_fail_with('unexpected function call f3()', function()
+  //   shouldFailWith('unexpected function call f3()', function()
   //     f1.shouldBeCalled().
   //       andAlso(f2.shouldBeCalled()).
   //       andThen(f3.shouldBeCalled()).
@@ -374,7 +362,7 @@ describe('mach', function() {
   // })
   //
   // it('should fail if may_be_called is used after a call has already been specified', function()
-  //   should_fail_with('call already specified', function()
+  //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
   //
   //     f.shouldBeCalled().may_be_called()
@@ -382,7 +370,7 @@ describe('mach', function() {
   // })
   //
   // it('should fail if may_be_called_with is used after a call has already been specified', function()
-  //   should_fail_with('call already specified', function()
+  //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
   //
   //     f.shouldBeCalled().may_be_called_with(4)
@@ -390,7 +378,7 @@ describe('mach', function() {
   // })
   //
   // it('should handle unexpected calls outside of an expectation', function()
-  //   should_fail_with('unexpected function call f(1, 2, 3)', function()
+  //   shouldFailWith('unexpected function call f(1, 2, 3)', function()
   //     mach.mockFunction('f')(1, 2, 3)
   //   })
   // })
@@ -398,7 +386,7 @@ describe('mach', function() {
   // it('should handle table arguments in error messages', function()
   //   var a = {}
   //
-  //   should_fail_with('unexpected function call f(' .. tostring(a) ..')', function()
+  //   shouldFailWith('unexpected function call f(' .. tostring(a) ..')', function()
   //     mach.mockFunction('f')(a)
   //   })
   // })
