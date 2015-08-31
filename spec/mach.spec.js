@@ -352,45 +352,53 @@ describe('mach', function() {
     });
   });
 
-  // it('should allow soft expectations to be called', function()
-  //   var f = mach.mockFunction('f')
+  it('should allow soft expectations to be called', function() {
+    var f = mach.mockFunction('f');
+
+    f.mayBeCalled().when(function() {
+      f();
+    });
+  });
+
+  it('should allow soft expectations to be omitted', function() {
+    var f = mach.mockFunction('f');
+
+    f.mayBeCalled().when(function() {});
+  });
+
+  it('should allow soft expectations with return values', function() {
+    var f = mach.mockFunction('f');
+
+    f.mayBeCalled().andWillReturn(3).when(function() {
+      expect(f()).toBe(3);
+    });
+  });
+
+  it('should allow soft expectations with arguments to be called', function() {
+    var f = mach.mockFunction('f');
+
+    f.mayBeCalledWith(4).when(function() {
+      f(4);
+    });
+
+    f.mayBeCalledWith(4).when(function() {
+      f(4);
+    });
+  });
+
+  it('should allow soft expectations with arguments to be omitted', function() {
+    var f = mach.mockFunction('f');
+
+    f.mayBeCalledWith(4).when(function() {});
+  });
+
+  // check interaction between optional calls and strictly ordered calls
   //
-  //   f.may_be_called().when(function() f() })
-  // })
-  //
-  // it('should allow soft expectations to be omitted', function()
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.may_be_called().when(function() })
-  // })
-  //
-  // it('should allow soft expectations with return values', function()
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.may_be_called().andWillReturn(3).when(function()
-  //     assert(f() == 3)
-  //   })
-  // })
-  //
-  // it('should allow soft expectations with arguments to be called', function()
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.mayBeCalledWith(4).when(function() f(4) })
-  //
-  //   f.mayBeCalledWith(4).when(function() f(4) })
-  // })
-  //
-  // it('should allow soft expectations with arguments to be omitted', function()
-  //   var f = mach.mockFunction('f')
-  //
-  //   f.mayBeCalledWith(4).when(function() })
-  // })
-  //
-  // it('should fail if may_be_called is used after a call has already been specified', function()
+  // it('should fail if mayBeCalled is used after a call has already been specified', function()
   //   shouldFailWith('call already specified', function()
   //     var f = mach.mockFunction('f')
   //
-  //     f.shouldBeCalled().may_be_called()
+  //     f.shouldBeCalled().mayBeCalled()
   //   })
   // })
   //

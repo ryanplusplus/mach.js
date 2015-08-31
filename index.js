@@ -26,28 +26,32 @@ function defaultMockHandler() {
 
 var mockHandler = defaultMockHandler;
 
-function ExpectedCall(mock, args) {
+function ExpectedCall(mock, args, required) {
   return {
-    mock: mock,
+    _mock: mock,
     _met: false,
-    _orderingRequired: false,
-    args: args || [],
+    _strictlyOrdered: false,
+    _required: required,
+    _args: args,
     complete: function() {
       this._met = true;
     },
     isComplete: function() {
       return this._met;
     },
+    isRequired: function() {
+      return this._required;
+    },
     matchesFunction: function(mock) {
-      return (mock === this.mock);
+      return (mock === this._mock);
     },
     matchesArguments: function(args) {
-      if (args.length !== this.args.length) {
+      if (args.length !== this._args.length) {
         return false;
       }
 
       for (i = 0; i < args.length; i++) {
-        if (args[i] !== this.args[i]) {
+        if (args[i] !== this._args[i]) {
           return false;
         }
       }
@@ -58,18 +62,21 @@ function ExpectedCall(mock, args) {
       return this.matchesFunction(mock) && this.matchesArguments(args);
     },
     setReturnValue: function(returnValue) {
-      this.returnValue = returnValue;
+      this._returnValue = returnValue;
+    },
+    getReturnValue: function() {
+      return this._returnValue;
     },
     clone: function() {
-      var clone = ExpectedCall(this.mock, this.args);
-      clone.setReturnValue(this.returnValue);
+      var clone = ExpectedCall(this._mock, this._args, this._required);
+      clone.setReturnValue(this._returnValue);
       return clone;
     },
-    requireOrdering: function() {
-      this._orderingRequired = true;
+    requireStrictOrdering: function() {
+      this._strictlyOrdered = true;
     },
-    orderingRequired: function() {
-      return this._orderingRequired;
+    strictlyOrdered: function() {
+      return this._strictlyOrdered;
     }
   };
 }
@@ -88,7 +95,7 @@ function Expectation() {
       expectedCalls.some(function(expectedCall) {
         if (!expectedCall.isComplete()) {
           if (expectedCall.matches(mock, args)) {
-            if (expectedCall.orderingRequired() && incompleteExpectationFound) {
+            if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
               return false;
             }
 
@@ -117,7 +124,7 @@ function Expectation() {
         throw unexpectedFunctionCall(mock, args);
       }
 
-      return matchedExpectation.returnValue;
+      return matchedExpectation.getReturnValue();
     }
 
     thunk();
@@ -125,7 +132,7 @@ function Expectation() {
     mockHandler = defaultMockHandler;
 
     expectedCalls.forEach(function(expectedCall) {
-      if (expectedCall.isComplete() == false) {
+      if (expectedCall.isRequired() && !expectedCall.isComplete()) {
         throw new Error('not all calls occurred');
       }
     });
@@ -146,15 +153,15 @@ function Expectation() {
 
   function andThen(expectation) {
     expectation._expectedCalls.forEach(function(expectedCall) {
-      expectedCall.requireOrdering();
+      expectedCall.requireStrictOrdering();
       expectedCalls.push(expectedCall);
     });
 
     return this;
   }
 
-  function expectCallTo(mock, args) {
-    this._expectedCalls.push(ExpectedCall(mock, args));
+  function expectCallTo(mock, args, required) {
+    this._expectedCalls.push(ExpectedCall(mock, args, required));
   }
 
   function multipleTimes(count) {
@@ -186,17 +193,29 @@ function Mock(name) {
 
   mock._name = name;
 
-  mock.shouldBeCalled = function shouldBeCalled() {
+  mock.shouldBeCalled = function() {
     var expectation = Expectation();
-    expectation._expectCallTo(mock);
+    expectation._expectCallTo(mock, [], true);
     return expectation;
   };
 
-  mock.shouldBeCalledWith = function shouldBeCalledWith() {
+  mock.shouldBeCalledWith = function() {
     var expectation = Expectation();
-    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments));
+    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments), true);
     return expectation;
   }
+
+  mock.mayBeCalled = function() {
+    var expectation = Expectation();
+    expectation._expectCallTo(mock, [], false);
+    return expectation;
+  };
+
+  mock.mayBeCalledWith = function() {
+    var expectation = Expectation();
+    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments), false);
+    return expectation;
+  };
 
   return mock;
 }
