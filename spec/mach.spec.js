@@ -393,23 +393,30 @@ describe('mach', function() {
   });
 
   // check interaction between optional calls and strictly ordered calls
+  // - strictly ordered required call occurs after a missing optional call
+  // - strictly call occurs then prior optional call is made -- should be an out of order call
+  // - strictly ordered optional calls
   //
-  // it('should fail if mayBeCalled is used after a call has already been specified', function()
-  //   shouldFailWith('call already specified', function()
-  //     var f = mach.mockFunction('f')
+  // new error: out of order call
   //
-  //     f.shouldBeCalled().mayBeCalled()
-  //   })
-  // })
-  //
-  // it('should fail if mayBeCalledWith is used after a call has already been specified', function()
-  //   shouldFailWith('call already specified', function()
-  //     var f = mach.mockFunction('f')
-  //
-  //     f.shouldBeCalled().mayBeCalledWith(4)
-  //   })
-  // })
-  //
+  // more verbose errors: print call status
+
+  it('should fail if mayBeCalled is used after a call has already been specified', function() {
+    shouldFail(function() {
+      var f = mach.mockFunction('f');
+
+      f.shouldBeCalled().mayBeCalled();
+    });
+  });
+
+  it('should fail if mayBeCalledWith is used after a call has already been specified', function() {
+    shouldFail(function() {
+      var f = mach.mockFunction('f');
+
+      f.shouldBeCalled().mayBeCalledWith(4);
+    });
+  });
+
   // it('should handle table arguments in error messages', function()
   //   var a = {}
   //
