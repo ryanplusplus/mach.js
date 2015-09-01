@@ -109,7 +109,7 @@ function Expectation() {
           }
         }
 
-        if (!expectedCall.isComplete()) {
+        if (!expectedCall.isComplete() && expectedCall.isRequired()) {
           incompleteExpectationFound = true;
         }
 

@@ -416,8 +416,17 @@ describe('mach', function() {
     });
   });
 
+  it('should allow a strictly ordered call to occur after a missing optional call', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    f1.mayBeCalled().andThen(f2.shouldBeCalled()).when(function() {
+      f2();
+    });
+  });
+
   // check interaction between optional calls and strictly ordered calls
-  // - strictly ordered required call occurs after a missing optional call
+  // - strictly ordered required call occurs after a missing optional call (check)
   // - strictly call occurs then prior optional call is made -- should be an out of order call
   // - strictly ordered optional calls
   //
