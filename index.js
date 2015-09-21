@@ -20,6 +20,10 @@ function UnexpectedArguments(mock, args) {
   return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name);
 }
 
+function OutOfOrderCall(mock, args) {
+  return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')');
+}
+
 function defaultMockHandler() {
   throw UnexpectedFunctionCall(this, Array.prototype.slice.call(arguments));
 }
@@ -93,13 +97,13 @@ function Expectation() {
       var args = Array.prototype.slice.call(arguments);
       var incompleteExpectationFound = false;
 
-      for(var i = expectedCallIndex; i < expectedCalls.length; i++) {
+      for (var i = expectedCallIndex; i < expectedCalls.length; i++) {
         var expectedCall = expectedCalls[i];
 
         if (!expectedCall.isComplete()) {
           if (expectedCall.matches(mock, args)) {
             if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
-              break;
+              throw OutOfOrderCall(mock, args);
             }
 
             if (expectedCall.strictlyOrdered()) {
@@ -120,7 +124,7 @@ function Expectation() {
         if (!expectedCall.isComplete() && expectedCall.isRequired()) {
           incompleteExpectationFound = true;
         }
-    }
+      }
 
       if (!matchedExpectation) {
         if (partialMatch) {

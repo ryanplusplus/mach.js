@@ -263,7 +263,7 @@ describe('mach', function() {
     var f1 = mach.mockFunction('f1');
     var f2 = mach.mockFunction('f2');
 
-    shouldFailWith('unexpected function call f2()', function() {
+    shouldFailWith('out of order function call f2()', function() {
       f1.shouldBeCalled()
         .andThen(f2.shouldBeCalled())
         .when(function() {
@@ -286,7 +286,7 @@ describe('mach', function() {
     var f1 = mach.mockFunction('f1');
     var f2 = mach.mockFunction('f2');
 
-    shouldFailWith('unexpected function call f2()', function() {
+    shouldFailWith('out of order function call f2()', function() {
       f1.shouldBeCalled()
         .then(f2.shouldBeCalled())
         .when(function() {
@@ -301,7 +301,7 @@ describe('mach', function() {
     var f2 = mach.mockFunction('f2');
     var f3 = mach.mockFunction('f3');
 
-    shouldFailWith('unexpected function call f3()', function() {
+    shouldFailWith('out of order function call f3()', function() {
       f1.shouldBeCalled()
         .and(f2.shouldBeCalled())
         .then(f3.shouldBeCalled())
