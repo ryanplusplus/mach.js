@@ -12,16 +12,16 @@ function argString(args) {
   return asStrings.join(', ');
 }
 
-function unexpectedFunctionCall(mock, args) {
+function UnexpectedFunctionCall(mock, args) {
   return new Error('unexpected function call ' + mock._name + '(' + argString(args) + ')');
 }
 
-function unexpectedArguments(mock, args) {
+function UnexpectedArguments(mock, args) {
   return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name);
 }
 
 function defaultMockHandler() {
-  throw unexpectedFunctionCall(this, Array.prototype.slice.call(arguments));
+  throw UnexpectedFunctionCall(this, Array.prototype.slice.call(arguments));
 }
 
 var mockHandler = defaultMockHandler;
@@ -124,10 +124,10 @@ function Expectation() {
 
       if (!matchedExpectation) {
         if (partialMatch) {
-          throw unexpectedArguments(mock, args);
+          throw UnexpectedArguments(mock, args);
         }
 
-        throw unexpectedFunctionCall(mock, args);
+        throw UnexpectedFunctionCall(mock, args);
       }
 
       return matchedExpectation.getReturnValue();
