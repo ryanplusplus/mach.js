@@ -12,20 +12,20 @@ function argString(args) {
   return asStrings.join(', ');
 }
 
-function UnexpectedFunctionCall(mock, args) {
+function UnexpectedFunctionCallError(mock, args) {
   return new Error('unexpected function call ' + mock._name + '(' + argString(args) + ')');
 }
 
-function UnexpectedArguments(mock, args) {
+function UnexpectedArgumentsError(mock, args) {
   return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name);
 }
 
-function OutOfOrderCall(mock, args) {
+function OutOfOrderCallError(mock, args) {
   return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')');
 }
 
 function defaultMockHandler() {
-  throw UnexpectedFunctionCall(this, Array.prototype.slice.call(arguments));
+  throw UnexpectedFunctionCallError(this, Array.prototype.slice.call(arguments));
 }
 
 var mockHandler = defaultMockHandler;
@@ -102,7 +102,7 @@ function Expectation() {
         if (!expectedCall.isComplete()) {
           if (expectedCall.matches(mock, args)) {
             if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
-              throw OutOfOrderCall(mock, args);
+              throw OutOfOrderCallError(mock, args);
             }
 
             if (expectedCall.strictlyOrdered()) {
@@ -125,10 +125,10 @@ function Expectation() {
       }
 
       if (partialMatch) {
-        throw UnexpectedArguments(mock, args);
+        throw UnexpectedArgumentsError(mock, args);
       }
 
-      throw UnexpectedFunctionCall(mock, args);
+      throw UnexpectedFunctionCallError(mock, args);
     }
 
     thunk();
