@@ -437,14 +437,11 @@ describe('mach', function() {
     });
   });
 
-  // check interaction between optional calls and strictly ordered calls
-  // - (check) strictly ordered required call occurs after a missing optional call
-  // - (check) strictly ordered call occurs then prior optional call is made -- should be an out of order call
-  // - strictly ordered optional calls
-  //
   // new error: out of order call
   //
   // more verbose errors: print call status
   //
   // match object arguments (non-primitive equality)
+  //
+  // ignore arguments
 });

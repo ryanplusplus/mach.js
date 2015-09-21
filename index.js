@@ -83,6 +83,7 @@ function ExpectedCall(mock, args, required) {
 
 function Expectation() {
   var expectedCalls = [];
+  var expectedCallIndex = 0;
 
   function when(thunk) {
     mockHandler = function mockHandler() {
@@ -92,16 +93,23 @@ function Expectation() {
       var args = Array.prototype.slice.call(arguments);
       var incompleteExpectationFound = false;
 
-      expectedCalls.some(function(expectedCall) {
+      for(var i = expectedCallIndex; i < expectedCalls.length; i++) {
+        var expectedCall = expectedCalls[i];
+
         if (!expectedCall.isComplete()) {
           if (expectedCall.matches(mock, args)) {
             if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
-              return false;
+              break;
+            }
+
+            if (expectedCall.strictlyOrdered()) {
+              expectedCallIndex = i;
             }
 
             expectedCall.complete();
             matchedExpectation = expectedCall;
-            return true;
+
+            break;
           }
 
           if (expectedCall.matchesFunction(mock)) {
@@ -112,9 +120,7 @@ function Expectation() {
         if (!expectedCall.isComplete() && expectedCall.isRequired()) {
           incompleteExpectationFound = true;
         }
-
-        return false;
-      });
+    }
 
       if (!matchedExpectation) {
         if (partialMatch) {
