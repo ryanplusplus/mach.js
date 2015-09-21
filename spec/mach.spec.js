@@ -437,8 +437,6 @@ describe('mach', function() {
     });
   });
 
-  // new error: out of order call
-  //
   // more verbose errors: print call status
   //
   // match object arguments (non-primitive equality)
