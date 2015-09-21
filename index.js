@@ -92,7 +92,6 @@ function Expectation() {
   function when(thunk) {
     mockHandler = function mockHandler() {
       var mock = this;
-      var matchedExpectation;
       var partialMatch;
       var args = Array.prototype.slice.call(arguments);
       var incompleteExpectationFound = false;
@@ -111,9 +110,8 @@ function Expectation() {
             }
 
             expectedCall.complete();
-            matchedExpectation = expectedCall;
 
-            break;
+            return expectedCall.getReturnValue();
           }
 
           if (expectedCall.matchesFunction(mock)) {
@@ -126,15 +124,11 @@ function Expectation() {
         }
       }
 
-      if (!matchedExpectation) {
-        if (partialMatch) {
-          throw UnexpectedArguments(mock, args);
-        }
-
-        throw UnexpectedFunctionCall(mock, args);
+      if (partialMatch) {
+        throw UnexpectedArguments(mock, args);
       }
 
-      return matchedExpectation.getReturnValue();
+      throw UnexpectedFunctionCall(mock, args);
     }
 
     thunk();
