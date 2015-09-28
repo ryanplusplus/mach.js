@@ -455,7 +455,26 @@ describe('mach', function() {
     });
   });
 
+  it('should indicate expectation status in unexpected arguments failures', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    var failureMessage =
+      'completed calls:\n' +
+      '\tf1()\n' +
+      'incomplete calls:\n' +
+      '\tf2()';
+
+    shouldFailWith(failureMessage, function() {
+      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).when(function() {
+        f1();
+        f2(1);
+      });
+    });
+  });
+
   // more verbose errors: print call status
+  // don't show complete/incomplete when there are none
   //
   // match object arguments (non-primitive equality)
   //

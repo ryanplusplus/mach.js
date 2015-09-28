@@ -31,8 +31,10 @@ function UnexpectedFunctionCallError(mock, args, completedCalls, incompleteCalls
     incompleteCallString(incompleteCalls));
 }
 
-function UnexpectedArgumentsError(mock, args) {
-  return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name);
+function UnexpectedArgumentsError(mock, args, completedCalls, incompleteCalls) {
+  return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name + '\n' +
+  completedCallString(completedCalls) + '\n' +
+  incompleteCallString(incompleteCalls));
 }
 
 function OutOfOrderCallError(mock, args) {
@@ -162,7 +164,7 @@ function Expectation() {
       }
 
       if (partialMatch) {
-        throw UnexpectedArgumentsError(mock, args);
+        throw UnexpectedArgumentsError(mock, args, completedCalls(), incompleteCalls());
       }
 
       throw UnexpectedFunctionCallError(mock, args, completedCalls(), incompleteCalls());
