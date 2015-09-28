@@ -1,26 +1,22 @@
 describe('mach', function() {
   var mach = require('./../index.js');
+  var f = mach.mockFunction('f');
+  var f1 = mach.mockFunction('f1');
+  var f2 = mach.mockFunction('f2');
 
   it('should be able to verify that a function is called', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalled().when(function() {
       f();
     });
   });
 
   it('should fail when an expected function call does not occur', function() {
-    var f = mach.mockFunction('f');
-
     shouldFailWith('not all calls occurred', function() {
       f.shouldBeCalled().when(function() {});
     });
   });
 
   it('should fail when a different mock is called instead of the expected mock', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     shouldFailWith('unexpected function call f2()', function() {
       f1.shouldBeCalled().when(function() {
         f2();
@@ -29,16 +25,12 @@ describe('mach', function() {
   });
 
   it('should fail when a function is called unexpectedly', function() {
-    var f = mach.mockFunction('f');
-
     shouldFailWith('unexpected function call f()', function() {
       f();
     });
   });
 
   it('should fail when a function is called unexpectedly after a successful expectation', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalled().when(function() {
       f();
     });
@@ -49,16 +41,12 @@ describe('mach', function() {
   });
 
   it('should be able to verify that a function has been called with the correct arguments', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalledWith(1, '2').when(function() {
       f(1, '2');
     });
   });
 
   it('should fail when a function iss been called with incorrect arguments', function() {
-    var f = mach.mockFunction('f');
-
     shouldFailWith('unexpected arguments (1, \'3\') provided to function f', function() {
       f.shouldBeCalledWith(1, '2').when(function() {
         f(1, '3');
@@ -67,16 +55,12 @@ describe('mach', function() {
   });
 
   it('should allow the return value of a mocked function to be specified', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalled().andWillReturn(4).when(function() {
       expect(f()).toBe(4);
     });
   });
 
   it('should allow multiple function calls to be expected', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
       f();
       f(1, 2, 3);
@@ -84,8 +68,6 @@ describe('mach', function() {
   });
 
   it('should fail if multiplle function calls are expected but not all occur', function() {
-    var f = mach.mockFunction('f');
-
     shouldFailWith('not all calls occurred', function() {
       f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
         f(1, 2, 3);
@@ -94,9 +76,6 @@ describe('mach', function() {
   });
 
   it('should be able to verify that multiple functions are called', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     f1.shouldBeCalled().andAlso(f2.shouldBeCalledWith(1, 2, 3)).when(function() {
       f1();
       f2(1, 2, 3);
@@ -151,8 +130,6 @@ describe('mach', function() {
   });
 
   it('should let you expect a function to be called multiple times', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(function() {
       expect(f(2)).toBe(1);
       expect(f(2)).toBe(1);
@@ -173,8 +150,6 @@ describe('mach', function() {
 
   it('should fail if a function is called too many times', function() {
     shouldFailWith('unexpected function call f(2)', function() {
-      var f = mach.mockFunction('f');
-
       f.shouldBeCalledWith(2).multipleTimes(2).when(function() {
         f(2);
         f(2);
@@ -192,8 +167,6 @@ describe('mach', function() {
   });
 
   it('should allow and to be used as an alias for andAlso', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalled().and(f.shouldBeCalledWith(1, 2, 3)).when(function() {
       f();
       f(1, 2, 3);
@@ -201,49 +174,36 @@ describe('mach', function() {
   });
 
   it('should fail if andWillReturn is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
-    var f = mach.mockFunction('f');
-
     shouldFail(function() {
       f.andWillReturn(1);
     });
   });
 
   it('should fail if when is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
-    var f = mach.mockFunction('f');
-
     shouldFail(function() {
       f.when(function() {});
     });
   });
 
   it('should fail if after is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
-    var f = mach.mockFunction('f');
-
     shouldFail(function() {
       f.after(function() {});
     });
   });
 
   it('should fail if shouldBeCalled is used after a call has already been specified', function() {
-    var f = mach.mockFunction('f');
-
     shouldFail(function() {
       f.shouldBeCalled().shouldBeCalled();
     });
   });
 
   it('should fail if shouldBeCalledWith is used after a call has already been specified', function() {
-    var f = mach.mockFunction('f');
-
     shouldFail(function() {
       f.shouldBeCalled().shouldBeCalledWith(4);
     });
   });
 
   it('should allow calls to happen out of order when andAlso is used', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     f1.shouldBeCalled()
       .andAlso(f2.shouldBeCalled())
       .when(function() {
@@ -260,9 +220,6 @@ describe('mach', function() {
   });
 
   it('should not allow calls to happen out of order when andThen is used', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     shouldFailWith('out of order function call f2()', function() {
       f1.shouldBeCalled()
         .andThen(f2.shouldBeCalled())
@@ -283,9 +240,6 @@ describe('mach', function() {
   });
 
   it('should allow then to be used as a synonym for andThen', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     shouldFailWith('out of order function call f2()', function() {
       f1.shouldBeCalled()
         .then(f2.shouldBeCalled())
@@ -314,8 +268,6 @@ describe('mach', function() {
   });
 
   it('should allow ordered and unordered calls to be mixed', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalledWith(1)
       .andAlso(f.shouldBeCalledWith(2))
       .andThen(f.shouldBeCalledWith(3))
@@ -329,9 +281,6 @@ describe('mach', function() {
   });
 
   it('should allow you to mix and match call types', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     f1.shouldBeCalled()
       .andAlso(f2.shouldBeCalledWith(1, 2, 3))
       .andThen(f2.shouldBeCalledWith(1).andWillReturn(4))
@@ -343,8 +292,6 @@ describe('mach', function() {
   });
 
   it('should maintain independent expectations', function() {
-    var f = mach.mockFunction('f');
-
     f.shouldBeCalled();
 
     f.shouldBeCalled().when(function() {
@@ -353,30 +300,22 @@ describe('mach', function() {
   });
 
   it('should allow soft expectations to be called', function() {
-    var f = mach.mockFunction('f');
-
     f.mayBeCalled().when(function() {
       f();
     });
   });
 
   it('should allow soft expectations to be omitted', function() {
-    var f = mach.mockFunction('f');
-
     f.mayBeCalled().when(function() {});
   });
 
   it('should allow soft expectations with return values', function() {
-    var f = mach.mockFunction('f');
-
     f.mayBeCalled().andWillReturn(3).when(function() {
       expect(f()).toBe(3);
     });
   });
 
   it('should allow soft expectations with arguments to be called', function() {
-    var f = mach.mockFunction('f');
-
     f.mayBeCalledWith(4).when(function() {
       f(4);
     });
@@ -387,23 +326,17 @@ describe('mach', function() {
   });
 
   it('should allow soft expectations with arguments to be omitted', function() {
-    var f = mach.mockFunction('f');
-
     f.mayBeCalledWith(4).when(function() {});
   });
 
   it('should fail if mayBeCalled is used after a call has already been specified', function() {
     shouldFail(function() {
-      var f = mach.mockFunction('f');
-
       f.shouldBeCalled().mayBeCalled();
     });
   });
 
   it('should fail if mayBeCalledWith is used after a call has already been specified', function() {
     shouldFail(function() {
-      var f = mach.mockFunction('f');
-
       f.shouldBeCalled().mayBeCalledWith(4);
     });
   });
@@ -417,18 +350,12 @@ describe('mach', function() {
   });
 
   it('should allow a strictly ordered call to occur after a missing optional call', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     f1.mayBeCalled().andThen(f2.shouldBeCalled()).when(function() {
       f2();
     });
   });
 
   it('should not allow order to be violated for an optional call', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     shouldFailWith('unexpected function call f1()', function() {
       f1.mayBeCalled().andThen(f2.shouldBeCalled()).when(function() {
         f2();
@@ -438,9 +365,6 @@ describe('mach', function() {
   });
 
   it('should indicate expectation status in unexpected call failures', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     var failureMessage =
       'completed calls:\n' +
       '\tf1()\n' +
@@ -456,9 +380,6 @@ describe('mach', function() {
   });
 
   it('should indicate expectation status in unexpected arguments failures', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     var failureMessage =
       'completed calls:\n' +
       '\tf1()\n' +
@@ -474,15 +395,12 @@ describe('mach', function() {
   });
 
   it('should indicate expectation status in out of order call failures', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f2');
-
     var failureMessage =
       'completed calls:\n' +
       '\tf1()\n' +
       'incomplete calls:\n' +
       '\tf2()\n'
-      '\tf1()';
+    '\tf1()';
 
     shouldFailWith(failureMessage, function() {
       f1.shouldBeCalled().andThen(f2.shouldBeCalled()).andThen(f1.shouldBeCalled()).when(function() {
@@ -492,7 +410,6 @@ describe('mach', function() {
     });
   });
 
-  // more verbose errors: print call status
   // don't show complete/incomplete when there are none
   //
   // match object arguments (non-primitive equality)
