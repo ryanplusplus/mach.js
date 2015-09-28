@@ -24,23 +24,37 @@ function incompleteCallString(incompleteCalls) {
   }).join('\n');
 }
 
+function callStatusString(completedCalls, incompleteCalls) {
+  var result = '';
+
+  if (completedCalls.length > 0) {
+    result += '\n' + completedCallString(completedCalls);
+  }
+
+  if (incompleteCalls.length > 0) {
+    result += '\n' + incompleteCallString(incompleteCalls);
+  }
+
+  return result;
+}
+
 function UnexpectedFunctionCallError(mock, args, completedCalls, incompleteCalls) {
   return new Error(
-    'unexpected function call ' + mock._name + '(' + argString(args) + ')\n' +
-    completedCallString(completedCalls) + '\n' +
-    incompleteCallString(incompleteCalls));
+    'unexpected function call ' + mock._name + '(' + argString(args) + ')' +
+    callStatusString(completedCalls, incompleteCalls)
+  )
 }
 
 function UnexpectedArgumentsError(mock, args, completedCalls, incompleteCalls) {
-  return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name + '\n' +
-  completedCallString(completedCalls) + '\n' +
-  incompleteCallString(incompleteCalls));
+  return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name +
+    callStatusString(completedCalls, incompleteCalls)
+  )
 }
 
 function OutOfOrderCallError(mock, args, completedCalls, incompleteCalls) {
-  return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')\n' +
-  completedCallString(completedCalls) + '\n' +
-  incompleteCallString(incompleteCalls));
+  return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')' +
+    callStatusString(completedCalls, incompleteCalls)
+  )
 }
 
 function defaultMockHandler() {

@@ -410,8 +410,33 @@ describe('mach', function() {
     });
   });
 
-  // don't show complete/incomplete when there are none
-  //
+  it('should omit the completed call listing when there are no completed calls', function() {
+    var failureMessage =
+      'unexpected function call f2()\n' +
+      'incomplete calls:\n' +
+      '\tf1()';
+
+    shouldFailWithExactly(failureMessage, function() {
+      f1.shouldBeCalled().when(function() {
+        f2();
+      });
+    });
+  });
+
+  it('should omit the incomplete call listing when there are no completed calls', function() {
+    var failureMessage =
+      'unexpected function call f2()\n' +
+      'completed calls:\n' +
+      '\tf1()';
+
+    shouldFailWithExactly(failureMessage, function() {
+      f1.shouldBeCalled().when(function() {
+        f1();
+        f2();
+      });
+    });
+  });
+
   // match object arguments (non-primitive equality)
   //
   // ignore arguments
