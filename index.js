@@ -37,8 +37,10 @@ function UnexpectedArgumentsError(mock, args, completedCalls, incompleteCalls) {
   incompleteCallString(incompleteCalls));
 }
 
-function OutOfOrderCallError(mock, args) {
-  return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')');
+function OutOfOrderCallError(mock, args, completedCalls, incompleteCalls) {
+  return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')\n' +
+  completedCallString(completedCalls) + '\n' +
+  incompleteCallString(incompleteCalls));
 }
 
 function defaultMockHandler() {
@@ -141,7 +143,7 @@ function Expectation() {
         if (!expectedCall.isComplete()) {
           if (expectedCall.matches(mock, args)) {
             if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
-              throw OutOfOrderCallError(mock, args);
+              throw OutOfOrderCallError(mock, args, completedCalls(), incompleteCalls());
             }
 
             if (expectedCall.strictlyOrdered()) {

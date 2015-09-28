@@ -473,6 +473,25 @@ describe('mach', function() {
     });
   });
 
+  it('should indicate expectation status in out of order call failures', function() {
+    var f1 = mach.mockFunction('f1');
+    var f2 = mach.mockFunction('f2');
+
+    var failureMessage =
+      'completed calls:\n' +
+      '\tf1()\n' +
+      'incomplete calls:\n' +
+      '\tf2()\n'
+      '\tf1()';
+
+    shouldFailWith(failureMessage, function() {
+      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).andThen(f1.shouldBeCalled()).when(function() {
+        f1();
+        f1();
+      });
+    });
+  });
+
   // more verbose errors: print call status
   // don't show complete/incomplete when there are none
   //
