@@ -418,12 +418,26 @@ describe('mach', function() {
       'completed calls:\n' +
       '\tf1()\n' +
       'incomplete calls:\n' +
-      '\tf2()\n'
-    '\tf1()';
+      '\tf2()\n' +
+      '\tf1()';
 
     shouldFailWith(failureMessage, function() {
       f1.shouldBeCalled().andThen(f2.shouldBeCalled()).andThen(f1.shouldBeCalled()).when(function() {
         f1();
+        f1();
+      });
+    });
+  });
+
+  it('should indicate expectation status when not all calls occur', function() {
+    var failureMessage =
+      'completed calls:\n' +
+      '\tf1()\n' +
+      'incomplete calls:\n' +
+      '\tf2()';
+
+    shouldFailWith(failureMessage, function() {
+      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).when(function() {
         f1();
       });
     });
@@ -456,7 +470,21 @@ describe('mach', function() {
     });
   });
 
+  it('should indicate when any args are allowed in call listing', function() {
+    var failureMessage =
+      'completed calls:\n' +
+      '\tf1(1, 2, 3)\n';
+    'incomplete calls:\n' +
+    '\tf1(<any>)';
+
+    shouldFailWith(failureMessage, function() {
+      f1.shouldBeCalledWithAnyArguments().multipleTimes(2).when(function() {
+        f1(1, 2, 3);
+        f2();
+      });
+    });
+  });
+
   // match object arguments (non-primitive equality)
-  //
-  // ignore arguments
+  // anonymous mocks
 });

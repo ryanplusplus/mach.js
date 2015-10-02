@@ -20,7 +20,8 @@ function completedCallString(completedCalls) {
 
 function incompleteCallString(incompleteCalls) {
   return 'incomplete calls:\n' + incompleteCalls.map(function(c) {
-    return '\t' + c.getName() + '(' + argString(c.getExpectedArgs()) + ')'
+    var args = c.argsChecked() ? argString(c.getExpectedArgs()) : '<any>';
+    return '\t' + c.getName() + '(' + args + ')'
   }).join('\n');
 }
 
@@ -57,6 +58,10 @@ function OutOfOrderCallError(mock, args, completedCalls, incompleteCalls) {
   )
 }
 
+function NotAllCallsOccurredError(completedCalls, incompleteCalls) {
+  return new Error('not all calls occurred\n' + callStatusString(completedCalls, incompleteCalls));
+}
+
 function defaultMockHandler() {
   throw UnexpectedFunctionCallError(this, Array.prototype.slice.call(arguments), [], []);
 }
@@ -80,6 +85,9 @@ function ExpectedCall(mock, args, required, checkArgs) {
     },
     isRequired: function() {
       return this._required;
+    },
+    argsChecked: function() {
+      return this._checkArgs;
     },
     matchesFunction: function(mock) {
       return (mock === this._mock);
@@ -199,7 +207,7 @@ function Expectation() {
 
     expectedCalls.forEach(function(expectedCall) {
       if (expectedCall.isRequired() && !expectedCall.isComplete()) {
-        throw new Error('not all calls occurred');
+        throw NotAllCallsOccurredError(completedCalls(), incompleteCalls());
       }
     });
   }
