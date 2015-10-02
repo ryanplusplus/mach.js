@@ -92,9 +92,6 @@ describe('mach', function() {
   });
 
   it('should allow functions to be used to improve readability', function() {
-    var f1 = mach.mockFunction('f1');
-    var f2 = mach.mockFunction('f1');
-
     function somethingShouldHappen() {
       return f1.shouldBeCalled();
     }
