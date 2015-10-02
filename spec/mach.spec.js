@@ -484,7 +484,4 @@ describe('mach', function() {
       });
     });
   });
-
-  // match object arguments (non-primitive equality)
-  // anonymous mocks
 });

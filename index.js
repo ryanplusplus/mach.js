@@ -308,7 +308,7 @@ function Mock(name) {
 
 module.exports = {
   mockFunction: function mockFunction() {
-    if (typeof arguments[0] == 'function') {
+    if (typeof arguments[0] === 'function') {
       return Mock(arguments[0].name);
     } else {
       return Mock(arguments[0]);
