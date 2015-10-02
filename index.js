@@ -277,6 +277,12 @@ function Mock(name) {
     return expectation;
   };
 
+  mock.mayBeCalledWithAnyArguments = function() {
+    var expectation = Expectation();
+    expectation._expectCallTo(mock, [], false, false);
+    return expectation;
+  };
+
   mock.mayBeCalled = function() {
     var expectation = Expectation();
     expectation._expectCallTo(mock, [], false, true);

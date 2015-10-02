@@ -68,6 +68,14 @@ describe('mach', function() {
     });
   });
 
+  it('should be able to have a soft expectation for a call with any arguments', function() {
+    f1.mayBeCalledWithAnyArguments().when(function() {});
+
+    f1.mayBeCalledWithAnyArguments().when(function() {
+      f1(1, 'hi');
+    });
+  });
+
   it('should allow the return value of a mocked function to be specified', function() {
     f.shouldBeCalled().andWillReturn(4).when(function() {
       expect(f()).toBe(4);
