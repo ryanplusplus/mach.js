@@ -93,7 +93,7 @@ function ExpectedCall(mock, args, required, checkArgs) {
       return (mock === this._mock);
     },
     matchesArguments: function(args) {
-      if(!this._checkArgs) {
+      if (!this._checkArgs) {
         return true;
       }
 
