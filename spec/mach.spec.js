@@ -54,6 +54,20 @@ describe('mach', function() {
     });
   });
 
+  it('should be able to verify that a function is called with any arguments', function() {
+    f1.shouldBeCalledWithAnyArguments().when(function() {
+      f1();
+    });
+
+    f1.shouldBeCalledWithAnyArguments().when(function() {
+      f1(1, 'hi');
+    });
+
+    shouldFailWith('not all calls occurred', function() {
+      f.shouldBeCalledWithAnyArguments().when(function() {});
+    });
+  });
+
   it('should allow the return value of a mocked function to be specified', function() {
     f.shouldBeCalled().andWillReturn(4).when(function() {
       expect(f()).toBe(4);

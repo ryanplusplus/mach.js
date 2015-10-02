@@ -63,11 +63,12 @@ function defaultMockHandler() {
 
 var mockHandler = defaultMockHandler;
 
-function ExpectedCall(mock, args, required) {
+function ExpectedCall(mock, args, required, checkArgs) {
   return {
     _mock: mock,
     _met: false,
     _strictlyOrdered: false,
+    _checkArgs: checkArgs,
     _required: required,
     _expectedArgs: args,
     complete: function(args) {
@@ -84,6 +85,10 @@ function ExpectedCall(mock, args, required) {
       return (mock === this._mock);
     },
     matchesArguments: function(args) {
+      if(!this._checkArgs) {
+        return true;
+      }
+
       if (args.length !== this._expectedArgs.length) {
         return false;
       }
@@ -115,7 +120,7 @@ function ExpectedCall(mock, args, required) {
       return this._mock._name;
     },
     clone: function() {
-      var clone = ExpectedCall(this._mock, this._expectedArgs, this._required);
+      var clone = ExpectedCall(this._mock, this._expectedArgs, this._required, this._checkArgs);
       clone.setReturnValue(this._returnValue);
       return clone;
     },
@@ -221,8 +226,8 @@ function Expectation() {
     return this;
   }
 
-  function expectCallTo(mock, args, required) {
-    this._expectedCalls.push(ExpectedCall(mock, args, required));
+  function expectCallTo(mock, args, required, checkArgs) {
+    this._expectedCalls.push(ExpectedCall(mock, args, required, checkArgs));
   }
 
   function multipleTimes(count) {
@@ -256,25 +261,31 @@ function Mock(name) {
 
   mock.shouldBeCalled = function() {
     var expectation = Expectation();
-    expectation._expectCallTo(mock, [], true);
+    expectation._expectCallTo(mock, [], true, true);
     return expectation;
   };
 
   mock.shouldBeCalledWith = function() {
     var expectation = Expectation();
-    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments), true);
+    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments), true, true);
     return expectation;
-  }
+  };
+
+  mock.shouldBeCalledWithAnyArguments = function() {
+    var expectation = Expectation();
+    expectation._expectCallTo(mock, [], true, false);
+    return expectation;
+  };
 
   mock.mayBeCalled = function() {
     var expectation = Expectation();
-    expectation._expectCallTo(mock, [], false);
+    expectation._expectCallTo(mock, [], false, true);
     return expectation;
   };
 
   mock.mayBeCalledWith = function() {
     var expectation = Expectation();
-    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments), false);
+    expectation._expectCallTo(mock, Array.prototype.slice.call(arguments), false, true);
     return expectation;
   };
 
