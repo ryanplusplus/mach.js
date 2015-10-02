@@ -46,7 +46,7 @@ describe('mach', function() {
     });
   });
 
-  it('should fail when a function iss been called with incorrect arguments', function() {
+  it('should fail when a function is called with incorrect arguments', function() {
     shouldFailWith('unexpected arguments (1, \'3\') provided to function f', function() {
       f.shouldBeCalledWith(1, '2').when(function() {
         f(1, '3');
