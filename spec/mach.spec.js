@@ -4,6 +4,14 @@ describe('mach', function() {
   var f1 = mach.mockFunction('f1');
   var f2 = mach.mockFunction('f2');
 
+  it('should allow anonymous mocks', function() {
+    var anonymousMock = mach.mockFunction();
+
+    anonymousMock.shouldBeCalled().when(function() {
+      anonymousMock();
+    });
+  });
+
   it('should be able to verify that a function is called', function() {
     f.shouldBeCalled().when(function() {
       f();
@@ -473,15 +481,23 @@ describe('mach', function() {
   it('should indicate when any args are allowed in call listing', function() {
     var failureMessage =
       'completed calls:\n' +
-      '\tf1(1, 2, 3)\n';
-    'incomplete calls:\n' +
-    '\tf1(<any>)';
+      '\tf1(1, 2, 3)\n' +
+      'incomplete calls:\n' +
+      '\tf1(<any>)';
 
     shouldFailWith(failureMessage, function() {
       f1.shouldBeCalledWithAnyArguments().multipleTimes(2).when(function() {
         f1(1, 2, 3);
         f2();
       });
+    });
+  });
+
+  it('should show anonymous mocks in call listings', function() {
+    var f = mach.mockFunction();
+
+    shouldFailWith('incomplete calls:\n\t<anonymous>()', function() {
+      f.shouldBeCalled().when(function() {});
     });
   });
 });

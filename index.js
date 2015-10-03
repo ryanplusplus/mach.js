@@ -311,7 +311,7 @@ module.exports = {
     if (typeof arguments[0] === 'function') {
       return Mock(arguments[0].name);
     } else {
-      return Mock(arguments[0]);
+      return Mock(arguments[0] || '<anonymous>');
     }
   },
   mockObject: function mockObject(obj, name) {
