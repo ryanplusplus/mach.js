@@ -30,6 +30,30 @@ mockedObject.foo.shouldBeCalled().when(function() {
 });
 ```
 
+## Required Arguments
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalledWith(1, 2).when(function() {
+  f(1, 2);
+});
+```
+
+## Ignored Arguments
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalledWithAnyArguments().when(function() {
+  f(1, 2);
+});
+```
+
 ## Multiple Expectations
 
 ```javascript
