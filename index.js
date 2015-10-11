@@ -1,10 +1,11 @@
 function argString(args) {
   var asStrings = [];
 
-  for (i = 0; i < args.length; i++) {
-    if (typeof args[i] === 'string') {
+  for(i = 0; i < args.length; i++) {
+    if(typeof args[i] === 'string') {
       asStrings.push('\'' + args[i] + '\'');
-    } else {
+    }
+    else {
       asStrings.push(args[i]);
     }
   }
@@ -28,11 +29,11 @@ function incompleteCallString(incompleteCalls) {
 function callStatusString(completedCalls, incompleteCalls) {
   var result = '';
 
-  if (completedCalls.length > 0) {
+  if(completedCalls.length > 0) {
     result += '\n' + completedCallString(completedCalls);
   }
 
-  if (incompleteCalls.length > 0) {
+  if(incompleteCalls.length > 0) {
     result += '\n' + incompleteCallString(incompleteCalls);
   }
 
@@ -90,19 +91,19 @@ function ExpectedCall(mock, args, required, checkArgs) {
       return this._checkArgs;
     },
     matchesFunction: function(mock) {
-      return (mock === this._mock);
+      return(mock === this._mock);
     },
     matchesArguments: function(args) {
-      if (!this._checkArgs) {
+      if(!this._checkArgs) {
         return true;
       }
 
-      if (args.length !== this._expectedArgs.length) {
+      if(args.length !== this._expectedArgs.length) {
         return false;
       }
 
-      for (i = 0; i < args.length; i++) {
-        if (args[i] !== this._expectedArgs[i]) {
+      for(i = 0; i < args.length; i++) {
+        if(args[i] !== this._expectedArgs[i]) {
           return false;
         }
       }
@@ -164,16 +165,16 @@ function Expectation() {
       var args = Array.prototype.slice.call(arguments);
       var incompleteExpectationFound = false;
 
-      for (var i = expectedCallIndex; i < expectedCalls.length; i++) {
+      for(var i = expectedCallIndex; i < expectedCalls.length; i++) {
         var expectedCall = expectedCalls[i];
 
-        if (!expectedCall.isComplete()) {
-          if (expectedCall.matches(mock, args)) {
-            if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
+        if(!expectedCall.isComplete()) {
+          if(expectedCall.matches(mock, args)) {
+            if(expectedCall.strictlyOrdered() && incompleteExpectationFound) {
               throw OutOfOrderCallError(mock, args, completedCalls(), incompleteCalls());
             }
 
-            if (expectedCall.strictlyOrdered()) {
+            if(expectedCall.strictlyOrdered()) {
               expectedCallIndex = i;
             }
 
@@ -182,17 +183,17 @@ function Expectation() {
             return expectedCall.getReturnValue();
           }
 
-          if (expectedCall.matchesFunction(mock)) {
+          if(expectedCall.matchesFunction(mock)) {
             partialMatch = expectedCall;
           }
         }
 
-        if (!expectedCall.isComplete() && expectedCall.isRequired()) {
+        if(!expectedCall.isComplete() && expectedCall.isRequired()) {
           incompleteExpectationFound = true;
         }
       }
 
-      if (partialMatch) {
+      if(partialMatch) {
         throw UnexpectedArgumentsError(mock, args, completedCalls(), incompleteCalls());
       }
 
@@ -201,12 +202,13 @@ function Expectation() {
 
     try {
       thunk();
-    } finally {
+    }
+    finally {
       mockHandler = defaultMockHandler;
     }
 
     expectedCalls.forEach(function(expectedCall) {
-      if (expectedCall.isRequired() && !expectedCall.isComplete()) {
+      if(expectedCall.isRequired() && !expectedCall.isComplete()) {
         throw NotAllCallsOccurredError(completedCalls(), incompleteCalls());
       }
     });
@@ -239,7 +241,7 @@ function Expectation() {
   }
 
   function multipleTimes(count) {
-    for (var i = 0; i < count - 1; i++) {
+    for(var i = 0; i < count - 1; i++) {
       this._expectedCalls.push(this._expectedCalls[this._expectedCalls.length - 1].clone());
     }
 
@@ -308,16 +310,17 @@ function Mock(name) {
 
 module.exports = {
   mockFunction: function mockFunction() {
-    if (typeof arguments[0] === 'function') {
+    if(typeof arguments[0] === 'function') {
       return Mock(arguments[0].name);
-    } else {
+    }
+    else {
       return Mock(arguments[0] || '<anonymous>');
     }
   },
   mockObject: function mockObject(obj, name) {
     var mockedObject = {};
 
-    for (property in obj) {
+    for(property in obj) {
       mockedObject[property] = this.mockFunction(name + '.' + property);
     }
 
