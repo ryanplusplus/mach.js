@@ -163,3 +163,28 @@ somethingShouldHappen()
   .and(anotherThingShouldHappen())
   .when(theCodeUnderTestRuns);
 ```
+
+## Handy Error messages
+
+```javascript
+var mach = require('mach');
+
+var f1 = mach.mockFunction('f1');
+var f2 = mach.mockFunction('f2');
+var f2 = mach.mockFunction('f3');
+
+f1.shouldBeCalledWith(1)
+  .and(f2.shouldBeCalledWith(2))
+  .when(function() {
+    f1(1);
+    f3(3);
+  });
+```
+
+```
+unexpected function call f(3)
+completed calls:
+  f1(1)
+incomplete calls:
+  f2(2)
+```
