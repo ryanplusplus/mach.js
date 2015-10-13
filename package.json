@@ -1,6 +1,6 @@
 {
   "name": "mach.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple mocking framework for Lua inspired by CppUMock and designed for readability",
   "main": "index.js",
   "scripts": {
