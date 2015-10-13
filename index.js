@@ -5,6 +5,9 @@ function argString(args) {
     if(typeof args[i] === 'string') {
       asStrings.push('\'' + args[i] + '\'');
     }
+    else if(args[i].constructor === Array) {
+      asStrings.push('[' + args[i].join(', ') + ']');
+    }
     else {
       asStrings.push(args[i]);
     }
