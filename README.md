@@ -1,5 +1,5 @@
 # mach.js
-Simple mocking framework for Lua inspired by CppUMock and designed for readability
+Simple mocking framework for JavaScript inspired by CppUMock and designed for readability
 
 ## Mocking a Function
 
