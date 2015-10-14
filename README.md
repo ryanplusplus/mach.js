@@ -137,7 +137,7 @@ f.shouldBeCalledWith(1)
   });
 ```
 
-## Value equality
+## Value Equality
 
 ```javascript
 var mach = require('mach');
