@@ -137,6 +137,19 @@ f.shouldBeCalledWith(1)
   });
 ```
 
+## Value equality
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalledWith(mach.same([1, 2, 3]))
+  .when(function() {
+    f([1, 2, 3]);
+  });
+```
+
 ## Flexible Syntax
 
 ```javascript
