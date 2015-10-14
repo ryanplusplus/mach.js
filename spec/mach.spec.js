@@ -506,4 +506,43 @@ describe('mach', function() {
       f([1, 2, 3]);
     });
   });
+
+  it('should allow arguments to be checked for sameness', function() {
+    f.shouldBeCalledWith(mach.same([1, 2, 3]))
+      .when(function() {
+        f([1, 2, 3]);
+      });
+  });
+
+  it('should actually check for sameness', function() {
+    shouldFail(function() {
+      f.shouldBeCalledWith(mach.same([1, 2, 3]))
+        .when(function() {
+          f([3, 2, 1]);
+        });
+    });
+  });
+
+  it('should allow some arguments to be checked for sameness and some for equality', function() {
+    shouldFail(function() {
+      f.shouldBeCalledWith(mach.same([1, 2, 3]), [4, 5, 6])
+        .when(function() {
+          f([1, 2, 3], [4, 5, 6]);
+        });
+    });
+
+    f.shouldBeCalledWith(mach.same([1, 2, 3]), 7)
+      .when(function() {
+        f([1, 2, 3], 7);
+      });
+  });
+
+  it('should actually check for sameness', function() {
+    var failureMessage = 'incomplete calls:\n' + '\tf([1, 2, 3])';
+
+    shouldFailWith(failureMessage, function() {
+      f.shouldBeCalledWith(mach.same([1, 2, 3]))
+        .when(function() {});
+    });
+  });
 });

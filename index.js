@@ -1,15 +1,25 @@
+var _ = require('underscore');
+
+var machSame = {};
+
 function argString(args) {
   var asStrings = [];
 
   for(i = 0; i < args.length; i++) {
-    if(typeof args[i] === 'string') {
-      asStrings.push('\'' + args[i] + '\'');
+    var arg = args[i];
+
+    if(machSame.isPrototypeOf(arg)) {
+      arg = arg.val;
     }
-    else if(args[i].constructor === Array) {
-      asStrings.push('[' + args[i].join(', ') + ']');
+
+    if(typeof arg === 'string') {
+      asStrings.push('\'' + arg + '\'');
+    }
+    else if(arg.constructor === Array) {
+      asStrings.push('[' + arg.join(', ') + ']');
     }
     else {
-      asStrings.push(args[i]);
+      asStrings.push(arg);
     }
   }
 
@@ -106,7 +116,12 @@ function ExpectedCall(mock, args, required, checkArgs) {
       }
 
       for(i = 0; i < args.length; i++) {
-        if(args[i] !== this._expectedArgs[i]) {
+        if(machSame.isPrototypeOf(this._expectedArgs[i])) {
+          if(!_.isEqual(args[i], this._expectedArgs[i].val)) {
+            return false;
+          }
+        }
+        else if(args[i] !== this._expectedArgs[i]) {
           return false;
         }
       }
@@ -328,5 +343,12 @@ module.exports = {
     }
 
     return mockedObject;
+  },
+  same: function same(val) {
+    return Object.create(machSame, {
+      val: {
+        value: val
+      }
+    });
   }
 };

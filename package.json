@@ -23,5 +23,8 @@
   "homepage": "https://github.com/ryanplusplus/mach.js#readme",
   "devDependencies": {
     "jasmine": "2.3.2"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3"
   }
 }
