@@ -13,7 +13,8 @@
   "keywords": [
     "TDD",
     "Testing",
-    "Mocking"
+    "Mocking",
+    "Mock"
   ],
   "author": "Ryan Hartlage",
   "license": "MIT",

@@ -501,6 +501,16 @@ describe('mach', function() {
     });
   });
 
+  it('should show methods mocked on anonymous objects in call listings', function() {
+    var anonymousMockedObject = mach.mockObject({
+      f: function() {}
+    });
+
+    shouldFailWith('incomplete calls:\n\t<anonymous>.f()', function() {
+      anonymousMockedObject.f.shouldBeCalled().when(function() {});
+    });
+  });
+
   it('should print arrays in calls properly', function() {
     shouldFailWith('unexpected function call f([1, 2, 3])', function() {
       f([1, 2, 3]);
