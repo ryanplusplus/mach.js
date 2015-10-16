@@ -13,6 +13,15 @@ f.shouldBeCalled().when(function() {
 });
 ```
 
+## Naming a Mocked Function
+
+```javascript
+var mach = require('mach');
+
+// Will be called out as 'f' in any error messages
+var f = mach.mockFunction('f');
+```
+
 ## Mocking an Object
 
 ```javascript
@@ -28,6 +37,20 @@ mockedObject = mach.mockObject(someObject);
 mockedObject.foo.shouldBeCalled().when(function() {
   mockedObject.foo();
 });
+```
+
+## Naming a Mocked Object
+
+```javascript
+var mach = require('mach');
+
+var someObject = {
+  foo: function() {},
+  bar: function() {}
+};
+
+// Mocked fields are now named 'someObject.foo' and 'someObject.bar'
+mockedObject = mach.mockObject(someObject, 'someObject');
 ```
 
 ## Required Arguments
