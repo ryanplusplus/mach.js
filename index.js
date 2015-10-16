@@ -339,7 +339,12 @@ module.exports = {
     var mockedObject = {};
 
     for(var property in obj) {
-      mockedObject[property] = this.mockFunction((name || '<anonymous>') + '.' + property);
+      if(typeof obj[property] === 'function') {
+        mockedObject[property] = this.mockFunction((name || '<anonymous>') + '.' + property);
+      }
+      else {
+        mockedObject[property] = obj[property];
+      }
     }
 
     return mockedObject;

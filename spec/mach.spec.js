@@ -156,6 +156,18 @@ describe('mach', function() {
       });
   });
 
+  it('should copy non-function fields to a mocked object', function() {
+    var someObject = {
+      foo: function() {},
+      bar: function() {},
+      baz: 3
+    }
+
+    mockedObject = mach.mockObject(someObject, 'someObject');
+
+    expect(mockedObject.baz).toBe(3);
+  });
+
   it('should let you expect a function to be called multiple times', function() {
     f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(function() {
       expect(f(2)).toBe(1);
