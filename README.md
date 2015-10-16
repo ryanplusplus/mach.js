@@ -18,7 +18,7 @@ f.shouldBeCalled().when(function() {
 ```javascript
 var mach = require('mach');
 
-// Will be called out as 'f' in any error messages
+// Mocked function is now given as 'f' in error messages
 var f = mach.mockFunction('f');
 ```
 
@@ -49,7 +49,7 @@ var someObject = {
   bar: function() {}
 };
 
-// Mocked fields are now named 'someObject.foo' and 'someObject.bar'
+// Mocked fields are now given as 'someObject.foo' and 'someObject.bar' in error messages
 mockedObject = mach.mockObject(someObject, 'someObject');
 ```
 
