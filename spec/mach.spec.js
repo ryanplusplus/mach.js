@@ -113,7 +113,7 @@ describe('mach', function() {
   });
 
   it('should allow an existing function to be mocked', function() {
-    function f() {};
+    function f() {}
     var fMock = mach.mockFunction(f);
 
     shouldFailWith('unexpected function call f()', function() {
@@ -137,14 +137,14 @@ describe('mach', function() {
 
     somethingShouldHappen().
     andAlso(anotherThingShouldHappen()).
-    when(theCodeUnderTestRuns)
-  })
+    when(theCodeUnderTestRuns);
+  });
 
   it('should allow an object containing functions to be mocked', function() {
     var someObject = {
       foo: function() {},
       bar: function() {}
-    }
+    };
 
     mockedObject = mach.mockObject(someObject, 'someObject');
 
@@ -161,7 +161,7 @@ describe('mach', function() {
       foo: function() {},
       bar: function() {},
       baz: 3
-    }
+    };
 
     mockedObject = mach.mockObject(someObject, 'someObject');
 
@@ -201,7 +201,7 @@ describe('mach', function() {
     var f = mach.mockFunction();
 
     f.shouldBeCalled().after(function() {
-      f()
+      f();
     });
   });
 
@@ -272,8 +272,8 @@ describe('mach', function() {
       f1.shouldBeCalledWith(1)
         .andThen(f2.shouldBeCalled(2))
         .when(function() {
-          f1(2)
-          f1(1)
+          f1(2);
+          f1(1);
         });
     });
   });
@@ -381,7 +381,7 @@ describe('mach', function() {
   });
 
   it('should handle object arguments in error messages', function() {
-    var a = {}
+    var a = {};
 
     shouldFailWith('unexpected function call f(' + a.toString() + ')', function() {
       mach.mockFunction('f')(a);
