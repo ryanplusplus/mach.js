@@ -19,13 +19,13 @@ describe('mach', function() {
   });
 
   it('should fail when an expected function call does not occur', function() {
-    shouldFailWith('not all calls occurred', function() {
+    shouldFailWith('Not all calls occurred', function() {
       f.shouldBeCalled().when(function() {});
     });
   });
 
   it('should fail when a different mock is called instead of the expected mock', function() {
-    shouldFailWith('unexpected function call f2()', function() {
+    shouldFailWith('Unexpected function call f2()', function() {
       f1.shouldBeCalled().when(function() {
         f2();
       });
@@ -33,7 +33,7 @@ describe('mach', function() {
   });
 
   it('should fail when a function is called unexpectedly', function() {
-    shouldFailWith('unexpected function call f()', function() {
+    shouldFailWith('Unexpected function call f()', function() {
       f();
     });
   });
@@ -43,7 +43,7 @@ describe('mach', function() {
       f();
     });
 
-    shouldFailWith('unexpected function call f()', function() {
+    shouldFailWith('Unexpected function call f()', function() {
       f();
     });
   });
@@ -55,7 +55,7 @@ describe('mach', function() {
   });
 
   it('should fail when a function is called with incorrect arguments', function() {
-    shouldFailWith('unexpected arguments (1, \'3\') provided to function f', function() {
+    shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', function() {
       f.shouldBeCalledWith(1, '2').when(function() {
         f(1, '3');
       });
@@ -71,7 +71,7 @@ describe('mach', function() {
       f1(1, 'hi');
     });
 
-    shouldFailWith('not all calls occurred', function() {
+    shouldFailWith('Not all calls occurred', function() {
       f.shouldBeCalledWithAnyArguments().when(function() {});
     });
   });
@@ -98,7 +98,7 @@ describe('mach', function() {
   });
 
   it('should fail if multiplle function calls are expected but not all occur', function() {
-    shouldFailWith('not all calls occurred', function() {
+    shouldFailWith('Not all calls occurred', function() {
       f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
         f(1, 2, 3);
       });
@@ -116,7 +116,7 @@ describe('mach', function() {
     function f() {}
     var fMock = mach.mockFunction(f);
 
-    shouldFailWith('unexpected function call f()', function() {
+    shouldFailWith('Unexpected function call f()', function() {
       fMock();
     });
   });
@@ -177,7 +177,7 @@ describe('mach', function() {
   });
 
   it('should fail if a function is not called enough times', function() {
-    shouldFailWith('not all calls occurred', function() {
+    shouldFailWith('Not all calls occurred', function() {
       var f = mach.mockFunction();
 
       f.shouldBeCalledWith(2).multipleTimes(3).when(function() {
@@ -188,7 +188,7 @@ describe('mach', function() {
   });
 
   it('should fail if a function is called too many times', function() {
-    shouldFailWith('unexpected function call f(2)', function() {
+    shouldFailWith('Unexpected function call f(2)', function() {
       f.shouldBeCalledWith(2).multipleTimes(2).when(function() {
         f(2);
         f(2);
@@ -259,7 +259,7 @@ describe('mach', function() {
   });
 
   it('should not allow calls to happen out of order when andThen is used', function() {
-    shouldFailWith('out of order function call f2()', function() {
+    shouldFailWith('Out of order function call f2()', function() {
       f1.shouldBeCalled()
         .andThen(f2.shouldBeCalled())
         .when(function() {
@@ -268,7 +268,7 @@ describe('mach', function() {
         });
     });
 
-    shouldFailWith('unexpected arguments (2) provided to function f1', function() {
+    shouldFailWith('Unexpected arguments (2) provided to function f1', function() {
       f1.shouldBeCalledWith(1)
         .andThen(f2.shouldBeCalled(2))
         .when(function() {
@@ -279,7 +279,7 @@ describe('mach', function() {
   });
 
   it('should allow then to be used as a synonym for andThen', function() {
-    shouldFailWith('out of order function call f2()', function() {
+    shouldFailWith('Out of order function call f2()', function() {
       f1.shouldBeCalled()
         .then(f2.shouldBeCalled())
         .when(function() {
@@ -294,7 +294,7 @@ describe('mach', function() {
     var f2 = mach.mockFunction('f2');
     var f3 = mach.mockFunction('f3');
 
-    shouldFailWith('out of order function call f3()', function() {
+    shouldFailWith('Out of order function call f3()', function() {
       f1.shouldBeCalled()
         .and(f2.shouldBeCalled())
         .then(f3.shouldBeCalled())
@@ -383,7 +383,7 @@ describe('mach', function() {
   it('should handle object arguments in error messages', function() {
     var a = {};
 
-    shouldFailWith('unexpected function call f(' + a.toString() + ')', function() {
+    shouldFailWith('Unexpected function call f(' + a.toString() + ')', function() {
       mach.mockFunction('f')(a);
     });
   });
@@ -395,7 +395,7 @@ describe('mach', function() {
   });
 
   it('should not allow order to be violated for an optional call', function() {
-    shouldFailWith('unexpected function call f1()', function() {
+    shouldFailWith('Unexpected function call f1()', function() {
       f1.mayBeCalled().andThen(f2.shouldBeCalled()).when(function() {
         f2();
         f1();
@@ -405,9 +405,9 @@ describe('mach', function() {
 
   it('should indicate expectation status in unexpected call failures', function() {
     var failureMessage =
-      'completed calls:\n' +
+      'Completed calls:\n' +
       '\tf1()\n' +
-      'incomplete calls:\n' +
+      'Incomplete calls:\n' +
       '\tf2()';
 
     shouldFailWith(failureMessage, function() {
@@ -420,9 +420,9 @@ describe('mach', function() {
 
   it('should indicate expectation status in unexpected arguments failures', function() {
     var failureMessage =
-      'completed calls:\n' +
+      'Completed calls:\n' +
       '\tf1()\n' +
-      'incomplete calls:\n' +
+      'Incomplete calls:\n' +
       '\tf2()';
 
     shouldFailWith(failureMessage, function() {
@@ -435,9 +435,9 @@ describe('mach', function() {
 
   it('should indicate expectation status in out of order call failures', function() {
     var failureMessage =
-      'completed calls:\n' +
+      'Completed calls:\n' +
       '\tf1()\n' +
-      'incomplete calls:\n' +
+      'Incomplete calls:\n' +
       '\tf2()\n' +
       '\tf1()';
 
@@ -451,9 +451,9 @@ describe('mach', function() {
 
   it('should indicate expectation status when not all calls occur', function() {
     var failureMessage =
-      'completed calls:\n' +
+      'Completed calls:\n' +
       '\tf1()\n' +
-      'incomplete calls:\n' +
+      'Incomplete calls:\n' +
       '\tf2()';
 
     shouldFailWith(failureMessage, function() {
@@ -465,8 +465,8 @@ describe('mach', function() {
 
   it('should omit the completed call listing when there are no completed calls', function() {
     var failureMessage =
-      'unexpected function call f2()\n' +
-      'incomplete calls:\n' +
+      'Unexpected function call f2()\n' +
+      'Incomplete calls:\n' +
       '\tf1()';
 
     shouldFailWithExactly(failureMessage, function() {
@@ -476,10 +476,10 @@ describe('mach', function() {
     });
   });
 
-  it('should omit the incomplete call listing when there are no completed calls', function() {
+  it('should omit the incomplete call listing when there are no incomplete calls', function() {
     var failureMessage =
-      'unexpected function call f2()\n' +
-      'completed calls:\n' +
+      'Unexpected function call f2()\n' +
+      'Completed calls:\n' +
       '\tf1()';
 
     shouldFailWithExactly(failureMessage, function() {
@@ -492,9 +492,9 @@ describe('mach', function() {
 
   it('should indicate when any args are allowed in call listing', function() {
     var failureMessage =
-      'completed calls:\n' +
+      'Completed calls:\n' +
       '\tf1(1, 2, 3)\n' +
-      'incomplete calls:\n' +
+      'Incomplete calls:\n' +
       '\tf1(<any>)';
 
     shouldFailWith(failureMessage, function() {
@@ -508,7 +508,7 @@ describe('mach', function() {
   it('should show anonymous mocks in call listings', function() {
     var anonymousMock = mach.mockFunction();
 
-    shouldFailWith('incomplete calls:\n\t<anonymous>()', function() {
+    shouldFailWith('Incomplete calls:\n\t<anonymous>()', function() {
       anonymousMock.shouldBeCalled().when(function() {});
     });
   });
@@ -518,13 +518,13 @@ describe('mach', function() {
       f: function() {}
     });
 
-    shouldFailWith('incomplete calls:\n\t<anonymous>.f()', function() {
+    shouldFailWith('Incomplete calls:\n\t<anonymous>.f()', function() {
       anonymousMockedObject.f.shouldBeCalled().when(function() {});
     });
   });
 
   it('should print arrays in calls properly', function() {
-    shouldFailWith('unexpected function call f([1, 2, 3])', function() {
+    shouldFailWith('Unexpected function call f([1, 2, 3])', function() {
       f([1, 2, 3]);
     });
   });
@@ -560,7 +560,7 @@ describe('mach', function() {
   });
 
   it('should actually check for sameness', function() {
-    var failureMessage = 'incomplete calls:\n' + '\tf([1, 2, 3])';
+    var failureMessage = 'Incomplete calls:\n' + '\tf([1, 2, 3])';
 
     shouldFailWith(failureMessage, function() {
       f.shouldBeCalledWith(mach.same([1, 2, 3]))

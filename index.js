@@ -27,13 +27,13 @@ function argString(args) {
 }
 
 function completedCallString(completedCalls) {
-  return 'completed calls:\n' + completedCalls.map(function(c) {
+  return 'Completed calls:\n' + completedCalls.map(function(c) {
     return '\t' + c.getName() + '(' + argString(c.getActualArgs()) + ')';
   }).join('\n');
 }
 
 function incompleteCallString(incompleteCalls) {
-  return 'incomplete calls:\n' + incompleteCalls.map(function(c) {
+  return 'Incomplete calls:\n' + incompleteCalls.map(function(c) {
     var args = c.argsChecked() ? argString(c.getExpectedArgs()) : '<any>';
     return '\t' + c.getName() + '(' + args + ')';
   }).join('\n');
@@ -55,25 +55,25 @@ function callStatusString(completedCalls, incompleteCalls) {
 
 function UnexpectedFunctionCallError(mock, args, completedCalls, incompleteCalls) {
   return new Error(
-    'unexpected function call ' + mock._name + '(' + argString(args) + ')' +
+    'Unexpected function call ' + mock._name + '(' + argString(args) + ')' +
     callStatusString(completedCalls, incompleteCalls)
   );
 }
 
 function UnexpectedArgumentsError(mock, args, completedCalls, incompleteCalls) {
-  return new Error('unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name +
+  return new Error('Unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name +
     callStatusString(completedCalls, incompleteCalls)
   );
 }
 
 function OutOfOrderCallError(mock, args, completedCalls, incompleteCalls) {
-  return new Error('out of order function call ' + mock._name + '(' + argString(args) + ')' +
+  return new Error('Out of order function call ' + mock._name + '(' + argString(args) + ')' +
     callStatusString(completedCalls, incompleteCalls)
   );
 }
 
 function NotAllCallsOccurredError(completedCalls, incompleteCalls) {
-  return new Error('not all calls occurred\n' + callStatusString(completedCalls, incompleteCalls));
+  return new Error('Not all calls occurred\n' + callStatusString(completedCalls, incompleteCalls));
 }
 
 function defaultMockHandler() {
