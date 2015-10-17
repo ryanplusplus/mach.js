@@ -231,9 +231,9 @@ f1.shouldBeCalledWith(1)
 ```
 
 ```
-unexpected function call f(3)
-completed calls:
+Unexpected function call f(3)
+Completed calls:
   f1(1)
-incomplete calls:
+Incomplete calls:
   f2(2)
 ```
