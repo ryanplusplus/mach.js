@@ -567,4 +567,11 @@ describe('mach', function() {
         .when(function() {});
     });
   });
+
+  it('should allow additional mocked calls to be ignored', function() {
+    f1.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
+      f1();
+      f2();
+    });
+  });
 });

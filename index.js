@@ -163,6 +163,7 @@ function ExpectedCall(mock, args, required, checkArgs) {
 function Expectation() {
   var expectedCalls = [];
   var expectedCallIndex = 0;
+  var ignoreOtherCalls = false;
 
   function completedCalls() {
     return expectedCalls.filter(function(c) {
@@ -215,7 +216,9 @@ function Expectation() {
         throw UnexpectedArgumentsError(mock, args, completedCalls(), incompleteCalls());
       }
 
-      throw UnexpectedFunctionCallError(mock, args, completedCalls(), incompleteCalls());
+      if(!ignoreOtherCalls) {
+        throw UnexpectedFunctionCallError(mock, args, completedCalls(), incompleteCalls());
+      }
     };
 
     try {
@@ -266,6 +269,11 @@ function Expectation() {
     return this;
   }
 
+  function andOtherCallsShouldBeIgnored() {
+    ignoreOtherCalls = true;
+    return this;
+  }
+
   return {
     when: when,
     after: when,
@@ -275,6 +283,7 @@ function Expectation() {
     andThen: andThen,
     then: andThen,
     multipleTimes: multipleTimes,
+    andOtherCallsShouldBeIgnored: andOtherCallsShouldBeIgnored,
     _expectedCalls: expectedCalls,
     _expectCallTo: expectCallTo
   };

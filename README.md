@@ -77,6 +77,19 @@ f.shouldBeCalledWithAnyArguments().when(function() {
 });
 ```
 
+## Ignoring Other calls
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
+  f();
+  f(1);
+});
+```
+
 ## Multiple Expectations
 
 ```javascript
