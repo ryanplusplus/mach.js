@@ -364,5 +364,10 @@ module.exports = {
         value: val
       }
     });
+  },
+  ignoreMockedCallsWhen: function ignoreWhen(thunk) {
+    mockHandler = function() {};
+    thunk();
+    mockHandler = defaultMockHandler;
   }
 };

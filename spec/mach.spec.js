@@ -574,4 +574,25 @@ describe('mach', function() {
       f2();
     });
   });
+
+  it('should allow mocked calls to be ignored', function() {
+    var x;
+
+    mach.ignoreMockedCallsWhen(function() {
+      f();
+      x = 4;
+    });
+
+    expect(x).toBe(4);
+  });
+
+  it('should fail when a function is called unexpectedly after calls are ignored', function() {
+    mach.ignoreMockedCallsWhen(function() {
+      f();
+    });
+
+    shouldFailWith('Unexpected function call f()', function() {
+      f();
+    });
+  });
 });
