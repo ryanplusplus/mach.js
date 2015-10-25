@@ -186,6 +186,18 @@ f.shouldBeCalledWith(mach.same([1, 2, 3]))
   });
 ```
 
+## Ignore Mocked Calls
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+mach.ignoreMockedCallsWhen(function() {
+  f();
+});
+```
+
 ## Flexible Syntax
 
 ```javascript
