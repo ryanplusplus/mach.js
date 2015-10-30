@@ -137,6 +137,12 @@ function ExpectedCall(mock, args, required, checkArgs) {
     getReturnValue: function() {
       return this._returnValue;
     },
+    setThrowValue: function(throwValue) {
+      this._throwValue = throwValue;
+    },
+    getThrowValue: function() {
+      return this._throwValue;
+    },
     getExpectedArgs: function() {
       return this._expectedArgs;
     },
@@ -199,6 +205,10 @@ function Expectation() {
 
             expectedCall.complete(args);
 
+            if(expectedCall.getThrowValue()) {
+              throw expectedCall.getThrowValue();
+            }
+
             return expectedCall.getReturnValue();
           }
 
@@ -240,6 +250,11 @@ function Expectation() {
     return this;
   }
 
+  function andWillThrow(returnValue) {
+    expectedCalls[expectedCalls.length - 1].setThrowValue(returnValue);
+    return this;
+  }
+
   function andAlso(expectation) {
     expectation._expectedCalls.forEach(function(expectedCall) {
       expectedCalls.push(expectedCall);
@@ -278,6 +293,7 @@ function Expectation() {
     when: when,
     after: when,
     andWillReturn: andWillReturn,
+    andWillThrow: andWillThrow,
     andAlso: andAlso,
     and: andAlso,
     andThen: andThen,
