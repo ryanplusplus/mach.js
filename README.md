@@ -90,6 +90,35 @@ f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
 });
 ```
 
+## Return Values
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalled().andWillReturn(4).when(function() {
+  expect(f()).toBe(4);
+});
+```
+
+## Thrown Values
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalled().andWillThrow(Error('error').when(function() {
+  try {
+    f();
+  }
+  catch(e) {
+    console.log(e.message);
+  }
+});
+```
+
 ## Multiple Expectations
 
 ```javascript
