@@ -90,7 +90,7 @@ f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
 });
 ```
 
-## Return Values
+## Returning Values
 
 ```javascript
 var mach = require('mach');
@@ -102,7 +102,7 @@ f.shouldBeCalled().andWillReturn(4).when(function() {
 });
 ```
 
-## Thrown Values
+## Throwing Values
 
 ```javascript
 var mach = require('mach');
@@ -215,7 +215,7 @@ f.shouldBeCalledWith(mach.same([1, 2, 3]))
   });
 ```
 
-## Ignore Mocked Calls
+## Ignoring Mocked Calls
 
 ```javascript
 var mach = require('mach');
