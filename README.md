@@ -53,7 +53,7 @@ var someObject = {
 mockedObject = mach.mockObject(someObject, 'someObject');
 ```
 
-## Required Arguments
+## Requiring Arguments
 
 ```javascript
 var mach = require('mach');
@@ -65,7 +65,7 @@ f.shouldBeCalledWith(1, 2).when(function() {
 });
 ```
 
-## Ignored Arguments
+## Ignoring Arguments
 
 ```javascript
 var mach = require('mach');
@@ -119,7 +119,7 @@ f.shouldBeCalled().andWillThrow(Error('error').when(function() {
 });
 ```
 
-## Multiple Expectations
+## Making Multiple Expectations
 
 ```javascript
 var mach = require('mach');
@@ -135,7 +135,7 @@ f1.shouldBeCalled()
   });
 ```
 
-## Optional Expectations
+## Making Optional Expectations
 
 ```javascript
 var mach = require('mach');
@@ -145,7 +145,7 @@ var f = mach.mockFunction();
 f.mayBeCalled().when(function() {});
 ```
 
-## Optional Ordering
+## Using Optional Ordering
 
 ```javascript
 var mach = require('mach');
@@ -183,7 +183,7 @@ f.shouldBeCalledWith(1)
   });
 ```
 
-## Mixed Ordering
+## Using Mixed Ordering
 
 ```javascript
 var mach = require('mach');
@@ -202,7 +202,7 @@ f.shouldBeCalledWith(1)
   });
 ```
 
-## Value Equality
+## Checking For Value Equality
 
 ```javascript
 var mach = require('mach');
