@@ -109,7 +109,7 @@ var mach = require('mach');
 
 var f = mach.mockFunction();
 
-f.shouldBeCalled().andWillThrow(Error('error').when(function() {
+f.shouldBeCalled().andWillThrow(Error('error')).when(function() {
   try {
     f();
   }
