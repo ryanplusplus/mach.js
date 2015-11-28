@@ -77,7 +77,7 @@ f.shouldBeCalledWithAnyArguments().when(function() {
 });
 ```
 
-## Ignoring Other calls
+## Ignoring Other Calls
 
 ```javascript
 var mach = require('mach');
