@@ -117,7 +117,7 @@ function ExpectedCall(mock, args, required, checkArgs) {
 
       for(i = 0; i < args.length; i++) {
         if(machSame.isPrototypeOf(this._expectedArgs[i])) {
-          if(!_.isEqual(args[i], this._expectedArgs[i].val)) {
+          if(!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
             return false;
           }
         }
@@ -374,10 +374,13 @@ var mach = {
 
     return mockedObject;
   },
-  same: function same(val) {
+  same: function same(val, matcher) {
     return Object.create(machSame, {
       val: {
         value: val
+      },
+      matcher: {
+        value: matcher || _.isEqual
       }
     });
   },
