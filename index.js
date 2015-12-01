@@ -351,7 +351,7 @@ function Mock(name) {
   return mock;
 }
 
-module.exports = {
+var mach = {
   mockFunction: function mockFunction() {
     if(typeof arguments[0] === 'function') {
       return Mock(arguments[0].name);
@@ -387,3 +387,7 @@ module.exports = {
     mockHandler = defaultMockHandler;
   }
 };
+
+mach.match = mach.same;
+
+module.exports = mach;
