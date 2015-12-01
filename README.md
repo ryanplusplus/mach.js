@@ -202,7 +202,7 @@ f.shouldBeCalledWith(1)
   });
 ```
 
-## Checking For Value Equality
+## Matching Arguments Using Deep Compare
 
 ```javascript
 var mach = require('mach');
@@ -212,6 +212,23 @@ var f = mach.mockFunction();
 f.shouldBeCalledWith(mach.same([1, 2, 3]))
   .when(function() {
     f([1, 2, 3]);
+  });
+```
+
+## Matching Arguments Using a Custom Matcher
+
+```javascript
+var mach = require('mach');
+
+var customMatcher = function(a, b) {
+  return a[0] === b[0]
+};
+
+var f = mach.mockFunction();
+
+f.shouldBeCalledWith(mach.same([1, 2, 3], customMatcher))
+  .when(function() {
+    f([1, 4, 9]);
   });
 ```
 
