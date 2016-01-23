@@ -209,6 +209,7 @@ var mach = require('mach');
 
 var f = mach.mockFunction();
 
+// mach.match can also be used
 f.shouldBeCalledWith(mach.same([1, 2, 3]))
   .when(function() {
     f([1, 2, 3]);
