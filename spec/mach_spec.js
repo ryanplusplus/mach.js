@@ -54,6 +54,18 @@ describe('mach', function() {
     });
   });
 
+  it('should allow undefined to be used as an argument to a mocked function', function() {
+    f.shouldBeCalledWith(undefined).when(function() {
+      f(undefined);
+    });
+  });
+
+  it('should allow null to be used as an argument to a mocked function', function() {
+    f.shouldBeCalledWith(null).when(function() {
+      f(null);
+    });
+  });
+
   it('should fail when a function is called with incorrect arguments', function() {
     shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', function() {
       f.shouldBeCalledWith(1, '2').when(function() {
@@ -537,6 +549,18 @@ describe('mach', function() {
   it('should print arrays in calls properly', function() {
     shouldFailWith('Unexpected function call f([1, 2, 3])', function() {
       f([1, 2, 3]);
+    });
+  });
+
+  it('should print undefined in calls properly', function() {
+    shouldFailWith('Unexpected function call f(undefined)', function() {
+      f(undefined);
+    });
+  });
+
+  it('should print null in calls properly', function() {
+    shouldFailWith('Unexpected function call f(null)', function() {
+      f(null);
     });
   });
 

@@ -15,11 +15,11 @@ function argString(args) {
     if(typeof arg === 'string') {
       asStrings.push('\'' + arg + '\'');
     }
-    else if(arg.constructor === Array) {
+    else if(arg && arg.constructor === Array) {
       asStrings.push('[' + arg.join(', ') + ']');
     }
     else {
-      asStrings.push(arg);
+      asStrings.push(String(arg));
     }
   }
 
