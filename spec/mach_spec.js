@@ -342,6 +342,19 @@ describe('mach', function() {
       });
   });
 
+  it('should correctly handle ordering when expectations are nested', function() {
+    f.shouldBeCalledWith(1)
+      .andAlso(f.shouldBeCalledWith(2)
+        .andThen(f.shouldBeCalledWith(3)
+          .andAlso(f.shouldBeCalledWith(4))))
+      .when(function() {
+        f(2);
+        f(1);
+        f(4);
+        f(3);
+      });
+  });
+
   it('should allow you to mix and match call types', function() {
     f1.shouldBeCalled()
       .andAlso(f2.shouldBeCalledWith(1, 2, 3))

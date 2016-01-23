@@ -264,8 +264,8 @@ function Expectation() {
   }
 
   function andThen(expectation) {
-    expectation._expectedCalls.forEach(function(expectedCall) {
-      expectedCall.requireStrictOrdering();
+    expectation._expectedCalls.forEach(function(expectedCall, i) {
+      if(i === 0) expectedCall.requireStrictOrdering();
       expectedCalls.push(expectedCall);
     });
 
