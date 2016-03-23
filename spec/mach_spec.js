@@ -19,7 +19,7 @@ describe('mach', function() {
   });
 
   it('async fail to call test', (done) => {
-    f.shouldBeCalled().during((finished) => {
+    f.shouldBeCalled().when((finished) => {
         new Promise((resolve) => {
           resolve();
         }).then(() => finished());
@@ -36,7 +36,7 @@ describe('mach', function() {
   });
 
   it('async call test', (done) => {
-    f.shouldBeCalled().during((finished) => {
+    f.shouldBeCalled().when((finished) => {
         new Promise((resolve) => {
           f();
           resolve();
