@@ -220,7 +220,7 @@ function Expectation() {
   }
 
   function when(thunk) {
-    mockHandler = function _mockHandler() {
+    mockHandler = function mockHandler() {
       var mock = this;
       var partialMatch;
       var args = Array.prototype.slice.call(arguments);
