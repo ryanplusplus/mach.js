@@ -7,130 +7,205 @@ describe('mach', function() {
   it('should allow anonymous mocks', function() {
     var anonymousMock = mach.mockFunction();
 
-    anonymousMock.shouldBeCalled().when(function() {
-      anonymousMock();
-    });
-  });
-
-  it('should be able to verify that a function is called', function() {
-    f.shouldBeCalled().when(function() {
-      f();
-    });
-  });
-
-  it('async fail to call test', (done) => {
-    f.shouldBeCalled().when((finished) => {
-        new Promise((resolve) => {
-          resolve();
-        }).then(() => finished());
-      })
-      .then(() => {
-        fail('error');
-        done();
-      })
-      .catch((error) => {
-        expect(error.message).toContain('Not all calls occurred');
-        // putting fail(error) here will fail the test and get the error like we want
-        done();
+    anonymousMock.shouldBeCalled()
+      .when(function() {
+        anonymousMock();
       });
   });
 
-  it('async call test', (done) => {
-    f.shouldBeCalled().when((finished) => {
-        new Promise((resolve) => {
+  describe('synchronous', () => {
+    it('should be able to verify that a function is called', function() {
+      f.shouldBeCalled()
+        .when(function() {
+          f();
+        });
+    });
+
+    it('should fail when an expected function call does not occur', function() {
+      shouldFailWith('Not all calls occurred', function() {
+        f.shouldBeCalled()
+          .when(function() {});
+      });
+    });
+
+    it('should fail when a different mock is called instead of the expected mock', function() {
+      shouldFailWith('Unexpected function call f2()', function() {
+        f1.shouldBeCalled()
+          .when(function() {
+            f2();
+          });
+      });
+    });
+
+    it('should fail when a function is called unexpectedly', function() {
+      shouldFailWith('Unexpected function call f()', function() {
+        f();
+      });
+    });
+
+    it('should fail when a function is called unexpectedly after a successful expectation', function() {
+      f.shouldBeCalled()
+        .when(function() {
+          f();
+        });
+
+      shouldFailWith('Unexpected function call f()', function() {
+        f();
+      });
+    });
+  });
+
+  describe('asynchronous', () => {
+    it('should be able to verify that a function is called', (done) => {
+      f.shouldBeCalled()
+        .when((finished) => {
+          return new Promise((resolve) => {
+              f();
+              resolve();
+            })
+            .then(finished);
+        })
+        .catch((error) => {
+          fail(error.message);
+          done();
+        })
+        .then(done);
+    });
+
+    it('should fail when an expected function call does not occur', (done) => {
+      f.shouldBeCalled()
+        .when((finished) => {
+          return new Promise((resolve) => {
+              resolve();
+            })
+            .then(finished);
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toContain('Not all calls occurred');
+          done();
+        });
+    });
+
+    it('should fail when a different mock is called instead of the expected mock', (done) => {
+      f1.shouldBeCalled()
+        .when((finished) => {
+          return new Promise((resolve) => {
+              f2();
+              resolve();
+            })
+            .then(() => {
+              finished();
+            });
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toContain('Unexpected function call f2()');
+          done();
+        });
+    });
+
+    it('should fail when a function is called unexpectedly', (done) => {
+      new Promise((resolve) => {
           f();
           resolve();
-        }).then(() => finished());
-      })
-      .catch((error) => {
-        fail(error.message);
-        done();
-      })
-      .then(() => done());
-  });
-
-  it('should fail when an expected function call does not occur', function() {
-    shouldFailWith('Not all calls occurred', function() {
-      f.shouldBeCalled().when(function() {});
-    });
-  });
-
-  it('should fail when a different mock is called instead of the expected mock', function() {
-    shouldFailWith('Unexpected function call f2()', function() {
-      f1.shouldBeCalled().when(function() {
-        f2();
-      });
-    });
-  });
-
-  it('should fail when a function is called unexpectedly', function() {
-    shouldFailWith('Unexpected function call f()', function() {
-      f();
-    });
-  });
-
-  it('should fail when a function is called unexpectedly after a successful expectation', function() {
-    f.shouldBeCalled().when(function() {
-      f();
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toContain('Unexpected function call f()');
+          done();
+        });
     });
 
-    shouldFailWith('Unexpected function call f()', function() {
-      f();
+    it('should fail when a function is called unexpectedly after a successful expectation', () => {
+      f.shouldBeCalled()
+        .when((finished) => {
+          new Promise((resolve) => {
+              f();
+            })
+            .then(() => {
+              shouldFailWith('Unexpected function call f()', function() {
+                f();
+              });
+            })
+        });
     });
   });
 
   it('should be able to verify that a function has been called with the correct arguments', function() {
-    f.shouldBeCalledWith(1, '2').when(function() {
-      f(1, '2');
-    });
+    f.shouldBeCalledWith(1, '2')
+      .when(function() {
+        f(1, '2');
+      });
   });
 
   it('should allow undefined to be used as an argument to a mocked function', function() {
-    f.shouldBeCalledWith(undefined).when(function() {
-      f(undefined);
-    });
+    f.shouldBeCalledWith(undefined)
+      .when(function() {
+        f(undefined);
+      });
   });
 
   it('should allow null to be used as an argument to a mocked function', function() {
-    f.shouldBeCalledWith(null).when(function() {
-      f(null);
-    });
+    f.shouldBeCalledWith(null)
+      .when(function() {
+        f(null);
+      });
   });
 
   it('should fail when a function is called with incorrect arguments', function() {
     shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', function() {
-      f.shouldBeCalledWith(1, '2').when(function() {
-        f(1, '3');
-      });
+      f.shouldBeCalledWith(1, '2')
+        .when(function() {
+          f(1, '3');
+        });
     });
   });
 
   it('should be able to verify that a function is called with any arguments', function() {
-    f1.shouldBeCalledWithAnyArguments().when(function() {
-      f1();
-    });
+    f1.shouldBeCalledWithAnyArguments()
+      .when(function() {
+        f1();
+      });
 
-    f1.shouldBeCalledWithAnyArguments().when(function() {
-      f1(1, 'hi');
-    });
+    f1.shouldBeCalledWithAnyArguments()
+      .when(function() {
+        f1(1, 'hi');
+      });
 
     shouldFailWith('Not all calls occurred', function() {
-      f.shouldBeCalledWithAnyArguments().when(function() {});
+      f.shouldBeCalledWithAnyArguments()
+        .when(function() {});
     });
   });
 
   it('should be able to have a soft expectation for a call with any arguments', function() {
-    f1.mayBeCalledWithAnyArguments().when(function() {});
+    f1.mayBeCalledWithAnyArguments()
+      .when(function() {});
 
-    f1.mayBeCalledWithAnyArguments().when(function() {
-      f1(1, 'hi');
-    });
+    f1.mayBeCalledWithAnyArguments()
+      .when(function() {
+        f1(1, 'hi');
+      });
   });
 
   it('should allow mach.any to match any single argument', function() {
-    f.shouldBeCalledWith(1, mach.any, 3).when(function() {
-      f(1, 'whatever', 3);
-    });
+    f.shouldBeCalledWith(1, mach.any, 3)
+      .when(function() {
+        f(1, 'whatever', 3);
+      });
   });
 
   it('should ensure that other arguments match when using mach.any', function() {
@@ -140,48 +215,62 @@ describe('mach', function() {
       '\tf(1, <mach.any>, 3)';
 
     shouldFailWithExactly(failureMessage, function() {
-      f.shouldBeCalledWith(1, mach.any, 3).when(function() {
-        f(1, 3, 2);
-      });
+      f.shouldBeCalledWith(1, mach.any, 3)
+        .when(function() {
+          f(1, 3, 2);
+        });
     });
   });
 
   it('should allow the return value of a mocked function to be specified', function() {
-    f.shouldBeCalled().andWillReturn(4).when(function() {
-      expect(f()).toBe(4);
-    });
+    f.shouldBeCalled()
+      .andWillReturn(4)
+      .when(function() {
+        expect(f())
+          .toBe(4);
+      });
   });
 
   it('should allow a mocked call to throw when called', function() {
-    f.shouldBeCalled().andWillThrow(4).when(function() {
-      try {
-        f();
-      } catch (e) {
-        expect(e).toBe(4);
-      }
-    });
+    f.shouldBeCalled()
+      .andWillThrow(4)
+      .when(function() {
+        try {
+          f();
+        }
+        catch (e) {
+          expect(e)
+            .toBe(4);
+        }
+      });
   });
 
   it('should allow multiple function calls to be expected', function() {
-    f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
-      f();
-      f(1, 2, 3);
-    });
+    f.shouldBeCalled()
+      .andAlso(f.shouldBeCalledWith(1, 2, 3))
+      .when(function() {
+        f();
+        f(1, 2, 3);
+      });
   });
 
   it('should fail if multiplle function calls are expected but not all occur', function() {
     shouldFailWith('Not all calls occurred', function() {
-      f.shouldBeCalled().andAlso(f.shouldBeCalledWith(1, 2, 3)).when(function() {
-        f(1, 2, 3);
-      });
+      f.shouldBeCalled()
+        .andAlso(f.shouldBeCalledWith(1, 2, 3))
+        .when(function() {
+          f(1, 2, 3);
+        });
     });
   });
 
   it('should be able to verify that multiple functions are called', function() {
-    f1.shouldBeCalled().andAlso(f2.shouldBeCalledWith(1, 2, 3)).when(function() {
-      f1();
-      f2(1, 2, 3);
-    });
+    f1.shouldBeCalled()
+      .andAlso(f2.shouldBeCalledWith(1, 2, 3))
+      .when(function() {
+        f1();
+        f2(1, 2, 3);
+      });
   });
 
   it('should allow an existing function to be mocked', function() {
@@ -207,8 +296,10 @@ describe('mach', function() {
       f2(1, 2, 3);
     }
 
-    somethingShouldHappen().
-    andAlso(anotherThingShouldHappen()).
+    somethingShouldHappen()
+      .
+    andAlso(anotherThingShouldHappen())
+      .
     when(theCodeUnderTestRuns);
   });
 
@@ -237,51 +328,65 @@ describe('mach', function() {
 
     mockedObject = mach.mockObject(someObject, 'someObject');
 
-    expect(mockedObject.baz).toBe(3);
+    expect(mockedObject.baz)
+      .toBe(3);
   });
 
   it('should let you expect a function to be called multiple times', function() {
-    f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(function() {
-      expect(f(2)).toBe(1);
-      expect(f(2)).toBe(1);
-      expect(f(2)).toBe(1);
-    });
+    f.shouldBeCalledWith(2)
+      .andWillReturn(1)
+      .multipleTimes(3)
+      .when(function() {
+        expect(f(2))
+          .toBe(1);
+        expect(f(2))
+          .toBe(1);
+        expect(f(2))
+          .toBe(1);
+      });
   });
 
   it('should fail if a function is not called enough times', function() {
     shouldFailWith('Not all calls occurred', function() {
       var f = mach.mockFunction();
 
-      f.shouldBeCalledWith(2).multipleTimes(3).when(function() {
-        f(2);
-        f(2);
-      });
+      f.shouldBeCalledWith(2)
+        .multipleTimes(3)
+        .when(function() {
+          f(2);
+          f(2);
+        });
     });
   });
 
   it('should fail if a function is called too many times', function() {
     shouldFailWith('Unexpected function call f(2)', function() {
-      f.shouldBeCalledWith(2).multipleTimes(2).when(function() {
-        f(2);
-        f(2);
-        f(2);
-      });
+      f.shouldBeCalledWith(2)
+        .multipleTimes(2)
+        .when(function() {
+          f(2);
+          f(2);
+          f(2);
+        });
     });
   });
 
   it('should allow after to be used as an alias for when', function() {
     var f = mach.mockFunction();
 
-    f.shouldBeCalled().after(function() {
-      f();
-    });
+    f.shouldBeCalled()
+      .after(function() {
+        f();
+      });
   });
 
   it('should allow and to be used as an alias for andAlso', function() {
-    f.shouldBeCalled().and(f.shouldBeCalledWith(1, 2, 3)).when(function() {
-      f();
-      f(1, 2, 3);
-    });
+    f.shouldBeCalled()
+      .and(f.shouldBeCalledWith(1, 2, 3))
+      .when(function() {
+        f();
+        f(1, 2, 3);
+      });
   });
 
   it('should fail if andWillReturn is not preceeded by shouldBeCalled or shouldBeCalledWith', function() {
@@ -304,13 +409,15 @@ describe('mach', function() {
 
   it('should fail if shouldBeCalled is used after a call has already been specified', function() {
     shouldFail(function() {
-      f.shouldBeCalled().shouldBeCalled();
+      f.shouldBeCalled()
+        .shouldBeCalled();
     });
   });
 
   it('should fail if shouldBeCalledWith is used after a call has already been specified', function() {
     shouldFail(function() {
-      f.shouldBeCalled().shouldBeCalledWith(4);
+      f.shouldBeCalled()
+        .shouldBeCalledWith(4);
     });
   });
 
@@ -407,61 +514,74 @@ describe('mach', function() {
   it('should allow you to mix and match call types', function() {
     f1.shouldBeCalled()
       .andAlso(f2.shouldBeCalledWith(1, 2, 3))
-      .andThen(f2.shouldBeCalledWith(1).andWillReturn(4))
+      .andThen(f2.shouldBeCalledWith(1)
+        .andWillReturn(4))
       .when(function() {
         f1();
         f2(1, 2, 3);
-        expect(f2(1)).toBe(4);
+        expect(f2(1))
+          .toBe(4);
       });
   });
 
   it('should maintain independent expectations', function() {
     f.shouldBeCalled();
 
-    f.shouldBeCalled().when(function() {
-      f();
-    });
+    f.shouldBeCalled()
+      .when(function() {
+        f();
+      });
   });
 
   it('should allow soft expectations to be called', function() {
-    f.mayBeCalled().when(function() {
-      f();
-    });
+    f.mayBeCalled()
+      .when(function() {
+        f();
+      });
   });
 
   it('should allow soft expectations to be omitted', function() {
-    f.mayBeCalled().when(function() {});
+    f.mayBeCalled()
+      .when(function() {});
   });
 
   it('should allow soft expectations with return values', function() {
-    f.mayBeCalled().andWillReturn(3).when(function() {
-      expect(f()).toBe(3);
-    });
+    f.mayBeCalled()
+      .andWillReturn(3)
+      .when(function() {
+        expect(f())
+          .toBe(3);
+      });
   });
 
   it('should allow soft expectations with arguments to be called', function() {
-    f.mayBeCalledWith(4).when(function() {
-      f(4);
-    });
+    f.mayBeCalledWith(4)
+      .when(function() {
+        f(4);
+      });
 
-    f.mayBeCalledWith(4).when(function() {
-      f(4);
-    });
+    f.mayBeCalledWith(4)
+      .when(function() {
+        f(4);
+      });
   });
 
   it('should allow soft expectations with arguments to be omitted', function() {
-    f.mayBeCalledWith(4).when(function() {});
+    f.mayBeCalledWith(4)
+      .when(function() {});
   });
 
   it('should fail if mayBeCalled is used after a call has already been specified', function() {
     shouldFail(function() {
-      f.shouldBeCalled().mayBeCalled();
+      f.shouldBeCalled()
+        .mayBeCalled();
     });
   });
 
   it('should fail if mayBeCalledWith is used after a call has already been specified', function() {
     shouldFail(function() {
-      f.shouldBeCalled().mayBeCalledWith(4);
+      f.shouldBeCalled()
+        .mayBeCalledWith(4);
     });
   });
 
@@ -474,17 +594,21 @@ describe('mach', function() {
   });
 
   it('should allow a strictly ordered call to occur after a missing optional call', function() {
-    f1.mayBeCalled().andThen(f2.shouldBeCalled()).when(function() {
-      f2();
-    });
+    f1.mayBeCalled()
+      .andThen(f2.shouldBeCalled())
+      .when(function() {
+        f2();
+      });
   });
 
   it('should not allow order to be violated for an optional call', function() {
     shouldFailWith('Unexpected function call f1()', function() {
-      f1.mayBeCalled().andThen(f2.shouldBeCalled()).when(function() {
-        f2();
-        f1();
-      });
+      f1.mayBeCalled()
+        .andThen(f2.shouldBeCalled())
+        .when(function() {
+          f2();
+          f1();
+        });
     });
   });
 
@@ -496,10 +620,12 @@ describe('mach', function() {
       '\tf2()';
 
     shouldFailWith(failureMessage, function() {
-      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).when(function() {
-        f1();
-        f1();
-      });
+      f1.shouldBeCalled()
+        .andThen(f2.shouldBeCalled())
+        .when(function() {
+          f1();
+          f1();
+        });
     });
   });
 
@@ -511,10 +637,12 @@ describe('mach', function() {
       '\tf2()';
 
     shouldFailWith(failureMessage, function() {
-      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).when(function() {
-        f1();
-        f2(1);
-      });
+      f1.shouldBeCalled()
+        .andThen(f2.shouldBeCalled())
+        .when(function() {
+          f1();
+          f2(1);
+        });
     });
   });
 
@@ -527,10 +655,13 @@ describe('mach', function() {
       '\tf1()';
 
     shouldFailWith(failureMessage, function() {
-      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).andThen(f1.shouldBeCalled()).when(function() {
-        f1();
-        f1();
-      });
+      f1.shouldBeCalled()
+        .andThen(f2.shouldBeCalled())
+        .andThen(f1.shouldBeCalled())
+        .when(function() {
+          f1();
+          f1();
+        });
     });
   });
 
@@ -542,9 +673,11 @@ describe('mach', function() {
       '\tf2()';
 
     shouldFailWith(failureMessage, function() {
-      f1.shouldBeCalled().andThen(f2.shouldBeCalled()).when(function() {
-        f1();
-      });
+      f1.shouldBeCalled()
+        .andThen(f2.shouldBeCalled())
+        .when(function() {
+          f1();
+        });
     });
   });
 
@@ -555,9 +688,10 @@ describe('mach', function() {
       '\tf1()';
 
     shouldFailWithExactly(failureMessage, function() {
-      f1.shouldBeCalled().when(function() {
-        f2();
-      });
+      f1.shouldBeCalled()
+        .when(function() {
+          f2();
+        });
     });
   });
 
@@ -568,10 +702,11 @@ describe('mach', function() {
       '\tf1()';
 
     shouldFailWithExactly(failureMessage, function() {
-      f1.shouldBeCalled().when(function() {
-        f1();
-        f2();
-      });
+      f1.shouldBeCalled()
+        .when(function() {
+          f1();
+          f2();
+        });
     });
   });
 
@@ -583,10 +718,12 @@ describe('mach', function() {
       '\tf1(<any>)';
 
     shouldFailWith(failureMessage, function() {
-      f1.shouldBeCalledWithAnyArguments().multipleTimes(2).when(function() {
-        f1(1, 2, 3);
-        f2();
-      });
+      f1.shouldBeCalledWithAnyArguments()
+        .multipleTimes(2)
+        .when(function() {
+          f1(1, 2, 3);
+          f2();
+        });
     });
   });
 
@@ -594,7 +731,8 @@ describe('mach', function() {
     var anonymousMock = mach.mockFunction();
 
     shouldFailWith('Incomplete calls:\n\t<anonymous>()', function() {
-      anonymousMock.shouldBeCalled().when(function() {});
+      anonymousMock.shouldBeCalled()
+        .when(function() {});
     });
   });
 
@@ -604,7 +742,8 @@ describe('mach', function() {
     });
 
     shouldFailWith('Incomplete calls:\n\t<anonymous>.f()', function() {
-      anonymousMockedObject.f.shouldBeCalled().when(function() {});
+      anonymousMockedObject.f.shouldBeCalled()
+        .when(function() {});
     });
   });
 
@@ -695,10 +834,12 @@ describe('mach', function() {
   });
 
   it('should allow additional mocked calls to be ignored', function() {
-    f1.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
-      f1();
-      f2();
-    });
+    f1.shouldBeCalled()
+      .andOtherCallsShouldBeIgnored()
+      .when(function() {
+        f1();
+        f2();
+      });
   });
 
   it('should allow mocked calls to be ignored', function() {
@@ -709,7 +850,8 @@ describe('mach', function() {
       x = 4;
     });
 
-    expect(x).toBe(4);
+    expect(x)
+      .toBe(4);
   });
 
   it('should fail when a function is called unexpectedly after calls are ignored', function() {
