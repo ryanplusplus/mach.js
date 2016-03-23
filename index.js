@@ -2,6 +2,11 @@ var _ = require('underscore');
 
 var machSame = {};
 
+var machAny = {};
+machAny.toString = function() {
+  return '<mach.any>';
+};
+
 function argString(args) {
   var asStrings = [];
 
@@ -116,7 +121,9 @@ function ExpectedCall(mock, args, required, checkArgs) {
       }
 
       for(i = 0; i < args.length; i++) {
-        if(machSame.isPrototypeOf(this._expectedArgs[i])) {
+        if(this._expectedArgs[i] === machAny) {
+        }
+        else if(machSame.isPrototypeOf(this._expectedArgs[i])) {
           if(!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
             return false;
           }
@@ -392,5 +399,7 @@ var mach = {
 };
 
 mach.match = mach.same;
+
+mach.any = machAny;
 
 module.exports = mach;

@@ -96,6 +96,25 @@ describe('mach', function() {
     });
   });
 
+  it('should allow mach.any to match any single argument', function() {
+    f.shouldBeCalledWith(1, mach.any, 3).when(function() {
+      f(1, 'whatever', 3);
+    });
+  });
+
+  it('should ensure that other arguments match when using mach.any', function() {
+    var failureMessage =
+      'Unexpected arguments (1, 3, 2) provided to function f\n' +
+      'Incomplete calls:\n' +
+      '\tf(1, <mach.any>, 3)';
+
+    shouldFailWithExactly(failureMessage, function() {
+      f.shouldBeCalledWith(1, mach.any, 3).when(function() {
+        f(1, 3, 2);
+      });
+    });
+  });
+
   it('should allow the return value of a mocked function to be specified', function() {
     f.shouldBeCalled().andWillReturn(4).when(function() {
       expect(f()).toBe(4);
