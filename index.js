@@ -10,20 +10,18 @@ machAny.toString = function() {
 function argString(args) {
   var asStrings = [];
 
-  for(i = 0; i < args.length; i++) {
+  for (i = 0; i < args.length; i++) {
     var arg = args[i];
 
-    if(machSame.isPrototypeOf(arg)) {
+    if (machSame.isPrototypeOf(arg)) {
       arg = arg.val;
     }
 
-    if(typeof arg === 'string') {
+    if (typeof arg === 'string') {
       asStrings.push('\'' + arg + '\'');
-    }
-    else if(arg && arg.constructor === Array) {
+    } else if (arg && arg.constructor === Array) {
       asStrings.push('[' + arg.join(', ') + ']');
-    }
-    else {
+    } else {
       asStrings.push(String(arg));
     }
   }
@@ -47,11 +45,11 @@ function incompleteCallString(incompleteCalls) {
 function callStatusString(completedCalls, incompleteCalls) {
   var result = '';
 
-  if(completedCalls.length > 0) {
+  if (completedCalls.length > 0) {
     result += '\n' + completedCallString(completedCalls);
   }
 
-  if(incompleteCalls.length > 0) {
+  if (incompleteCalls.length > 0) {
     result += '\n' + incompleteCallString(incompleteCalls);
   }
 
@@ -109,26 +107,23 @@ function ExpectedCall(mock, args, required, checkArgs) {
       return this._checkArgs;
     },
     matchesFunction: function(mock) {
-      return(mock === this._mock);
+      return (mock === this._mock);
     },
     matchesArguments: function(args) {
-      if(!this._checkArgs) {
+      if (!this._checkArgs) {
         return true;
       }
 
-      if(args.length !== this._expectedArgs.length) {
+      if (args.length !== this._expectedArgs.length) {
         return false;
       }
 
-      for(i = 0; i < args.length; i++) {
-        if(this._expectedArgs[i] === machAny) {
-        }
-        else if(machSame.isPrototypeOf(this._expectedArgs[i])) {
-          if(!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
+      for (i = 0; i < args.length; i++) {
+        if (this._expectedArgs[i] === machAny) {} else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
+          if (!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
             return false;
           }
-        }
-        else if(args[i] !== this._expectedArgs[i]) {
+        } else if (args[i] !== this._expectedArgs[i]) {
           return false;
         }
       }
@@ -190,67 +185,90 @@ function Expectation() {
     });
   }
 
-  function when(thunk) {
-    mockHandler = function mockHandler() {
-      var mock = this;
-      var partialMatch;
-      var args = Array.prototype.slice.call(arguments);
-      var incompleteExpectationFound = false;
+  function _mockHandler() {
+    var mock = this;
+    var partialMatch;
+    var args = Array.prototype.slice.call(arguments);
+    var incompleteExpectationFound = false;
 
-      for(var i = expectedCallIndex; i < expectedCalls.length; i++) {
-        var expectedCall = expectedCalls[i];
+    for (var i = expectedCallIndex; i < expectedCalls.length; i++) {
+      var expectedCall = expectedCalls[i];
 
-        if(!expectedCall.isComplete()) {
-          if(expectedCall.matches(mock, args)) {
-            if(expectedCall.strictlyOrdered() && incompleteExpectationFound) {
-              throw OutOfOrderCallError(mock, args, completedCalls(), incompleteCalls());
-            }
-
-            if(expectedCall.strictlyOrdered()) {
-              expectedCallIndex = i;
-            }
-
-            expectedCall.complete(args);
-
-            if(expectedCall.getThrowValue()) {
-              throw expectedCall.getThrowValue();
-            }
-
-            return expectedCall.getReturnValue();
+      if (!expectedCall.isComplete()) {
+        if (expectedCall.matches(mock, args)) {
+          if (expectedCall.strictlyOrdered() && incompleteExpectationFound) {
+            throw OutOfOrderCallError(mock, args, completedCalls(), incompleteCalls());
           }
 
-          if(expectedCall.matchesFunction(mock)) {
-            partialMatch = expectedCall;
+          if (expectedCall.strictlyOrdered()) {
+            expectedCallIndex = i;
           }
+
+          expectedCall.complete(args);
+
+          if (expectedCall.getThrowValue()) {
+            throw expectedCall.getThrowValue();
+          }
+
+          return expectedCall.getReturnValue();
         }
 
-        if(!expectedCall.isComplete() && expectedCall.isRequired()) {
-          incompleteExpectationFound = true;
+        if (expectedCall.matchesFunction(mock)) {
+          partialMatch = expectedCall;
         }
       }
 
-      if(partialMatch) {
-        throw UnexpectedArgumentsError(mock, args, completedCalls(), incompleteCalls());
+      if (!expectedCall.isComplete() && expectedCall.isRequired()) {
+        incompleteExpectationFound = true;
       }
-
-      if(!ignoreOtherCalls) {
-        throw UnexpectedFunctionCallError(mock, args, completedCalls(), incompleteCalls());
-      }
-    };
-
-    try {
-      thunk();
-    }
-    finally {
-      mockHandler = defaultMockHandler;
     }
 
+    if (partialMatch) {
+      throw UnexpectedArgumentsError(mock, args, completedCalls(), incompleteCalls());
+    }
+
+    if (!ignoreOtherCalls) {
+      throw UnexpectedFunctionCallError(mock, args, completedCalls(), incompleteCalls());
+    }
+  };
+
+  function _checkCalls() {
     expectedCalls.forEach(function(expectedCall) {
-      if(expectedCall.isRequired() && !expectedCall.isComplete()) {
+      if (expectedCall.isRequired() && !expectedCall.isComplete()) {
         throw NotAllCallsOccurredError(completedCalls(), incompleteCalls());
       }
     });
-  }
+  };
+
+  function during(thunk) {
+    mockHandler = _mockHandler;
+
+    return new Promise((resolve, reject) => {
+        var done = () => {
+          resolve();
+        };
+
+        var t = setTimeout(() => reject(), 5000);
+
+        thunk(done);
+      })
+      .catch(() => mockHandler = defaultMockHandler)
+      .then(() => {
+        _checkCalls();
+      });
+  };
+
+  function when(thunk) {
+    mockHandler = _mockHandler;
+
+    try {
+      thunk();
+    } finally {
+      mockHandler = defaultMockHandler;
+    }
+
+    _checkCalls();
+  };
 
   function andWillReturn(returnValue) {
     expectedCalls[expectedCalls.length - 1].setReturnValue(returnValue);
@@ -272,7 +290,7 @@ function Expectation() {
 
   function andThen(expectation) {
     expectation._expectedCalls.forEach(function(expectedCall, i) {
-      if(i === 0) expectedCall.requireStrictOrdering();
+      if (i === 0) expectedCall.requireStrictOrdering();
       expectedCalls.push(expectedCall);
     });
 
@@ -284,7 +302,7 @@ function Expectation() {
   }
 
   function multipleTimes(count) {
-    for(var i = 0; i < count - 1; i++) {
+    for (var i = 0; i < count - 1; i++) {
       this._expectedCalls.push(this._expectedCalls[this._expectedCalls.length - 1].clone());
     }
 
@@ -297,6 +315,7 @@ function Expectation() {
   }
 
   return {
+    during: during,
     when: when,
     after: when,
     andWillReturn: andWillReturn,
@@ -360,21 +379,19 @@ function Mock(name) {
 
 var mach = {
   mockFunction: function mockFunction() {
-    if(typeof arguments[0] === 'function') {
+    if (typeof arguments[0] === 'function') {
       return Mock(arguments[0].name);
-    }
-    else {
+    } else {
       return Mock(arguments[0] || '<anonymous>');
     }
   },
   mockObject: function mockObject(obj, name) {
     var mockedObject = {};
 
-    for(var property in obj) {
-      if(typeof obj[property] === 'function') {
+    for (var property in obj) {
+      if (typeof obj[property] === 'function') {
         mockedObject[property] = this.mockFunction((name || '<anonymous>') + '.' + property);
-      }
-      else {
+      } else {
         mockedObject[property] = obj[property];
       }
     }

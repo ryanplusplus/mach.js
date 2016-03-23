@@ -18,6 +18,37 @@ describe('mach', function() {
     });
   });
 
+  it('async fail to call test', (done) => {
+    f.shouldBeCalled().during((finished) => {
+        new Promise((resolve) => {
+          resolve();
+        }).then(() => finished());
+      })
+      .then(() => {
+        fail('error');
+        done();
+      })
+      .catch((error) => {
+        expect(error.message).toContain('Not all calls occurred');
+        // putting fail(error) here will fail the test and get the error like we want
+        done();
+      });
+  });
+
+  it('async call test', (done) => {
+    f.shouldBeCalled().during((finished) => {
+        new Promise((resolve) => {
+          f();
+          resolve();
+        }).then(() => finished());
+      })
+      .catch((error) => {
+        fail(error.message);
+        done();
+      })
+      .then(() => done());
+  });
+
   it('should fail when an expected function call does not occur', function() {
     shouldFailWith('Not all calls occurred', function() {
       f.shouldBeCalled().when(function() {});
@@ -125,8 +156,7 @@ describe('mach', function() {
     f.shouldBeCalled().andWillThrow(4).when(function() {
       try {
         f();
-      }
-      catch(e) {
+      } catch (e) {
         expect(e).toBe(4);
       }
     });
