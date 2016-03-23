@@ -65,7 +65,19 @@ f.shouldBeCalledWith(1, 2).when(function() {
 });
 ```
 
-## Ignoring Arguments
+## Ignoring Single Arguments
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalledWith(1, mach.any, 3).when(function() {
+  f(1, 'whatever', 3);
+});
+```
+
+## Ignoring All Arguments
 
 ```javascript
 var mach = require('mach');
