@@ -106,6 +106,16 @@ describe('mach', () => {
           f(null);
         });
     });
+
+    it('should fail when a function is called with incorrect arguments', () => {
+      shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', () => {
+        f.shouldBeCalledWith(1, '2')
+          .when(() => {
+            f(1, '3');
+          });
+      });
+    });
+    // END OF SYNC
   });
 
   describe('callbacks', () => {
@@ -286,15 +296,27 @@ describe('mach', () => {
         })
         .then(done);
     });
-  });
 
-  it('should fail when a function is called with incorrect arguments', () => {
-    shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', () => {
+    it('should fail when a function is called with incorrect arguments', (done) => {
+      // shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', () => {
       f.shouldBeCalledWith(1, '2')
-        .when(() => {
-          f(1, '3');
+        .when((finished) => {
+          return new Promise((resolve) => {
+              f(1, '3');
+            })
+            .then(finished);
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toContain('Unexpected arguments (1, \'3\') provided to function f');
+          done();
         });
     });
+    // END OF PROMISES
   });
 
   it('should be able to verify that a function is called with any arguments', () => {
