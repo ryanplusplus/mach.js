@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('underscore');
 
 var machSame = {};
@@ -10,7 +12,7 @@ machAny.toString = function() {
 function argString(args) {
   var asStrings = [];
 
-  for (i = 0; i < args.length; i++) {
+  for (let i = 0; i < args.length; i++) {
     var arg = args[i];
 
     if (machSame.isPrototypeOf(arg)) {
@@ -122,7 +124,7 @@ function ExpectedCall(mock, args, required, checkArgs) {
         return false;
       }
 
-      for (i = 0; i < args.length; i++) {
+      for (let i = 0; i < args.length; i++) {
         if (this._expectedArgs[i] === machAny) {}
         else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
           if (!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
@@ -234,7 +236,7 @@ function Expectation() {
       var args = Array.prototype.slice.call(arguments);
       var incompleteExpectationFound = false;
 
-      for (var i = expectedCallIndex; i < expectedCalls.length; i++) {
+      for (let i = expectedCallIndex; i < expectedCalls.length; i++) {
         var expectedCall = expectedCalls[i];
 
         if (!expectedCall.isComplete()) {
