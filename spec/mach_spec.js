@@ -1,10 +1,40 @@
 'use strict';
 
 describe('mach', () => {
-  var mach = require('./../index.js');
-  var f = mach.mockFunction('f');
-  var f1 = mach.mockFunction('f1');
-  var f2 = mach.mockFunction('f2');
+  let mach = require('./../index.js');
+  let f = mach.mockFunction('f');
+  let f1 = mach.mockFunction('f1');
+  let f2 = mach.mockFunction('f2');
+
+  let shouldFail = (thunk) => {
+    try {
+      thunk();
+      fail('expected failure did not occur');
+    }
+    catch (e) {}
+  }
+
+  let shouldFailWith = (expectedFailure, thunk) => {
+    try {
+      thunk();
+      fail('expected failure did not occur');
+    }
+    catch (e) {
+      expect(e.message.toString())
+        .toContain(expectedFailure);
+    }
+  }
+
+  let shouldFailWithExactly = (expectedFailure, thunk) => {
+    try {
+      thunk();
+      fail('expected failure did not occur');
+    }
+    catch (e) {
+      expect(e.message.toString())
+        .toBe(expectedFailure);
+    }
+  }
 
   it('should allow anonymous mocks', () => {
     var anonymousMock = mach.mockFunction();
