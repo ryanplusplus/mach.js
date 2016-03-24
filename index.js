@@ -199,24 +199,26 @@ function Expectation() {
         throw NotAllCallsOccurredError(completedCalls(), incompleteCalls());
       }
     });
-  };
+  }
 
   function _asyncWhen(thunk) {
     return new Promise((resolve, reject) => {
+        let t = setTimeout(() => reject(), 5000);
+
         var done = () => {
+          clearTimeout(t);
           resolve();
         };
 
-        var t = setTimeout(() => reject(), 5000);
-
         return thunk(done)
           .catch((error) => {
+            clearTimeout(t);
             mockHandler = defaultMockHandler;
             reject(error);
           });
       })
       .then(_checkCalls);
-  };
+  }
 
   function _syncWhen(thunk) {
     try {
@@ -282,8 +284,8 @@ function Expectation() {
         return _syncWhen(thunk);
       default:
         return _asyncWhen(thunk);
-    };
-  };
+    }
+  }
 
   function andWillReturn(returnValue) {
     expectedCalls[expectedCalls.length - 1].setReturnValue(returnValue);

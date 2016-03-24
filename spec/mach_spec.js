@@ -12,7 +12,7 @@ describe('mach', () => {
       fail('expected failure did not occur');
     }
     catch (e) {}
-  }
+  };
 
   let shouldFailWith = (expectedFailure, thunk) => {
     try {
@@ -23,7 +23,7 @@ describe('mach', () => {
       expect(e.message.toString())
         .toContain(expectedFailure);
     }
-  }
+  };
 
   let shouldFailWithExactly = (expectedFailure, thunk) => {
     try {
@@ -34,7 +34,7 @@ describe('mach', () => {
       expect(e.message.toString())
         .toBe(expectedFailure);
     }
-  }
+  };
 
   it('should allow anonymous mocks', () => {
     var anonymousMock = mach.mockFunction();
@@ -46,6 +46,16 @@ describe('mach', () => {
   });
 
   describe('synchronous', () => {
+    it('should pass through errors in the tested code', () => {
+      let expectedError = 'error from tested code';
+      shouldFailWithExactly(expectedError, () => {
+        f.shouldBeCalled()
+          .when(() => {
+            throw new Error(expectedError);
+          });
+      });
+    });
+
     it('should be able to verify that a function is called', () => {
       f.shouldBeCalled()
         .when(() => {
@@ -119,16 +129,40 @@ describe('mach', () => {
   });
 
   describe('callbacks', () => {
+    it('should pass through errors in the tested code', (done) => {
+      let expectedError = 'error from tested code';
+      f.shouldBeCalled()
+        .when((finish) => {
+          let cbFunc = (callback) => {
+            throw new Error(expectedError);
+            callback();
+          };
+
+          cbFunc(() => {
+            finish();
+          });
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toBe(expectedError);
+          done();
+        });
+    });
+
     it('should be able to verify that a function is called', (done) => {
       f.shouldBeCalled()
-        .when((finished) => {
+        .when((finish) => {
           let cbFunc = (callback) => {
             f();
             callback();
           };
 
           cbFunc(() => {
-            finished();
+            finish();
           });
         })
         .catch((error) => {
@@ -140,13 +174,13 @@ describe('mach', () => {
 
     it('should fail when an expected function call does not occur', (done) => {
       f.shouldBeCalled()
-        .when((finished) => {
+        .when((finish) => {
           let cbFunc = (callback) => {
             callback();
           };
 
           cbFunc(() => {
-            finished();
+            finish();
           });
         })
         .then(() => {
@@ -162,14 +196,55 @@ describe('mach', () => {
   });
 
   describe('promises', () => {
+    it('should pass through errors in the tested code', (done) => {
+      let expectedError = 'error from tested code';
+      f.shouldBeCalled()
+        .when((finish) => {
+          return new Promise((resolve) => {
+              throw new Error(expectedError);
+              resolve();
+            })
+            .then(finish);
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toBe(expectedError);
+          done();
+        });
+    });
+
+    it('should handle rejections in the tested code', (done) => {
+      let expectedError = 'error from tested code';
+      f.shouldBeCalled()
+        .when((finish) => {
+          return new Promise((resolve, reject) => {
+              reject(new Error(expectedError));
+            })
+            .then(finish);
+        })
+        .then(() => {
+          fail(new Error('expected an error'));
+          done();
+        })
+        .catch((error) => {
+          expect(error.message)
+            .toBe(expectedError);
+          done();
+        });
+    });
+
     it('should be able to verify that a function is called', (done) => {
       f.shouldBeCalled()
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               f();
               resolve();
             })
-            .then(finished);
+            .then(finish);
         })
         .catch((error) => {
           fail(error.message);
@@ -180,11 +255,11 @@ describe('mach', () => {
 
     it('should fail when an expected function call does not occur', (done) => {
       f.shouldBeCalled()
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               resolve();
             })
-            .then(finished);
+            .then(finish);
         })
         .then(() => {
           fail(new Error('expected an error'));
@@ -199,13 +274,13 @@ describe('mach', () => {
 
     it('should fail when a different mock is called instead of the expected mock', (done) => {
       f1.shouldBeCalled()
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               f2();
               resolve();
             })
             .then(() => {
-              finished();
+              finish();
             });
         })
         .then(() => {
@@ -237,26 +312,28 @@ describe('mach', () => {
 
     it('should fail when a function is called unexpectedly after a successful expectation', () => {
       f.shouldBeCalled()
-        .when((finished) => {
+        .when((finish) => {
           new Promise((resolve) => {
               f();
+              resolve();
             })
             .then(() => {
               shouldFailWith('Unexpected function call f()', () => {
                 f();
               });
             });
+            finish();
         });
     });
 
     it('should be able to verify that a function has been called with the correct arguments', (done) => {
       f.shouldBeCalledWith(1, '2')
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               f(1, '2');
               resolve();
             })
-            .then(finished);
+            .then(finish);
         })
         .catch((error) => {
           fail(error.message);
@@ -267,12 +344,12 @@ describe('mach', () => {
 
     it('should allow undefined to be used as an argument to a mocked function', (done) => {
       f.shouldBeCalledWith(undefined)
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               f(undefined);
               resolve();
             })
-            .then(finished);
+            .then(finish);
         })
         .catch((error) => {
           fail(error.message);
@@ -283,12 +360,12 @@ describe('mach', () => {
 
     it('should allow null to be used as an argument to a mocked function', (done) => {
       f.shouldBeCalledWith(null)
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               f(null);
               resolve();
             })
-            .then(finished);
+            .then(finish);
         })
         .catch((error) => {
           fail(error.message);
@@ -300,11 +377,12 @@ describe('mach', () => {
     it('should fail when a function is called with incorrect arguments', (done) => {
       // shouldFailWith('Unexpected arguments (1, \'3\') provided to function f', () => {
       f.shouldBeCalledWith(1, '2')
-        .when((finished) => {
+        .when((finish) => {
           return new Promise((resolve) => {
               f(1, '3');
+              resolve();
             })
-            .then(finished);
+            .then(finish);
         })
         .then(() => {
           fail(new Error('expected an error'));
@@ -950,11 +1028,11 @@ describe('mach', () => {
   });
 
   it('should allow custom matchers to be used with mach.same', () => {
-    var alwaysMatches = function(a, b) {
+    var alwaysMatches = () => {
       return true;
     };
 
-    var neverMatches = function(a, b) {
+    var neverMatches = () => {
       return false;
     };
 
