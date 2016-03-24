@@ -2,86 +2,86 @@
 
 var _ = require('underscore');
 
-var machSame = {};
+// var machSame = {};
 
-var machAny = {};
-machAny.toString = function() {
-  return '<mach.any>';
-};
+// var machAny = {};
+// machAny.toString = function() {
+//   return '<mach.any>';
+// };
 
-function argString(args) {
-  var asStrings = [];
+// function argString(args) {
+//   var asStrings = [];
+//
+//   for (let i = 0; i < args.length; i++) {
+//     var arg = args[i];
+//
+//     if (machSame.isPrototypeOf(arg)) {
+//       arg = arg.val;
+//     }
+//
+//     if (typeof arg === 'string') {
+//       asStrings.push('\'' + arg + '\'');
+//     } else if (arg && arg.constructor === Array) {
+//       asStrings.push('[' + arg.join(', ') + ']');
+//     } else {
+//       asStrings.push(String(arg));
+//     }
+//   }
+//
+//   return asStrings.join(', ');
+// }
 
-  for (let i = 0; i < args.length; i++) {
-    var arg = args[i];
+// function completedCallString(completedCalls) {
+//   return 'Completed calls:\n' + completedCalls.map(function(c) {
+//       return '\t' + c.getName() + '(' + argString(c.getActualArgs()) + ')';
+//     })
+//     .join('\n');
+// }
 
-    if (machSame.isPrototypeOf(arg)) {
-      arg = arg.val;
-    }
+// function incompleteCallString(incompleteCalls) {
+//   return 'Incomplete calls:\n' + incompleteCalls.map(function(c) {
+//       var args = c.argsChecked() ? argString(c.getExpectedArgs()) : '<any>';
+//       return '\t' + c.getName() + '(' + args + ')';
+//     })
+//     .join('\n');
+// }
 
-    if (typeof arg === 'string') {
-      asStrings.push('\'' + arg + '\'');
-    } else if (arg && arg.constructor === Array) {
-      asStrings.push('[' + arg.join(', ') + ']');
-    } else {
-      asStrings.push(String(arg));
-    }
-  }
+// function callStatusString(completedCalls, incompleteCalls) {
+//   var result = '';
+//
+//   if (completedCalls.length > 0) {
+//     result += '\n' + completedCallString(completedCalls);
+//   }
+//
+//   if (incompleteCalls.length > 0) {
+//     result += '\n' + incompleteCallString(incompleteCalls);
+//   }
+//
+//   return result;
+// }
 
-  return asStrings.join(', ');
-}
+// function UnexpectedFunctionCallError(mock, args, completedCalls, incompleteCalls) {
+//   return new Error(
+//     'Unexpected function call ' + mock._name + '(' + argString(args) + ')' +
+//     callStatusString(completedCalls, incompleteCalls)
+//   );
+// }
 
-function completedCallString(completedCalls) {
-  return 'Completed calls:\n' + completedCalls.map(function(c) {
-      return '\t' + c.getName() + '(' + argString(c.getActualArgs()) + ')';
-    })
-    .join('\n');
-}
+// function UnexpectedArgumentsError(mock, args, completedCalls, incompleteCalls) {
+//   return new Error('Unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name +
+//     callStatusString(completedCalls, incompleteCalls)
+//   );
+// }
 
-function incompleteCallString(incompleteCalls) {
-  return 'Incomplete calls:\n' + incompleteCalls.map(function(c) {
-      var args = c.argsChecked() ? argString(c.getExpectedArgs()) : '<any>';
-      return '\t' + c.getName() + '(' + args + ')';
-    })
-    .join('\n');
-}
+// function OutOfOrderCallError(mock, args, completedCalls, incompleteCalls) {
+//   return new Error('Out of order function call ' + mock._name + '(' + argString(args) + ')' +
+//     callStatusString(completedCalls, incompleteCalls)
+//   );
+// }
 
-function callStatusString(completedCalls, incompleteCalls) {
-  var result = '';
-
-  if (completedCalls.length > 0) {
-    result += '\n' + completedCallString(completedCalls);
-  }
-
-  if (incompleteCalls.length > 0) {
-    result += '\n' + incompleteCallString(incompleteCalls);
-  }
-
-  return result;
-}
-
-function UnexpectedFunctionCallError(mock, args, completedCalls, incompleteCalls) {
-  return new Error(
-    'Unexpected function call ' + mock._name + '(' + argString(args) + ')' +
-    callStatusString(completedCalls, incompleteCalls)
-  );
-}
-
-function UnexpectedArgumentsError(mock, args, completedCalls, incompleteCalls) {
-  return new Error('Unexpected arguments ' + '(' + argString(args) + ')' + ' provided to function ' + mock._name +
-    callStatusString(completedCalls, incompleteCalls)
-  );
-}
-
-function OutOfOrderCallError(mock, args, completedCalls, incompleteCalls) {
-  return new Error('Out of order function call ' + mock._name + '(' + argString(args) + ')' +
-    callStatusString(completedCalls, incompleteCalls)
-  );
-}
-
-function NotAllCallsOccurredError(completedCalls, incompleteCalls) {
-  return new Error('Not all calls occurred\n' + callStatusString(completedCalls, incompleteCalls));
-}
+// function NotAllCallsOccurredError(completedCalls, incompleteCalls) {
+//   return new Error('Not all calls occurred\n' + callStatusString(completedCalls, incompleteCalls));
+// }
 
 function defaultMockHandler() {
   throw UnexpectedFunctionCallError(this, Array.prototype.slice.call(arguments), [], []);
@@ -89,88 +89,88 @@ function defaultMockHandler() {
 
 var mockHandler = defaultMockHandler;
 
-function ExpectedCall(mock, args, required, checkArgs) {
-  return {
-    _mock: mock,
-    _met: false,
-    _strictlyOrdered: false,
-    _checkArgs: checkArgs,
-    _required: required,
-    _expectedArgs: args,
-    complete: function(args) {
-      this._met = true;
-      this._actualArgs = args;
-    },
-    isComplete: function() {
-      return this._met;
-    },
-    isRequired: function() {
-      return this._required;
-    },
-    argsChecked: function() {
-      return this._checkArgs;
-    },
-    matchesFunction: function(mock) {
-      return (mock === this._mock);
-    },
-    matchesArguments: function(args) {
-      if (!this._checkArgs) {
-        return true;
-      }
-
-      if (args.length !== this._expectedArgs.length) {
-        return false;
-      }
-
-      for (let i = 0; i < args.length; i++) {
-        if (this._expectedArgs[i] === machAny) {} else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
-          if (!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
-            return false;
-          }
-        } else if (args[i] !== this._expectedArgs[i]) {
-          return false;
-        }
-      }
-
-      return true;
-    },
-    matches: function(mock, args) {
-      return this.matchesFunction(mock) && this.matchesArguments(args);
-    },
-    setReturnValue: function(returnValue) {
-      this._returnValue = returnValue;
-    },
-    getReturnValue: function() {
-      return this._returnValue;
-    },
-    setThrowValue: function(throwValue) {
-      this._throwValue = throwValue;
-    },
-    getThrowValue: function() {
-      return this._throwValue;
-    },
-    getExpectedArgs: function() {
-      return this._expectedArgs;
-    },
-    getActualArgs: function() {
-      return this._actualArgs;
-    },
-    getName: function() {
-      return this._mock._name;
-    },
-    clone: function() {
-      var clone = ExpectedCall(this._mock, this._expectedArgs, this._required, this._checkArgs);
-      clone.setReturnValue(this._returnValue);
-      return clone;
-    },
-    requireStrictOrdering: function() {
-      this._strictlyOrdered = true;
-    },
-    strictlyOrdered: function() {
-      return this._strictlyOrdered;
-    }
-  };
-}
+// function ExpectedCall(mock, args, required, checkArgs) {
+//   return {
+//     _mock: mock,
+//     _met: false,
+//     _strictlyOrdered: false,
+//     _checkArgs: checkArgs,
+//     _required: required,
+//     _expectedArgs: args,
+//     complete: function(args) {
+//       this._met = true;
+//       this._actualArgs = args;
+//     },
+//     isComplete: function() {
+//       return this._met;
+//     },
+//     isRequired: function() {
+//       return this._required;
+//     },
+//     argsChecked: function() {
+//       return this._checkArgs;
+//     },
+//     matchesFunction: function(mock) {
+//       return (mock === this._mock);
+//     },
+//     matchesArguments: function(args) {
+//       if (!this._checkArgs) {
+//         return true;
+//       }
+//
+//       if (args.length !== this._expectedArgs.length) {
+//         return false;
+//       }
+//
+//       for (let i = 0; i < args.length; i++) {
+//         if (this._expectedArgs[i] === machAny) {} else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
+//           if (!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
+//             return false;
+//           }
+//         } else if (args[i] !== this._expectedArgs[i]) {
+//           return false;
+//         }
+//       }
+//
+//       return true;
+//     },
+//     matches: function(mock, args) {
+//       return this.matchesFunction(mock) && this.matchesArguments(args);
+//     },
+//     setReturnValue: function(returnValue) {
+//       this._returnValue = returnValue;
+//     },
+//     getReturnValue: function() {
+//       return this._returnValue;
+//     },
+//     setThrowValue: function(throwValue) {
+//       this._throwValue = throwValue;
+//     },
+//     getThrowValue: function() {
+//       return this._throwValue;
+//     },
+//     getExpectedArgs: function() {
+//       return this._expectedArgs;
+//     },
+//     getActualArgs: function() {
+//       return this._actualArgs;
+//     },
+//     getName: function() {
+//       return this._mock._name;
+//     },
+//     clone: function() {
+//       var clone = ExpectedCall(this._mock, this._expectedArgs, this._required, this._checkArgs);
+//       clone.setReturnValue(this._returnValue);
+//       return clone;
+//     },
+//     requireStrictOrdering: function() {
+//       this._strictlyOrdered = true;
+//     },
+//     strictlyOrdered: function() {
+//       return this._strictlyOrdered;
+//     }
+//   };
+// }
 
 function Expectation() {
   var expectedCalls = [];
