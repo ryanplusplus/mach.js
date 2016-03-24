@@ -21,11 +21,9 @@ function argString(args) {
 
     if (typeof arg === 'string') {
       asStrings.push('\'' + arg + '\'');
-    }
-    else if (arg && arg.constructor === Array) {
+    } else if (arg && arg.constructor === Array) {
       asStrings.push('[' + arg.join(', ') + ']');
-    }
-    else {
+    } else {
       asStrings.push(String(arg));
     }
   }
@@ -125,13 +123,11 @@ function ExpectedCall(mock, args, required, checkArgs) {
       }
 
       for (let i = 0; i < args.length; i++) {
-        if (this._expectedArgs[i] === machAny) {}
-        else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
+        if (this._expectedArgs[i] === machAny) {} else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
           if (!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
             return false;
           }
-        }
-        else if (args[i] !== this._expectedArgs[i]) {
+        } else if (args[i] !== this._expectedArgs[i]) {
           return false;
         }
       }
@@ -203,16 +199,12 @@ function Expectation() {
 
   function _asyncWhen(thunk) {
     return new Promise((resolve, reject) => {
-        let t = setTimeout(() => reject(), 5000);
-
         var done = () => {
-          clearTimeout(t);
           resolve();
         };
 
         return thunk(done)
           .catch((error) => {
-            clearTimeout(t);
             mockHandler = defaultMockHandler;
             reject(error);
           });
@@ -223,8 +215,7 @@ function Expectation() {
   function _syncWhen(thunk) {
     try {
       thunk();
-    }
-    finally {
+    } finally {
       mockHandler = defaultMockHandler;
     }
 
@@ -397,8 +388,7 @@ var mach = {
   mockFunction: function mockFunction() {
     if (typeof arguments[0] === 'function') {
       return Mock(arguments[0].name);
-    }
-    else {
+    } else {
       return Mock(arguments[0] || '<anonymous>');
     }
   },
@@ -408,8 +398,7 @@ var mach = {
     for (var property in obj) {
       if (typeof obj[property] === 'function') {
         mockedObject[property] = this.mockFunction((name || '<anonymous>') + '.' + property);
-      }
-      else {
+      } else {
         mockedObject[property] = obj[property];
       }
     }

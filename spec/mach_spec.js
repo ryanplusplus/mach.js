@@ -10,16 +10,14 @@ describe('mach', () => {
     try {
       thunk();
       fail('expected failure did not occur');
-    }
-    catch (e) {}
+    } catch (e) {}
   };
 
   let shouldFailWith = (expectedFailure, thunk) => {
     try {
       thunk();
       fail('expected failure did not occur');
-    }
-    catch (e) {
+    } catch (e) {
       expect(e.message.toString())
         .toContain(expectedFailure);
     }
@@ -29,8 +27,7 @@ describe('mach', () => {
     try {
       thunk();
       fail('expected failure did not occur');
-    }
-    catch (e) {
+    } catch (e) {
       expect(e.message.toString())
         .toBe(expectedFailure);
     }
@@ -133,9 +130,8 @@ describe('mach', () => {
       let expectedError = 'error from tested code';
       f.shouldBeCalled()
         .when((finish) => {
-          let cbFunc = (callback) => {
+          let cbFunc = () => {
             throw new Error(expectedError);
-            callback();
           };
 
           cbFunc(() => {
@@ -200,9 +196,8 @@ describe('mach', () => {
       let expectedError = 'error from tested code';
       f.shouldBeCalled()
         .when((finish) => {
-          return new Promise((resolve) => {
+          return new Promise(() => {
               throw new Error(expectedError);
-              resolve();
             })
             .then(finish);
         })
@@ -322,7 +317,7 @@ describe('mach', () => {
                 f();
               });
             });
-            finish();
+          finish();
         });
     });
 
@@ -460,8 +455,7 @@ describe('mach', () => {
       .when(() => {
         try {
           f();
-        }
-        catch (e) {
+        } catch (e) {
           expect(e)
             .toBe(4);
         }
