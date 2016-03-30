@@ -1,51 +1,49 @@
 'use strict';
 
+var Any = require('./Any.js');
+var Same = require('./Same.js');
+
 class ExpectedCall {
   constructor(mock, args, required, checkArgs) {
-    this._mock = mock;
-    this._completed = false;
-    this._strictlyOrdered = false;
-    this._checkArgs = checkArgs;
-    this._required = required;
+    this.mock = mock;
+    this.completed = false;
+    this.strictlyOrdered = false;
+    this.checkArgs = checkArgs;
+    this.required = required;
+    this.expectedArgs = args;
+    this.actualArgs = undefined;
+    this.returnValue = undefined;
+    this.throwValue = undefined;
   }
 
   complete(args) {
-    this._completed = true;
-    this._actualArgs = args;
-  }
-
-  get isComplete() {
-    return this._completed;
-  }
-
-  get isRequired() {
-    return this._required;
-  }
-
-  get argsChecked() {
-    return this._checkArgs;
+    this.completed = true;
+    this.actualArgs = args;
   }
 
   matchesFunction(mock) {
-    return mock == this._mock;
+    return mock == this.mock;
   }
 
   matchesArguments(args) {
-    if (!this._checkArgs) {
+    if (!this.checkArgs) {
       return true;
     }
 
-    if (args.length !== this._expectedArgs.length) {
+    if (args.length !== this.expectedArgs.length) {
       return false;
     }
 
     for (let i = 0; i < args.length; i++) {
-      // FIXME: machAny, machSame
-      if (this._expectedArgs[i] === machAny) {} else if (machSame.isPrototypeOf(this._expectedArgs[i])) {
-        if (!this._expectedArgs[i].matcher(args[i], this._expectedArgs[i].val)) {
-          return false;
-        }
-      } else if (args[i] !== this._expectedArgs[i]) {
+      if (this.expectedArgs[i] instanceof Any) {
+        continue;
+      }
+
+      if (this.expectedArgs[i] instanceof Same && !this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].val)) {
+        return false;
+      }
+
+      if (args[i] !== this.expectedArgs[i]) {
         return false;
       }
     }
@@ -57,47 +55,14 @@ class ExpectedCall {
     return this.matchesFunction(mock) && this.matchesArguments(args);
   }
 
-  set returnValue(newReturnValue) {
-    this._returnValue = newReturnValue;
-  }
-
-  get returnValue() {
-    return this._returnValue;
-  }
-
-  set throwValue(newThrowValue) {
-    this._throwValue = throwValue;
-  }
-  get throwValue() {
-    return this._throwValue;
-  }
-
-  get expectedArgs() {
-    return this._expectedArgs;
-  }
-
-  get actualArgs() {
-    return this._actualArgs;
-  }
-
   get name() {
-    return this._mock._name;
+    return this.mock._name;
   }
 
   clone() {
-    let clone = new ExpectedCall(this._mock, this._expectedArgs, this._required, this._checkArgs);
-    clone.setReturnValue(this._returnValue);
-    // TODO: throwValue, other fields?
-    // are we aiming for shallow copy?
+    let clone = new ExpectedCall(this.mock, this.expectedArgs, this.required, this.checkArgs);
+    clone.returnValue = this.returnValue;
     return clone;
-  }
-
-  requireStrictOrdering() {
-    this._strictlyOrdered = true;
-  }
-
-  get strictlyOrdered() {
-    return this._strictlyOrdered;
   }
 }
 

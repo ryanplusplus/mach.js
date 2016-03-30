@@ -1,6 +1,5 @@
 'use strict';
 
-var ArgumentsString = require('../ArgumentsString.js');
 var FunctionCallsString = require('../FunctionCallsString.js');
 
 class NotAllCallsOccurredError extends Error {

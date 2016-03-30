@@ -1,11 +1,34 @@
 'use strict';
 
+var Expectation = require('./Expectation.js');
+var UnexpectedFunctionCallError = require('./UnexpectedFunctionCallError.js');
+
 class Mock {
   constructor(name) {
-    this._name = name;
-  }
+    var mock = (args) => {
+      return mock._handler(Array.from(args));
+    };
 
-  // TODO: make a function since you can't execute a class... that we know of
+    mock._name = name;
+
+    mock._resetHandler = () => {
+      this._handler = (args) => {
+        throw new UnexpectedFunctionCallError(this, args, [], []);
+      };
+    };
+
+    mock.shouldBeCalled = () => {
+      return new Expectation(mock, true);
+    };
+
+    mock.mayBeCalled = () => {
+      return new Expectation(mock, false);
+    };
+
+    mock._resetHandler();
+
+    return mock;
+  }
 }
 
 module.exports = Mock;

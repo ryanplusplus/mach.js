@@ -1,10 +1,15 @@
 'use strict';
 
 describe('ArgumentsString', () => {
-  let ArgumentsString = require('../src/ArgumentsString.js');
+  let ArgumentsString = require('../../src/Error/ArgumentsString.js');
+  let Same = require('../../src/Same.js');
 
   it('should return an empty string for no args', () => {
     expect(new ArgumentsString([]).toString()).toEqual('');
+  });
+
+  it('should extract value from Same', () => {
+    expect(new ArgumentsString([new Same(0)]).toString()).toEqual('0');
   });
 
   it('should convert undefined into a string', () => {

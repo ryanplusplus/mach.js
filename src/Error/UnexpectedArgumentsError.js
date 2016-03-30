@@ -8,7 +8,7 @@ class UnexpectedArgumentsError extends Error {
     super('Unexpected arguments ' +
       '(' + new ArgumentsString(args) + ')' +
       ' provided to function ' +
-      mock.name +
+      mock._name +
       new FunctionCallsString(completedCalls, incompleteCalls));
   }
 }

@@ -2,7 +2,7 @@
 
 class Any {
   toString() {
-    return '<mach.any>';
+    return '<any>';
   }
 }
 

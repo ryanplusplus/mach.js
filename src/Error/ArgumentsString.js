@@ -1,6 +1,6 @@
 'use strict';
 
-var Same = require('./Same.js');
+var Same = require('../Same.js');
 
 class ArgumentsString {
   constructor(args) {
