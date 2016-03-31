@@ -6,6 +6,10 @@ var OutOfOrderCallError = require('./Error/OutOfOrderCallError.js');
 var UnexpectedArgumentsError = require('./Error/UnexpectedArgumentsError.js');
 var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
 
+Array.prototype.last = function() {
+  return this[this.length - 1];
+};
+
 class Expectation {
   constructor(mock, required) {
     this._mock = mock;
@@ -15,12 +19,53 @@ class Expectation {
   }
 
   withTheseArguments(args) {
-    this._expectedCalls[-1].expectedArgs = args;
+    this._expectedCalls.last().expectedArgs = args;
     return this;
   }
 
   withAnyArguments() {
-    this.expectedCalls[-1].checkArgs = false;
+    this._expectedCalls.last().checkArgs = false;
+    return this;
+  }
+
+  _chainExpectations(expectation) {
+    for (let expectedCall of expectation._expectedCalls) {
+      this._expectedCalls.push(expectedCall);
+    }
+
+    return this;
+  }
+
+  and(expectation) {
+    return this._chainExpectations(expectation);
+  }
+
+  then(expectation) {
+    expectation._expectedCalls[0].strictlyOrdered = true;
+
+    return this._chainExpectations(expectation);
+  }
+
+  multipleTimes(count) {
+    for (var i = 0; i < count - 1; i++) {
+      this._expectedCalls.push(this._expectedCalls.last().clone());
+    }
+
+    return this;
+  }
+
+  andWillReturn(returnValue) {
+    this._expectedCalls.last().returnValue = returnValue;
+    return this;
+  }
+
+  andWillThrow(throwValue) {
+    this._expectedCalls.last().throwValue = throwValue;
+    return this;
+  }
+
+  andOtherCallsShouldBeIgnored() {
+    this._ignoreOtherCalls = true;
     return this;
   }
 
@@ -116,51 +161,6 @@ class Expectation {
       default:
         return this._asyncWhen(thunk);
     }
-  }
-
-  and(expectation) {
-    for (let expectedCall of expectation._expectedCalls) {
-      this._expectedCalls.push(expectedCall);
-    }
-
-    return this;
-  }
-
-  then(expectation) {
-    let first = true;
-
-    for (let expectedCall of expectation._expectedCalls) {
-      if (first) {
-        first = false;
-        expectedCall.strictlyOrdered = true;
-      }
-      this._expectedCalls.push(expectedCall);
-    }
-
-    return this;
-  }
-
-  multipleTimes(count) {
-    for (var i = 0; i < count - 1; i++) {
-      this._expectedCalls.push(this._expectedCalls[-1].clone());
-    }
-
-    return this;
-  }
-
-  andWillReturn(returnValue) {
-    this._expectedCalls[-1].returnValue = returnValue;
-    return this;
-  }
-
-  andWillThrow(throwValue) {
-    this._expectedCalls[-1].throwValue = throwValue;
-    return this;
-  }
-
-  andOtherCallsShouldBeIgnored() {
-    this._ignoreOtherCalls = true;
-    return this;
   }
 }
 
