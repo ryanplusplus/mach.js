@@ -29,4 +29,8 @@ describe('Same', () => {
     expect(same.matcher(0, 1)).toBe(true);
     expect(same.matcher(0, 0)).toBe(false);
   });
+
+  it('should stringify nicely', () => {
+    expect(new Same(0).toString()).toEqual('Same {value: 0, matcher: function (a, b) {\n    return eq(a, b);\n  }}');
+  });
 });

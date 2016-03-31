@@ -22,7 +22,7 @@ class ExpectedCall {
   }
 
   matchesFunction(mock) {
-    return mock == this.mock;
+    return mock === this.mock;
   }
 
   matchesArguments(args) {
@@ -39,8 +39,12 @@ class ExpectedCall {
         continue;
       }
 
-      if (this.expectedArgs[i] instanceof Same && !this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].val)) {
-        return false;
+      if (this.expectedArgs[i] instanceof Same) {
+        if (!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
+          return false;
+        } else {
+          continue;
+        }
       }
 
       if (args[i] !== this.expectedArgs[i]) {

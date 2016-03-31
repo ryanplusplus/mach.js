@@ -15,6 +15,10 @@ class Same {
   get matcher() {
     return this._matcher;
   }
+
+  toString() {
+    return 'Same {value: ' + this.value + ', matcher: ' + this.matcher + '}';
+  }
 }
 
 module.exports = Same;
