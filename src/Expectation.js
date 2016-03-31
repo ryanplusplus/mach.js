@@ -13,18 +13,21 @@ Array.prototype.last = function() {
 class Expectation {
   constructor(mock, required) {
     this._mock = mock;
+    // TODO: pass in expectation
     this._expectedCalls = [new ExpectedCall(mock, [], required, true)];
     this._callIndex = 0;
     this._ignoreOtherCalls = false;
   }
 
   withTheseArguments(args) {
-    this._expectedCalls.last().expectedArgs = args;
+    this._expectedCalls.last()
+      .expectedArgs = args;
     return this;
   }
 
   withAnyArguments() {
-    this._expectedCalls.last().checkArgs = false;
+    this._expectedCalls.last()
+      .checkArgs = false;
     return this;
   }
 
@@ -48,19 +51,22 @@ class Expectation {
 
   multipleTimes(count) {
     for (var i = 0; i < count - 1; i++) {
-      this._expectedCalls.push(this._expectedCalls.last().clone());
+      this._expectedCalls.push(this._expectedCalls.last()
+        .clone());
     }
 
     return this;
   }
 
   andWillReturn(returnValue) {
-    this._expectedCalls.last().returnValue = returnValue;
+    this._expectedCalls.last()
+      .returnValue = returnValue;
     return this;
   }
 
   andWillThrow(throwValue) {
-    this._expectedCalls.last().throwValue = throwValue;
+    this._expectedCalls.last()
+      .throwValue = throwValue;
     return this;
   }
 
@@ -79,7 +85,7 @@ class Expectation {
 
   _checkCalls() {
     for (let expectedCall of this._expectedCalls) {
-      if (expectedCall.isRequired && !expectedCall.completed) {
+      if (expectedCall.required && !expectedCall.completed) {
         throw new NotAllCallsOccurredError(this._completedCalls, this._incompleteCalls);
       }
     }
@@ -93,9 +99,12 @@ class Expectation {
       })
       .then(() => {
         this._checkCalls();
-      }).catch((error) => {
+      })
+      .catch((error) => {
         return error;
-      }).then((error) => {
+      })
+      .then((error) => {
+        // TODO: reset for whole chain
         this._mock._resetHandler();
 
         if (error) {
@@ -107,7 +116,9 @@ class Expectation {
   _syncWhen(thunk) {
     try {
       thunk();
-    } finally {
+    }
+    finally {
+      // TODO: reset for whole chain
       this._mock._resetHandler();
     }
 
@@ -115,6 +126,8 @@ class Expectation {
   }
 
   when(thunk) {
+    // TODO: set for whole chain 
+    //- need to ensure each mock gets its expectations references and not just all the same one?
     this._mock._handler = (args) => {
       var partialMatch;
       var incompleteExpectationFound = false;

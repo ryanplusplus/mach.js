@@ -4,5 +4,6 @@
    "esnext": true,
    "node": true,
    "jasmine": true,
-   "newcap": false
+   "newcap": false,
+   "loopfunc": true
 }
