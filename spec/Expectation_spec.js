@@ -104,6 +104,8 @@ describe('Expectation', () => {
         .multipleTimes(3)
         ._expectedCalls.length)
       .toEqual(3);
+
+    // FIXME: check all the fields
   });
 
   it('andWillReturn should set the return value', () => {
