@@ -58,13 +58,14 @@ class Expectation {
     return this;
   }
 
-  // TODO: how useful is this really since you can't chain the expected args?
   multipleTimes(count) {
     let expectedCall = this._expectedCalls.last();
 
     for (var i = 0; i < count - 1; i++) {
       this.then(new Expectation(this._mock, expectedCall.required));
 
+      this._expectedCalls.last().expectedArgs = expectedCall.expectedArgs;
+      this._expectedCalls.last().checkArgs = expectedCall.checkArgs;
       this._expectedCalls.last().returnValue = expectedCall.returnValue;
     }
 
