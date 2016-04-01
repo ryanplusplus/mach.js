@@ -120,8 +120,8 @@ class Tree {
     return tree;
   }
 
-  and(expectation) {
-    let node = new ExpectedCallNode(expectation._expectedCalls.last());
+  and(expectedCall) {
+    let node = new ExpectedCallNode(expectedCall);
 
     if (this._currentNode instanceof TerminusNode) {
       // - pop off existing AND subtree, add new node, re-insert
@@ -132,8 +132,8 @@ class Tree {
     }
   }
 
-  then(expectation) {
-    this._addNode(new ExpectedCallNode(expectation._expectedCalls.last()));
+  then(expectedCall) {
+    this._addNode(new ExpectedCallNode(expectedCall));
   }
 
   execute(args) {

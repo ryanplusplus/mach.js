@@ -8,56 +8,36 @@ describe('Tree', () => {
   });
 
   it('then should add a new ExpectedCallNode', () => {
-    let expectation = {
-      _expectedCalls: {
-        last: () => {
-          return {
-            name: 'foo'
-          };
-        }
-      }
+    let foo = {
+      name: 'foo'
+    };
+
+    let bar = {
+      name: 'bar'
     };
 
     let tree = new Tree();
 
-    tree.then(expectation);
+    tree.then(foo);
 
     expect(tree.toString()).toEqual('{ ROOT [{ foo [{ TERMINUS }] }] }');
 
-    tree.then(expectation);
+    tree.then(bar);
 
-    expect(tree.toString()).toEqual('{ ROOT [{ foo [{ foo [{ TERMINUS }] }] }] }');
+    expect(tree.toString()).toEqual('{ ROOT [{ foo [{ bar [{ TERMINUS }] }] }] }');
   });
 
   it('and should add a new ExpectedCallNode', () => {
     let foo = {
-      _expectedCalls: {
-        last: () => {
-          return {
-            name: 'foo'
-          };
-        }
-      }
+      name: 'foo'
     };
 
     let bar = {
-      _expectedCalls: {
-        last: () => {
-          return {
-            name: 'bar'
-          };
-        }
-      }
+      name: 'bar'
     };
 
     let baz = {
-      _expectedCalls: {
-        last: () => {
-          return {
-            name: 'baz'
-          };
-        }
-      }
+      name: 'baz'
     };
 
     let tree = new Tree();

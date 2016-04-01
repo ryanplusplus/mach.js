@@ -43,17 +43,17 @@ class Expectation {
   }
 
   and(expectation) {
-    this._tree.and(expectation);
-
     this._chainExpectations(expectation);
+
+    this._tree.and(this._expectedCalls.last());
 
     return this;
   }
 
   then(expectation) {
-    this._tree.then(expectation);
-
     this._chainExpectations(expectation);
+
+    this._tree.then(this._expectedCalls.last());
 
     return this;
   }
