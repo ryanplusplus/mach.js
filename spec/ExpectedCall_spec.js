@@ -114,27 +114,4 @@ describe('ExpectedCall', () => {
       expect(expectedCall.matches(mock, [0])).toBe(true);
     });
   });
-
-  it('clone should make a copy', () => {
-    let mock = {
-      _name: 'mock'
-    };
-    let args = [0, 1, 2];
-    let required = true;
-    let checkArgs = true;
-    let original = new ExpectedCall(mock, args, required, checkArgs);
-    original.returnValue = 3;
-
-    let copy = original.clone();
-
-    expect(original.mock).toEqual(copy.mock);
-    expect(original.expectedArgs).toEqual(copy.expectedArgs);
-    expect(original.required).toEqual(copy.required);
-    expect(original.checkArgs).toEqual(copy.checkArgs);
-    expect(original.returnValue).toEqual(copy.returnValue);
-
-    original.returnValue = 0;
-
-    expect(original.returnValue).not.toEqual(copy.returnValue);
-  });
 });

@@ -8,7 +8,6 @@ class ExpectedCall {
   constructor(mock, args, required, checkArgs) {
     this.mock = mock;
     this.completed = false;
-    this.strictlyOrdered = false;
     this.checkArgs = checkArgs;
     this.required = required;
     this.expectedArgs = args;
@@ -62,12 +61,6 @@ class ExpectedCall {
 
   get name() {
     return this.mock._name;
-  }
-
-  clone() {
-    let clone = new ExpectedCall(this.mock, this.expectedArgs, this.required, this.checkArgs);
-    clone.returnValue = this.returnValue;
-    return clone;
   }
 }
 

@@ -1,6 +1,7 @@
 'use strict';
 
 var ExpectedCall = require('./ExpectedCall.js');
+var Tree = require('./Tree/Tree.js');
 var NotAllCallsOccurredError = require('./Error/NotAllCallsOccurredError.js');
 var OutOfOrderCallError = require('./Error/OutOfOrderCallError.js');
 var UnexpectedArgumentsError = require('./Error/UnexpectedArgumentsError.js');
@@ -13,10 +14,11 @@ Array.prototype.last = function() {
 class Expectation {
   constructor(mock, required) {
     this._mock = mock;
-    // TODO: pass in expectation
     this._expectedCalls = [new ExpectedCall(mock, [], required, true)];
+    this._tree = new Tree();
     this._callIndex = 0;
     this._ignoreOtherCalls = false;
+    this._tree.then(this);
   }
 
   withTheseArguments(args) {
@@ -36,23 +38,33 @@ class Expectation {
       this._expectedCalls.push(expectedCall);
     }
 
-    return this;
+    expectation._tree = this._tree;
+    expectation._expectedCalls = this._expectedCalls;
   }
 
   and(expectation) {
-    return this._chainExpectations(expectation);
+    this._tree.and(expectation);
+
+    this._chainExpectations(expectation);
+
+    return this;
   }
 
   then(expectation) {
-    expectation._expectedCalls[0].strictlyOrdered = true;
+    this._tree.then(expectation);
 
-    return this._chainExpectations(expectation);
+    this._chainExpectations(expectation);
+
+    return this;
   }
 
   multipleTimes(count) {
+    let expectedCall = this._expectedCalls.last();
+
     for (var i = 0; i < count - 1; i++) {
-      this._expectedCalls.push(this._expectedCalls.last()
-        .clone());
+      this.then(new Expectation(this._mock, expectedCall.required));
+
+      this._expectedCalls.last().returnValue = expectedCall.returnValue;
     }
 
     return this;
@@ -71,6 +83,7 @@ class Expectation {
   }
 
   andOtherCallsShouldBeIgnored() {
+    // TODO: how implement in when?
     this._ignoreOtherCalls = true;
     return this;
   }
@@ -116,8 +129,7 @@ class Expectation {
   _syncWhen(thunk) {
     try {
       thunk();
-    }
-    finally {
+    } finally {
       // TODO: reset for whole chain
       this._mock._resetHandler();
     }
@@ -126,7 +138,7 @@ class Expectation {
   }
 
   when(thunk) {
-    // TODO: set for whole chain 
+    // TODO: set for whole chain
     //- need to ensure each mock gets its expectations references and not just all the same one?
     this._mock._handler = (args) => {
       var partialMatch;
