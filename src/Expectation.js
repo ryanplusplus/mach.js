@@ -18,7 +18,7 @@ class Expectation {
     this._tree = new Tree();
     this._callIndex = 0;
     this._ignoreOtherCalls = false;
-    this._tree.then(this);
+    this._tree.then(this._expectedCalls.last());
   }
 
   withTheseArguments(args) {
@@ -58,6 +58,7 @@ class Expectation {
     return this;
   }
 
+  // TODO: how useful is this really since you can't chain the expected args?
   multipleTimes(count) {
     let expectedCall = this._expectedCalls.last();
 
