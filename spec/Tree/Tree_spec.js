@@ -213,23 +213,23 @@ describe('Tree', () => {
 
       tree.then(new Tree(b));
 
-      expect(tree.completedCalls.length).toEqual(0);
-      expect(tree.incompleteCalls.length).toEqual(3);
+      expect(tree._completedCalls.length).toEqual(0);
+      expect(tree._incompleteCalls.length).toEqual(3);
 
       a.expectedCall.completed = true;
 
-      expect(tree.completedCalls.length).toEqual(1);
-      expect(tree.incompleteCalls.length).toEqual(2);
+      expect(tree._completedCalls.length).toEqual(1);
+      expect(tree._incompleteCalls.length).toEqual(2);
 
       b.expectedCalls[0].completed = true;
 
-      expect(tree.completedCalls.length).toEqual(2);
-      expect(tree.incompleteCalls.length).toEqual(1);
+      expect(tree._completedCalls.length).toEqual(2);
+      expect(tree._incompleteCalls.length).toEqual(1);
 
       b.expectedCalls[1].completed = true;
 
-      expect(tree.completedCalls.length).toEqual(3);
-      expect(tree.incompleteCalls.length).toEqual(0);
+      expect(tree._completedCalls.length).toEqual(3);
+      expect(tree._incompleteCalls.length).toEqual(0);
     });
 
     it('should throw an error if there is an invalid node type', () => {
@@ -238,12 +238,12 @@ describe('Tree', () => {
       let tree = new Tree(a);
 
       let error = 'Unexpected type for node, expected AndNode or ExpectedCallNode';
-      expect(() => tree.completedCalls).toThrowError(error);
-      expect(() => tree.incompleteCalls).toThrowError(error);
+      expect(() => tree._completedCalls).toThrowError(error);
+      expect(() => tree._incompleteCalls).toThrowError(error);
     });
   });
 
-  it('checkCalls should return correct result based on completion state of its expected calls', () => {
+  it('_checkCalls should return correct result based on completion state of its expected calls', () => {
     let a = new ExpectedCallNode({
       name: 'a',
       required: true,
@@ -266,21 +266,21 @@ describe('Tree', () => {
 
     tree.then(new Tree(b));
 
-    expect(() => tree.checkCalls()).toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls()).toThrowError(NotAllCallsOccurredError);
 
     a.expectedCall.completed = true;
     a.expectedCall.actualArgs = [];
 
-    expect(() => tree.checkCalls()).toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls()).toThrowError(NotAllCallsOccurredError);
 
     b.expectedCalls[0].completed = true;
     b.expectedCalls[0].actualArgs = [];
 
-    expect(() => tree.checkCalls()).not.toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls()).not.toThrowError(NotAllCallsOccurredError);
 
     b.expectedCalls[1].completed = true;
     b.expectedCalls[1].actualArgs = [];
 
-    expect(() => tree.checkCalls()).not.toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls()).not.toThrowError(NotAllCallsOccurredError);
   });
 });
