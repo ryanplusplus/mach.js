@@ -158,7 +158,6 @@ describe('Tree', () => {
     });
 
     it('AndNode -> ExpectedCallNode => Root -> AndNode -> ExpectedCallNode -> Terminus', () => {
-
       let a = new AndNode({
         name: 'a'
       });
@@ -179,7 +178,6 @@ describe('Tree', () => {
     });
 
     it('AndNode -> AndNode => Root -> AndNode -> AndNode -> Terminus', () => {
-
       let a = new AndNode({
         name: 'a'
       });
@@ -201,6 +199,62 @@ describe('Tree', () => {
       tree.then(new Tree(c));
 
       expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
+    });
+  });
+
+  describe('completedCalls / incompleteCalls', () => {
+    it('should return status of ExpectedCallNode expected call', () => {
+      let a = new ExpectedCallNode({
+        name: 'a',
+        completed: false
+      });
+
+      let tree = new Tree(a);
+
+      expect(tree.completedCalls.length).toEqual(0);
+      expect(tree.incompleteCalls.length).toEqual(1);
+
+      a.expectedCall.completed = true;
+
+      expect(tree.completedCalls.length).toEqual(1);
+      expect(tree.incompleteCalls.length).toEqual(0);
+    });
+
+    it('should return status of AndNode expected calls', () => {
+      let a = new AndNode({
+        name: 'a',
+        completed: false
+      });
+
+      a.merge(new AndNode({
+        name: 'b',
+        completed: false
+      }));
+
+      let tree = new Tree(a);
+
+      expect(tree.completedCalls.length).toEqual(0);
+      expect(tree.incompleteCalls.length).toEqual(2);
+
+      a.expectedCalls[0].completed = true;
+
+      expect(tree.completedCalls.length).toEqual(1);
+      expect(tree.incompleteCalls.length).toEqual(1);
+
+      a.expectedCalls[1].completed = true;
+
+      expect(tree.completedCalls.length).toEqual(2);
+      expect(tree.incompleteCalls.length).toEqual(0);
+    });
+
+    it('should throw an error if there is an invalid node type', () => {
+      let a = new Node('node');
+
+      let tree = new Tree(a);
+
+      let error = 'Unexpected type for node, expected AndNode or ExpectedCallNode';
+      expect(() => tree.completedCalls).toThrowError(error);
+      expect(() => tree.incompleteCalls).toThrowError(error);
     });
   });
 });

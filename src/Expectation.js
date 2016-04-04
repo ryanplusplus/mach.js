@@ -78,11 +78,11 @@ class Expectation {
   }
 
   get _completedCalls() {
-    // TODO: Implement
+    return this._tree.completedCalls;
   }
 
   get _incompleteCalls() {
-    // TODO: Implement
+    return this._tree.incompleteCalls;
   }
 
   _checkCalls() {

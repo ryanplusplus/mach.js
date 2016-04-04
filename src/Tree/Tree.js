@@ -51,6 +51,40 @@ class Tree {
     this._chainNodes(this._currentNode, node);
   }
 
+  _getCallsWithCompletionState(completionState) {
+    let calls = [];
+
+    let node = this._root.child;
+
+    while (!(node instanceof TerminusNode)) {
+      if (node instanceof ExpectedCallNode) {
+        if (node.expectedCall.completed === completionState) {
+          calls.push(node.expectedCall);
+        }
+      } else if (node instanceof AndNode) {
+        for (let expectedCall of node.expectedCalls) {
+          if (expectedCall.completed === completionState) {
+            calls.push(expectedCall);
+          }
+        }
+      } else {
+        throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
+      }
+
+      node = node.child;
+    }
+
+    return calls;
+  }
+
+  get completedCalls() {
+    return this._getCallsWithCompletionState(true);
+  }
+
+  get incompleteCalls() {
+    return this._getCallsWithCompletionState(false);
+  }
+
   // execute(args) {
   //   // TODO: execute expectation.when actions here
   //   // TODO: if successful, advance execute node
