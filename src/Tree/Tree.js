@@ -4,14 +4,15 @@ var RootNode = require('./RootNode.js');
 var TerminusNode = require('./TerminusNode.js');
 var ExpectedCallNode = require('./ExpectedCallNode.js');
 var AndNode = require('./AndNode.js');
+var NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
 
 class Tree {
   constructor(node) {
     this._root = new RootNode();
-
+    // TODO: ensure this transfers between trees during and and then?
+    this.ignoreOtherCalls = false;
     this._chainNodes(this._root, node);
     this._chainNodes(node, new TerminusNode());
-    this._currentNode = node;
   }
 
   _chainNodes(a, b) {
@@ -22,50 +23,39 @@ class Tree {
   and(tree) {
     let andNode;
 
-    if (this._currentNode instanceof ExpectedCallNode) {
-      andNode = new AndNode(this._currentNode.expectedCall);
-    } else if (this._currentNode instanceof AndNode) {
-      andNode = this._currentNode;
+    if (this._root.child instanceof ExpectedCallNode) {
+      andNode = new AndNode(this._root.child.expectedCall);
+    } else if (this._root.child instanceof AndNode) {
+      andNode = this._root.child;
     } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
     let node = tree._root.child;
 
-    if (node instanceof ExpectedCallNode) {
-      andNode.merge(new AndNode(node.expectedCall));
-    } else if (node instanceof AndNode) {
-      andNode.merge(node);
-    } else {
-      throw new Error('Unexpected type for tree node, expected AndNode or ExpectedCallNode');
-    }
+    andNode.merge(node);
 
     this._chainNodes(this._root, andNode);
     this._chainNodes(andNode, node.child);
-    this._currentNode = andNode;
   }
 
   then(tree) {
     let node = tree._root.child;
 
-    this._chainNodes(this._currentNode, node);
+    this._chainNodes(this._root.child, node);
   }
 
-  _getCallsWithCompletionState(completionState) {
+  _getCalls() {
     let calls = [];
 
     let node = this._root.child;
 
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
-        if (node.expectedCall.completed === completionState) {
-          calls.push(node.expectedCall);
-        }
+        calls.push(node.expectedCall);
       } else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
-          if (expectedCall.completed === completionState) {
-            calls.push(expectedCall);
-          }
+          calls.push(expectedCall);
         }
       } else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
@@ -78,14 +68,28 @@ class Tree {
   }
 
   get completedCalls() {
-    return this._getCallsWithCompletionState(true);
+    return this._getCalls().filter(c => c.completed === true);
   }
 
   get incompleteCalls() {
-    return this._getCallsWithCompletionState(false);
+    return this._getCalls().filter(c => c.completed === false);
   }
 
-  // execute(args) {
+  checkCalls() {
+    let result = true;
+    for (let expectedCall of this._getCalls()) {
+      if (expectedCall.required && !expectedCall.completed) {
+        result = false;
+        break;
+      }
+    }
+
+    if (!result) {
+      throw new NotAllCallsOccurredError(this.completedCalls, this.incompleteCalls);
+    }
+  }
+
+  // execute(thunk) {
   //   // TODO: execute expectation.when actions here
   //   // TODO: if successful, advance execute node
   // }

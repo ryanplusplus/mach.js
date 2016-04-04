@@ -3,15 +3,10 @@
 var ExpectedCall = require('./ExpectedCall.js');
 var Tree = require('./Tree/Tree.js');
 var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
-// var NotAllCallsOccurredError = require('./Error/NotAllCallsOccurredError.js');
-// var OutOfOrderCallError = require('./Error/OutOfOrderCallError.js');
-// var UnexpectedArgumentsError = require('./Error/UnexpectedArgumentsError.js');
-// var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
 
 class Expectation {
   constructor(mock, required) {
     this._mock = mock;
-    this._ignoreOtherCalls = false;
     this._expectedCall = new ExpectedCall(mock, [], required, true);
     this._tree = new Tree(new ExpectedCallNode(this._expectedCall));
   }
@@ -71,27 +66,9 @@ class Expectation {
   }
 
   andOtherCallsShouldBeIgnored() {
-    // TODO: how implement in when?
-    this._ignoreOtherCalls = true;
+    this._tree.ignoreOtherCalls = true;
 
     return this;
-  }
-
-  get _completedCalls() {
-    return this._tree.completedCalls;
-  }
-
-  get _incompleteCalls() {
-    return this._tree.incompleteCalls;
-  }
-
-  _checkCalls() {
-    // TODO: implement
-    // for (let expectedCall of this._expectedCalls) {
-    //   if (expectedCall.required && !expectedCall.completed) {
-    //     throw new NotAllCallsOccurredError(this._completedCalls, this._incompleteCalls);
-    //   }
-    // }
   }
 
   _asyncWhen(thunk) {

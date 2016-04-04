@@ -1,6 +1,7 @@
 'use strict';
 
 var Node = require('./Node.js');
+var ExpectedCallNode = require('./ExpectedCallNode.js');
 
 class AndNode extends Node {
   constructor(expectedCall) {
@@ -18,7 +19,16 @@ class AndNode extends Node {
     return this._name + ' {{ ' + calls.join(', ') + ' }}';
   }
 
-  merge(andNode) {
+  merge(node) {
+    let andNode;
+    if (node instanceof ExpectedCallNode) {
+      andNode = new AndNode(node.expectedCall);
+    } else if (node instanceof AndNode) {
+      andNode = node;
+    } else {
+      throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
+    }
+
     for (let expectedCall of andNode.expectedCalls) {
       this.expectedCalls.push(expectedCall);
     }

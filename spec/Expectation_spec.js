@@ -9,7 +9,7 @@ describe('Expectation', () => {
     }, true);
 
     expect(expectation._expectedCall.name).toEqual('foo');
-    expect(expectation._tree._currentNode.name).toEqual('foo');
+    expect(expectation._tree._root.child.name).toEqual('foo');
   });
 
   it('should set expected call required flag as specified', () => {
