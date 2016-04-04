@@ -2,10 +2,11 @@
 
 var ExpectedCall = require('./ExpectedCall.js');
 var Tree = require('./Tree/Tree.js');
-var NotAllCallsOccurredError = require('./Error/NotAllCallsOccurredError.js');
-var OutOfOrderCallError = require('./Error/OutOfOrderCallError.js');
-var UnexpectedArgumentsError = require('./Error/UnexpectedArgumentsError.js');
-var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
+var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+// var NotAllCallsOccurredError = require('./Error/NotAllCallsOccurredError.js');
+// var OutOfOrderCallError = require('./Error/OutOfOrderCallError.js');
+// var UnexpectedArgumentsError = require('./Error/UnexpectedArgumentsError.js');
+// var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
 
 Array.prototype.last = function() {
   return this[this.length - 1];
@@ -14,96 +15,86 @@ Array.prototype.last = function() {
 class Expectation {
   constructor(mock, required) {
     this._mock = mock;
-    this._expectedCalls = [new ExpectedCall(mock, [], required, true)];
-    this._tree = new Tree();
     this._callIndex = 0;
     this._ignoreOtherCalls = false;
-    this._tree.then(this._expectedCalls.last());
+    this._expectedCall = new ExpectedCall(mock, [], required, true);
+    this._tree = new Tree(new ExpectedCallNode(this._expectedCall));
   }
 
   withTheseArguments(args) {
-    this._expectedCalls.last()
-      .expectedArgs = args;
+    this._expectedCall.expectedArgs = args;
+
     return this;
   }
 
   withAnyArguments() {
-    this._expectedCalls.last()
-      .checkArgs = false;
+    this._expectedCall.checkArgs = false;
+
     return this;
   }
 
-  _chainExpectations(expectation) {
-    for (let expectedCall of expectation._expectedCalls) {
-      this._expectedCalls.push(expectedCall);
-    }
-
-    expectation._tree = this._tree;
-    expectation._expectedCalls = this._expectedCalls;
-  }
-
   and(expectation) {
-    this._chainExpectations(expectation);
-
-    this._tree.and(this._expectedCalls.last());
+    this._tree.and(expectation._tree);
 
     return this;
   }
 
   then(expectation) {
-    this._chainExpectations(expectation);
-
-    this._tree.then(this._expectedCalls.last());
+    this._tree.then(expectation._tree);
 
     return this;
   }
 
   multipleTimes(count) {
-    let expectedCall = this._expectedCalls.last();
+    let e = this;
 
     for (var i = 0; i < count - 1; i++) {
-      this.then(new Expectation(this._mock, expectedCall.required));
+      let expectation = new Expectation(this._mock, this._expectedCall.required);
 
-      this._expectedCalls.last().expectedArgs = expectedCall.expectedArgs;
-      this._expectedCalls.last().checkArgs = expectedCall.checkArgs;
-      this._expectedCalls.last().returnValue = expectedCall.returnValue;
+      expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
+      expectation._expectedCall.checkArgs = this._expectedCall.checkArgs;
+      expectation._expectedCall.returnValue = this._expectedCall.returnValue;
+
+      e = expectation.and(e);
     }
 
-    return this;
+    return e;
   }
 
   andWillReturn(returnValue) {
-    this._expectedCalls.last()
-      .returnValue = returnValue;
+    this._expectedCall.returnValue = returnValue;
+
     return this;
   }
 
   andWillThrow(throwValue) {
-    this._expectedCalls.last()
-      .throwValue = throwValue;
+    this._expectedCall.throwValue = throwValue;
+
     return this;
   }
 
   andOtherCallsShouldBeIgnored() {
     // TODO: how implement in when?
     this._ignoreOtherCalls = true;
+
     return this;
   }
 
   get _completedCalls() {
-    return this._expectedCalls.filter(c => c.completed);
+    // TODO: Implement
   }
 
   get _incompleteCalls() {
-    return this._expectedCalls.filter(c => !c.completed);
+    // TODO: Implement
   }
 
   _checkCalls() {
-    for (let expectedCall of this._expectedCalls) {
-      if (expectedCall.required && !expectedCall.completed) {
-        throw new NotAllCallsOccurredError(this._completedCalls, this._incompleteCalls);
-      }
-    }
+    // TODO: implement
+    // for (let expectedCall of this._expectedCalls) {
+    //   if (expectedCall.required && !expectedCall.completed) {
+    //     throw new NotAllCallsOccurredError(this._completedCalls, this._incompleteCalls);
+    //   }
+    // }
   }
 
   _asyncWhen(thunk) {
@@ -142,45 +133,46 @@ class Expectation {
   when(thunk) {
     // TODO: set for whole chain
     //- need to ensure each mock gets its expectations references and not just all the same one?
-    this._mock._handler = (args) => {
-      var partialMatch;
-      var incompleteExpectationFound = false;
-
-      for (var i = this._callIndex; i < this._expectedCalls.length; i++) {
-        var expectedCall = this._expectedCalls[i];
-        if (!expectedCall.completed) {
-          if (expectedCall.matches(this._mock, args)) {
-            if (expectedCall.strictlyOrdered && incompleteExpectationFound) {
-              throw new OutOfOrderCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
-            }
-
-            if (expectedCall.strictlyOrdered) {
-              this._callIndex = i;
-            }
-
-            expectedCall.complete(args);
-
-            if (expectedCall.throwValue) {
-              throw expectedCall.throwValue;
-            }
-
-            return expectedCall.returnValue;
-          }
-
-          if (expectedCall.matchesFunction(this._mock)) {
-            partialMatch = expectedCall;
-          }
-        }
-
-        if (partialMatch) {
-          throw new UnexpectedArgumentsError(this._mock, args, this._completedCalls, this._incompleteCalls);
-        }
-
-        if (!this._ignoreOtherCalls) {
-          throw new UnexpectedFunctionCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
-        }
-      }
-    };
+    // this._mock._handler = (args) => {
+    // TODO: Implement
+    // var partialMatch;
+    // var incompleteExpectationFound = false;
+    //
+    // for (var i = this._callIndex; i < this._expectedCalls.length; i++) {
+    //   var expectedCall = this._expectedCalls[i];
+    //   if (!expectedCall.completed) {
+    //     if (expectedCall.matches(this._mock, args)) {
+    //       if (expectedCall.strictlyOrdered && incompleteExpectationFound) {
+    //         throw new OutOfOrderCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
+    //       }
+    //
+    //       if (expectedCall.strictlyOrdered) {
+    //         this._callIndex = i;
+    //       }
+    //
+    //       expectedCall.complete(args);
+    //
+    //       if (expectedCall.throwValue) {
+    //         throw expectedCall.throwValue;
+    //       }
+    //
+    //       return expectedCall.returnValue;
+    //     }
+    //
+    //     if (expectedCall.matchesFunction(this._mock)) {
+    //       partialMatch = expectedCall;
+    //     }
+    //   }
+    //
+    //   if (partialMatch) {
+    //     throw new UnexpectedArgumentsError(this._mock, args, this._completedCalls, this._incompleteCalls);
+    //   }
+    //
+    //   if (!this._ignoreOtherCalls) {
+    //     throw new UnexpectedFunctionCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
+    //   }
+    // }
+    // };
 
     switch (thunk.length) {
       case 0:

@@ -3,7 +3,7 @@
 class Node {
   constructor(name) {
     this._name = name;
-    this.children = [];
+    this.child = undefined;
     this.parent = undefined;
   }
 
@@ -12,10 +12,10 @@ class Node {
   }
 
   toString() {
-    var result = '{ ' + this._name;
+    var result = '{ ' + this.name;
 
-    if (this.children.length > 0) {
-      result += ' [' + this.children.join(', ') + ']';
+    if (this.child !== undefined) {
+      result += ' [' + this.child.toString() + ']';
     }
 
     result += ' }';

@@ -7,10 +7,6 @@ class ExpectedCallNode extends Node {
     super(expectedCall.name);
     this.expectedCall = expectedCall;
   }
-
-  clone() {
-    return new ExpectedCallNode(this.expectedCall);
-  }
 }
 
 module.exports = ExpectedCallNode;
