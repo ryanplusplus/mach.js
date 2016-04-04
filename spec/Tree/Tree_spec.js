@@ -3,7 +3,6 @@
 describe('Tree', () => {
   let Tree = require('../../src/Tree/Tree.js');
   let Node = require('../../src/Tree/Node.js');
-  let RootNode = require('../../src/Tree/RootNode.js');
   let TerminusNode = require('../../src/Tree/TerminusNode.js');
   let ExpectedCallNode = require('../../src/Tree/ExpectedCallNode.js');
   let AndNode = require('../../src/Tree/AndNode.js');

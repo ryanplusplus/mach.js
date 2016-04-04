@@ -8,14 +8,9 @@ var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
 // var UnexpectedArgumentsError = require('./Error/UnexpectedArgumentsError.js');
 // var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
 
-Array.prototype.last = function() {
-  return this[this.length - 1];
-};
-
 class Expectation {
   constructor(mock, required) {
     this._mock = mock;
-    this._callIndex = 0;
     this._ignoreOtherCalls = false;
     this._expectedCall = new ExpectedCall(mock, [], required, true);
     this._tree = new Tree(new ExpectedCallNode(this._expectedCall));
@@ -33,34 +28,6 @@ class Expectation {
     return this;
   }
 
-  and(expectation) {
-    this._tree.and(expectation._tree);
-
-    return this;
-  }
-
-  then(expectation) {
-    this._tree.then(expectation._tree);
-
-    return this;
-  }
-
-  multipleTimes(count) {
-    let e = this;
-
-    for (var i = 0; i < count - 1; i++) {
-      let expectation = new Expectation(this._mock, this._expectedCall.required);
-
-      expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
-      expectation._expectedCall.checkArgs = this._expectedCall.checkArgs;
-      expectation._expectedCall.returnValue = this._expectedCall.returnValue;
-
-      e = expectation.and(e);
-    }
-
-    return e;
-  }
-
   andWillReturn(returnValue) {
     this._expectedCall.returnValue = returnValue;
 
@@ -69,6 +36,36 @@ class Expectation {
 
   andWillThrow(throwValue) {
     this._expectedCall.throwValue = throwValue;
+
+    return this;
+  }
+
+  and(expectation) {
+    this._tree.and(expectation._tree);
+
+    expectation._tree = this._tree;
+
+    return this;
+  }
+
+  then(expectation) {
+    this._tree.then(expectation._tree);
+
+    expectation._tree = this._tree;
+
+    return this;
+  }
+
+  multipleTimes(count) {
+    for (var i = 0; i < count - 1; i++) {
+      let expectation = new Expectation(this._mock, this._expectedCall.required);
+
+      expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
+      expectation._expectedCall.checkArgs = this._expectedCall.checkArgs;
+      expectation._expectedCall.returnValue = this._expectedCall.returnValue;
+
+      this.and(expectation);
+    }
 
     return this;
   }

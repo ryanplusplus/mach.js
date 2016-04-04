@@ -4,7 +4,6 @@ var Any = require('./Any.js');
 var Same = require('./Same.js');
 
 class ExpectedCall {
-  // TODO: pass in expectation
   constructor(mock, args, required, checkArgs) {
     this.mock = mock;
     this.completed = false;

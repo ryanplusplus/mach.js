@@ -37,7 +37,7 @@ class Tree {
     } else if (node instanceof AndNode) {
       andNode.merge(node);
     } else {
-      throw new Error('Unexpected type for tree node, expected AndNode or ExpectedCallNode')
+      throw new Error('Unexpected type for tree node, expected AndNode or ExpectedCallNode');
     }
 
     this._chainNodes(this._root, andNode);
