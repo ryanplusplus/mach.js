@@ -5,6 +5,8 @@ var TerminusNode = require('./TerminusNode.js');
 var ExpectedCallNode = require('./ExpectedCallNode.js');
 var AndNode = require('./AndNode.js');
 var NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
+var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
+var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
 class Tree {
   constructor(node) {
@@ -25,9 +27,11 @@ class Tree {
 
     if (this._root.child instanceof ExpectedCallNode) {
       andNode = new AndNode(this._root.child.expectedCall);
-    } else if (this._root.child instanceof AndNode) {
+    }
+    else if (this._root.child instanceof AndNode) {
       andNode = this._root.child;
-    } else {
+    }
+    else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -53,11 +57,13 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      } else if (node instanceof AndNode) {
+      }
+      else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      } else {
+      }
+      else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -68,11 +74,13 @@ class Tree {
   }
 
   get _completedCalls() {
-    return this._getCalls().filter(c => c.completed === true);
+    return this._getCalls()
+      .filter(c => c.completed === true);
   }
 
   get _incompleteCalls() {
-    return this._getCalls().filter(c => c.completed === false);
+    return this._getCalls()
+      .filter(c => c.completed === false);
   }
 
   _checkCalls() {
@@ -102,8 +110,7 @@ class Tree {
         return error;
       })
       .then((error) => {
-        // TODO: reset for whole chain
-        // this._mock._resetHandler();
+        this._resetMockHandler();
 
         if (error) {
           throw error;
@@ -114,20 +121,56 @@ class Tree {
   _syncWhen(thunk) {
     try {
       thunk();
-    } finally {
-      // TODO: reset for whole chain
-      // this._mock._resetHandler();
+    }
+    finally {
+      this._resetMockHandler();
     }
 
     this._checkCalls();
   }
 
-  execute(thunk) {
-    // TODO: set for whole chain
-    //- need to ensure each mock gets its expectations references and not just all the same one?
-    // this._mock._handler = (args) => {
-    // TODO: Implement
-    // var partialMatch;
+  _resetMockHandler() {
+    let calls = this._getCalls();
+
+    for (let call of calls) {
+      call.mock._resetHandler();
+    }
+  }
+  
+  _executeNode(mock, args) {
+    let partialMatch;
+
+    if (this._executingNode instanceof ExpectedCallNode) {
+      let expectedCall = this._executingNode.expectedCall;
+
+      if (expectedCall.matches(mock, args)) {
+        expectedCall.complete(args);
+
+        this._executingNode = this._executingNode.child;
+
+        if (expectedCall.throwValue) {
+          throw expectedCall.throwValue;
+        }
+
+        if (expectedCall.returnValue) {
+          return expectedCall.returnValue;
+        }
+      }
+      // TODO: optional case
+      else if (expectedCall.matchesFunction(mock)) {
+        throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
+      }
+      else {
+        throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
+      }
+
+    }
+    // TODO: AndNode case
+    // TODO: TerminusNode case
+    else {
+      throw new Error('Unexpected node type during execution');
+    }
+
     // var incompleteExpectationFound = false;
     //
     // for (var i = this._callIndex; i < this._expectedCalls.length; i++) {
@@ -163,9 +206,23 @@ class Tree {
     //   if (!this._ignoreOtherCalls) {
     //     throw new UnexpectedFunctionCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
     //   }
-    // }
-    // };
+    //  }
+  }
 
+  _setMockExecutionHandler() {
+    let calls = this._getCalls();
+
+    for (let call of calls) {
+      call.mock._handler = (args) => {
+        return this._executeNode(call.mock, args);
+      };
+    }
+  }
+
+  execute(thunk) {
+    this._setMockExecutionHandler();
+    this._executingNode = this._root.child;
+    
     switch (thunk.length) {
       case 0:
         return this._syncWhen(thunk);

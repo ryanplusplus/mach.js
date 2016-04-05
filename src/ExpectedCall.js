@@ -28,8 +28,8 @@ class ExpectedCall {
     if (!this.checkArgs) {
       return true;
     }
-
-    if (args.length !== this.expectedArgs.length) {
+    
+  if (args.length !== this.expectedArgs.length) {
       return false;
     }
 

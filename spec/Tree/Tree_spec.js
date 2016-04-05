@@ -7,6 +7,10 @@ describe('Tree', () => {
   let ExpectedCallNode = require('../../src/Tree/ExpectedCallNode.js');
   let AndNode = require('../../src/Tree/AndNode.js');
   let NotAllCallsOccurredError = require('../../src/Error/NotAllCallsOccurredError.js');
+  let UnexpectedFunctionCallError = require('../../src/Error/UnexpectedFunctionCallError.js');
+  let UnexpectedArgumentsError = require('../../src/Error/UnexpectedArgumentsError.js');
+  let Mock = require('../../src/Mock.js');
+  let ExpectedCall = require('../../src/ExpectedCall.js');
 
   it('should have a node when initialized', () => {
     let node = new ExpectedCallNode({
@@ -15,8 +19,10 @@ describe('Tree', () => {
 
     let tree = new Tree(node);
 
-    expect(tree._root.child).toEqual(node);
-    expect(node.child instanceof TerminusNode).toBe(true);
+    expect(tree._root.child)
+      .toEqual(node);
+    expect(node.child instanceof TerminusNode)
+      .toBe(true);
   });
 
   describe('and', () => {
@@ -33,7 +39,8 @@ describe('Tree', () => {
 
       tree.and(new Tree(b));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }');
     });
 
     it('ExpectedCallNode + AndNode => Root -> AndNode -> Terminus', () => {
@@ -53,7 +60,8 @@ describe('Tree', () => {
 
       tree.and(new Tree(b));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
     });
 
     it('AndNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
@@ -73,7 +81,8 @@ describe('Tree', () => {
 
       tree.and(new Tree(c));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
     });
 
     it('AndNode + AndNode => Root -> AndNode -> Terminus', () => {
@@ -97,7 +106,8 @@ describe('Tree', () => {
 
       tree.and(new Tree(c));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b, c, d }} [{ TERMINUS }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ AND {{ a, b, c, d }} [{ TERMINUS }] }] }');
     });
 
     it('should throw an error if current node is invalid type', () => {
@@ -124,7 +134,8 @@ describe('Tree', () => {
 
       tree.then(new Tree(b));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }');
     });
 
     it('ExpectedCallNode -> AndNode => Root -> ExpectedCallNode -> AndNode -> Terminus', () => {
@@ -144,7 +155,8 @@ describe('Tree', () => {
 
       tree.then(new Tree(b));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ a [{ AND {{ b, c }} [{ TERMINUS }] }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ a [{ AND {{ b, c }} [{ TERMINUS }] }] }] }');
     });
 
     it('AndNode -> ExpectedCallNode => Root -> AndNode -> ExpectedCallNode -> Terminus', () => {
@@ -164,7 +176,8 @@ describe('Tree', () => {
 
       tree.then(new Tree(c));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b }} [{ c [{ TERMINUS }] }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ AND {{ a, b }} [{ c [{ TERMINUS }] }] }] }');
     });
 
     it('AndNode -> AndNode => Root -> AndNode -> AndNode -> Terminus', () => {
@@ -188,7 +201,8 @@ describe('Tree', () => {
 
       tree.then(new Tree(c));
 
-      expect(tree.toString()).toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
+      expect(tree.toString())
+        .toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
     });
   });
 
@@ -213,23 +227,31 @@ describe('Tree', () => {
 
       tree.then(new Tree(b));
 
-      expect(tree._completedCalls.length).toEqual(0);
-      expect(tree._incompleteCalls.length).toEqual(3);
+      expect(tree._completedCalls.length)
+        .toEqual(0);
+      expect(tree._incompleteCalls.length)
+        .toEqual(3);
 
       a.expectedCall.completed = true;
 
-      expect(tree._completedCalls.length).toEqual(1);
-      expect(tree._incompleteCalls.length).toEqual(2);
+      expect(tree._completedCalls.length)
+        .toEqual(1);
+      expect(tree._incompleteCalls.length)
+        .toEqual(2);
 
       b.expectedCalls[0].completed = true;
 
-      expect(tree._completedCalls.length).toEqual(2);
-      expect(tree._incompleteCalls.length).toEqual(1);
+      expect(tree._completedCalls.length)
+        .toEqual(2);
+      expect(tree._incompleteCalls.length)
+        .toEqual(1);
 
       b.expectedCalls[1].completed = true;
 
-      expect(tree._completedCalls.length).toEqual(3);
-      expect(tree._incompleteCalls.length).toEqual(0);
+      expect(tree._completedCalls.length)
+        .toEqual(3);
+      expect(tree._incompleteCalls.length)
+        .toEqual(0);
     });
 
     it('should throw an error if there is an invalid node type', () => {
@@ -238,8 +260,10 @@ describe('Tree', () => {
       let tree = new Tree(a);
 
       let error = 'Unexpected type for node, expected AndNode or ExpectedCallNode';
-      expect(() => tree._completedCalls).toThrowError(error);
-      expect(() => tree._incompleteCalls).toThrowError(error);
+      expect(() => tree._completedCalls)
+        .toThrowError(error);
+      expect(() => tree._incompleteCalls)
+        .toThrowError(error);
     });
   });
 
@@ -266,21 +290,104 @@ describe('Tree', () => {
 
     tree.then(new Tree(b));
 
-    expect(() => tree._checkCalls()).toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls())
+      .toThrowError(NotAllCallsOccurredError);
 
     a.expectedCall.completed = true;
     a.expectedCall.actualArgs = [];
 
-    expect(() => tree._checkCalls()).toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls())
+      .toThrowError(NotAllCallsOccurredError);
 
     b.expectedCalls[0].completed = true;
     b.expectedCalls[0].actualArgs = [];
 
-    expect(() => tree._checkCalls()).not.toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls())
+      .not.toThrowError(NotAllCallsOccurredError);
 
     b.expectedCalls[1].completed = true;
     b.expectedCalls[1].actualArgs = [];
 
-    expect(() => tree._checkCalls()).not.toThrowError(NotAllCallsOccurredError);
+    expect(() => tree._checkCalls())
+      .not.toThrowError(NotAllCallsOccurredError);
+  });
+
+  describe('execute', () => {
+    describe('ExpectedCallNode tests', () => {
+      it('should throw an error for an unexpected call', () => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], true, true))));
+
+        expect(() => {
+            tree.execute(() => {
+              b();
+            });
+          })
+          .toThrowError(UnexpectedFunctionCallError);
+      });
+
+      it('should not throw an error for an expected call', () => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+            });
+          })
+          .not.toThrowError(UnexpectedFunctionCallError);
+      });
+
+      it('should throw an error for an incomplete call', () => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], true, true))));
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+            });
+          })
+          .toThrowError(NotAllCallsOccurredError);
+      });
+
+      // TODO: optional test case where optional comes before the required
+
+      it('should not throw an error for an optional incomplete call', () => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], false, true))));
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+            });
+          })
+          .not.toThrowError(NotAllCallsOccurredError);
+      });
+
+      it('should throw an error for invalid arguments', () => {
+        let a = new Mock('a');
+
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        expect(() => {
+            tree.execute(() => {
+              a(0);
+            });
+          })
+          .toThrowError(UnexpectedArgumentsError);
+      });
+    });
   });
 });
