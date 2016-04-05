@@ -332,11 +332,24 @@ describe('Tree', () => {
 
       it('should not throw an error for an expected call', () => {
         let a = new Mock('a');
+        let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
         expect(() => {
             tree.execute(() => {
               a();
+            });
+          })
+          .not.toThrowError(UnexpectedFunctionCallError);
+
+        tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], true, true))));
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+              b();
             });
           })
           .not.toThrowError(UnexpectedFunctionCallError);
@@ -358,8 +371,6 @@ describe('Tree', () => {
           .toThrowError(NotAllCallsOccurredError);
       });
 
-      // TODO: optional test case where optional comes before the required
-
       it('should not throw an error for an optional incomplete call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
@@ -367,6 +378,17 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], false, true))));
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+            });
+          })
+          .not.toThrowError(NotAllCallsOccurredError);
+
+        tree = new Tree(new ExpectedCallNode(new ExpectedCall(b, [], false, true)));
+
+        tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true))));
 
         expect(() => {
             tree.execute(() => {
@@ -388,6 +410,85 @@ describe('Tree', () => {
           })
           .toThrowError(UnexpectedArgumentsError);
       });
+
+      it('should throw an error if the expected call is set up to do so', () => {
+        let a = new Mock('a');
+        let expectedCall = new ExpectedCall(a, [], true, true);
+
+        let msg = 'error';
+        expectedCall.throwValue = new Error(msg);
+
+        let tree = new Tree(new ExpectedCallNode(expectedCall));
+
+        let actualError;
+
+        tree.execute(() => {
+          try {
+            a();
+          } catch (error) {
+            actualError = error;
+          }
+        });
+
+        expect(actualError.message).toEqual(msg);
+      });
+
+      it('should return a value if the expected call is set up to do so', () => {
+        let a = new Mock('a');
+        let expectedCall = new ExpectedCall(a, [], true, false);
+
+        expectedCall.returnValue = 0;
+
+        let tree = new Tree(new ExpectedCallNode(expectedCall));
+
+        tree.execute(() => {
+          expect(a()).toEqual(expectedCall.returnValue);
+        });
+      });
+
+      describe('_ignoreOtherCalls = true', () => {
+        it('should not throw an error for an unexpected call', () => {
+          let a = new Mock('a');
+          let b = new Mock('b');
+          let c = new Mock('c');
+
+          let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+          tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], true, true))));
+
+          tree._ignoreOtherCalls = true;
+
+          expect(() => {
+            tree.execute(() => {
+              a();
+              c();
+              b();
+            });
+          }).not.toThrow(UnexpectedFunctionCallError);
+        });
+
+        it('should not throw an error for a partial match', () => {
+          let a = new Mock('a');
+          let b = new Mock('b');
+          let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+          tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b, [], true, true))));
+
+          tree._ignoreOtherCalls = true;
+
+          expect(() => {
+            tree.execute(() => {
+              a(1);
+              a();
+              b();
+            });
+          }).not.toThrow(UnexpectedArgumentsError);
+        });
+      });
+    });
+
+    describe('AndNode tests', () => {
+
     });
   });
 });

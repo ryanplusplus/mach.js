@@ -11,8 +11,7 @@ var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.
 class Tree {
   constructor(node) {
     this._root = new RootNode();
-    // TODO: ensure this transfers between trees during 'and' and 'then'?
-    this.ignoreOtherCalls = false;
+    this._ignoreOtherCalls = false;
     this._chainNodes(this._root, node);
     this._chainNodes(node, new TerminusNode());
   }
@@ -27,11 +26,9 @@ class Tree {
 
     if (this._root.child instanceof ExpectedCallNode) {
       andNode = new AndNode(this._root.child.expectedCall);
-    }
-    else if (this._root.child instanceof AndNode) {
+    } else if (this._root.child instanceof AndNode) {
       andNode = this._root.child;
-    }
-    else {
+    } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -41,12 +38,16 @@ class Tree {
 
     this._chainNodes(this._root, andNode);
     this._chainNodes(andNode, node.child);
+
+    this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
   then(tree) {
     let node = tree._root.child;
 
     this._chainNodes(this._root.child, node);
+
+    this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
   _getCalls() {
@@ -57,13 +58,11 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      }
-      else if (node instanceof AndNode) {
+      } else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      }
-      else {
+      } else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -121,8 +120,7 @@ class Tree {
   _syncWhen(thunk) {
     try {
       thunk();
-    }
-    finally {
+    } finally {
       this._resetMockHandler();
     }
 
@@ -136,10 +134,8 @@ class Tree {
       call.mock._resetHandler();
     }
   }
-  
-  _executeNode(mock, args) {
-    let partialMatch;
 
+  _executeNode(mock, args) {
     if (this._executingNode instanceof ExpectedCallNode) {
       let expectedCall = this._executingNode.expectedCall;
 
@@ -148,65 +144,75 @@ class Tree {
 
         this._executingNode = this._executingNode.child;
 
-        if (expectedCall.throwValue) {
+        if (expectedCall.throwValue !== undefined) {
           throw expectedCall.throwValue;
         }
 
-        if (expectedCall.returnValue) {
-          return expectedCall.returnValue;
+        return expectedCall.returnValue;
+      }
+
+      if (!expectedCall.required) {
+        this._executingNode = this._executingNode.child;
+
+        return this._executeNode(mock, args);
+      }
+
+      if (!this._ignoreOtherCalls) {
+        if (expectedCall.matchesFunction(mock)) {
+          throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
         }
-      }
-      // TODO: optional case
-      else if (expectedCall.matchesFunction(mock)) {
-        throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
-      }
-      else {
+
+        // no match
         throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
       }
 
-    }
-    // TODO: AndNode case
-    // TODO: TerminusNode case
-    else {
-      throw new Error('Unexpected node type during execution');
+      return;
     }
 
-    // var incompleteExpectationFound = false;
-    //
-    // for (var i = this._callIndex; i < this._expectedCalls.length; i++) {
-    //   var expectedCall = this._expectedCalls[i];
-    //   if (!expectedCall.completed) {
-    //     if (expectedCall.matches(this._mock, args)) {
-    //       if (expectedCall.strictlyOrdered && incompleteExpectationFound) {
-    //         throw new OutOfOrderCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
-    //       }
-    //
-    //       if (expectedCall.strictlyOrdered) {
-    //         this._callIndex = i;
-    //       }
-    //
-    //       expectedCall.complete(args);
-    //
-    //       if (expectedCall.throwValue) {
-    //         throw expectedCall.throwValue;
-    //       }
-    //
-    //       return expectedCall.returnValue;
-    //     }
-    //
-    //     if (expectedCall.matchesFunction(this._mock)) {
-    //       partialMatch = expectedCall;
-    //     }
-    //   }
-    //
-    //   if (partialMatch) {
-    //     throw new UnexpectedArgumentsError(this._mock, args, this._completedCalls, this._incompleteCalls);
-    //   }
-    //
-    //   if (!this._ignoreOtherCalls) {
-    //     throw new UnexpectedFunctionCallError(this._mock, args, this._completedCalls, this._incompleteCalls);
-    //   }
-    //  }
+    if (this._executingNode instanceof AndNode) {
+      let matchedExpectedCall = this._executingNode.match(mock, args);
+
+      if (matchedExpectedCall !== undefined) {
+        matchedExpectedCall.complete(args);
+
+        if (this._executingNode.allDone()) {
+          this._executingNode = this._executingNode.child;
+        }
+
+        if (matchedExpectedCall.throwValue !== undefined) {
+          throw matchedExpectedCall.throwValue;
+        }
+
+        return matchedExpectedCall.returnValue;
+      }
+
+      if (this._executingNode.onlyOptionalRemain()) {
+        this._executingNode = this._executingNode.child;
+
+        return this._executeNode(mock, args);
+      }
+
+      let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
+
+      if (!this._ignoreOtherCalls) {
+        if (partialMatchExpectedCall !== undefined) {
+          throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
+        }
+
+        // no match
+        throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
+      }
+      return;
+    }
+
+    if (this._executingNode instanceof TerminusNode) {
+      if (!this._ignoreOtherCalls) {
+        throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
+      }
+      return;
+    }
+
+    throw new Error('Unexpected node type during execution');
   }
 
   _setMockExecutionHandler() {
@@ -222,7 +228,7 @@ class Tree {
   execute(thunk) {
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
-    
+
     switch (thunk.length) {
       case 0:
         return this._syncWhen(thunk);

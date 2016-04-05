@@ -33,6 +33,58 @@ class AndNode extends Node {
       this.expectedCalls.push(expectedCall);
     }
   }
+
+  match(mock, args) {
+    for (let expectedCall of this.expectedCalls) {
+      if (expectedCall.completed) {
+        continue;
+      }
+
+      if (expectedCall.matches(mock, args)) {
+        return expectedCall;
+      }
+    }
+
+    return undefined;
+  }
+
+  partialMatch(mock) {
+    for (let expectedCall of this.expectedCalls) {
+      if (expectedCall.completed) {
+        continue;
+      }
+
+      if (expectedCall.matchesFunction(mock)) {
+        return expectedCall;
+      }
+    }
+
+    return undefined;
+  }
+
+  allDone() {
+    for (let expectedCall of this.expectedCalls) {
+      if (!expectedCall.completed) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  onlyOptionalRemain() {
+    for (let expectedCall of this.expectedCalls) {
+      if (expectedCall.completed) {
+        continue;
+      }
+
+      if (expectedCall.required) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
 
 module.exports = AndNode;
