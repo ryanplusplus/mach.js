@@ -13,7 +13,7 @@ class Mock {
 
     mock._resetHandler = () => {
       mock._handler = (args) => {
-        throw new UnexpectedFunctionCallError(this, args, [], []);
+        throw new UnexpectedFunctionCallError(mock, args, [], []);
       };
     };
 

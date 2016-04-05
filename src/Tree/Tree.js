@@ -192,9 +192,9 @@ class Tree {
         return this._executeNode(mock, args);
       }
 
-      let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
-
       if (!this._ignoreOtherCalls) {
+        let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
+
         if (partialMatchExpectedCall !== undefined) {
           throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
         }
@@ -211,8 +211,6 @@ class Tree {
       }
       return;
     }
-
-    throw new Error('Unexpected node type during execution');
   }
 
   _setMockExecutionHandler() {
