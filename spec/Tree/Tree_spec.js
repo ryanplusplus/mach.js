@@ -888,9 +888,6 @@ describe('Tree', () => {
 
             cb(() => finished());
           })
-          .catch((error) => {
-            console.log(error);
-          })
           .then(() => done());
       });
     });

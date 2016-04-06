@@ -11,7 +11,7 @@ class Mock {
       return mock._handler(Array.from(arguments));
     };
 
-    mock._name = name;
+    mock._name = name || '<anonymous>';
 
     mock._reset = function() {
       _ignoreOtherCalls = false;
@@ -24,13 +24,27 @@ class Mock {
     };
 
     mock.shouldBeCalled = function() {
-      let e = new Expectation(mock, true);
+      return new Expectation(mock, true);
+    };
 
-      return e;
+    mock.shouldBeCalledWith = function() {
+      return mock.shouldBeCalled().withTheseArguments(...arguments);
+    };
+
+    mock.shouldBeCalledWithAnyArguments = function() {
+      return mock.shouldBeCalled().withAnyArguments();
     };
 
     mock.mayBeCalled = function() {
       return new Expectation(mock, false);
+    };
+
+    mock.mayBeCalledWith = function() {
+      return mock.mayBeCalled().withTheseArguments(...arguments);
+    };
+
+    mock.mayBeCalledWithAnyArguments = function() {
+      return mock.mayBeCalled().withAnyArguments();
     };
 
     mock._ignoreOtherCalls = function() {

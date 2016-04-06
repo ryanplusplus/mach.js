@@ -16,12 +16,12 @@ describe('FunctionCallsString', () => {
           completed: true
         }, {
           name: 'bar',
-          argsChecked: true,
+          checkArgs: true,
           expectedArgs: [],
           completed: false
         }, {
           name: 'baz',
-          argsChecked: false,
+          checkArgs: false,
           expectedArgs: [],
           completed: false
         }])

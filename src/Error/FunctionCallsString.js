@@ -47,7 +47,7 @@ class FunctionCallsString {
    */
   _incompleteCallsString(incompleteCalls) {
     return 'Incomplete calls:\n' + incompleteCalls.map(function(c) {
-        var args = c.argsChecked ? new ArgumentsString(c.expectedArgs) : new Any()
+        var args = c.checkArgs ? new ArgumentsString(c.expectedArgs) : new Any()
           .toString();
         return '\t' + c.name + '(' + args + ')';
       })

@@ -7,8 +7,15 @@ var MockObject = require('./src/MockObject.js');
 var Same = require('./src/Same.js');
 
 class Mach {
-  static mockFunction(name) {
-    return new Mock(name || '<anonymous>');
+  static mockFunction(thing) {
+    let name;
+
+    if (typeof thing === 'function') {
+      name = thing.name;
+    } else {
+      name = thing;
+    }
+    return new Mock(name);
   }
 
   static mockObject(object, name) {

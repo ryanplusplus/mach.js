@@ -39,10 +39,14 @@ describe('Expectation', () => {
     expect(expectation._expectedCall.expectedArgs.length)
       .toEqual(0);
 
-    expectation.withTheseArguments(args);
+    expectation.withTheseArguments(0, 1, 2, 3);
 
-    expect(expectation._expectedCall.expectedArgs)
-      .toEqual(args);
+    expect(expectation._expectedCall.expectedArgs.length)
+      .toEqual(args.length);
+
+    for (let i = 0; i < args.length; i++) {
+      expect(expectation._expectedCall.expectedArgs[i]).toEqual(args[i]);
+    }
   });
 
   it('withAnyArguments should set expected call checkArgs to false', () => {

@@ -11,8 +11,8 @@ class Expectation {
     this._tree = new Tree(new ExpectedCallNode(this._expectedCall));
   }
 
-  withTheseArguments(args) {
-    this._expectedCall.expectedArgs = args;
+  withTheseArguments() {
+    this._expectedCall.expectedArgs = Array.from(arguments);
 
     return this;
   }
@@ -36,19 +36,43 @@ class Expectation {
   }
 
   and(expectation) {
+    console.log(this._tree.toString());
+    console.log(expectation._tree.toString());
+    console.log('---');
+
     this._tree.and(expectation._tree);
+
+    console.log(this._tree.toString());
+
+    console.log('===');
 
     expectation._tree = this._tree;
 
     return this;
   }
 
+  andAlso(expectation) {
+    return this.and(expectation);
+  }
+
   then(expectation) {
+    console.log(this._tree.toString());
+    console.log(expectation._tree.toString());
+    console.log('---');
+
     this._tree.then(expectation._tree);
+
+    console.log(this._tree.toString());
+
+    console.log('===');
 
     expectation._tree = this._tree;
 
     return this;
+  }
+
+  andThen(expectation) {
+    return this.then(expectation);
   }
 
   multipleTimes(count) {
@@ -73,6 +97,10 @@ class Expectation {
 
   when(thunk) {
     return this._tree.execute(thunk);
+  }
+
+  after(thunk) {
+    return this.when(thunk);
   }
 }
 
