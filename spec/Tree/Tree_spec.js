@@ -739,6 +739,19 @@ describe('Tree', () => {
       });
     });
 
+    it('should throw an error if the thunk throws an exception', () => {
+      let a = new Mock('a');
+      let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+      expect(() => {
+          tree.execute(() => {
+            a();
+            throw new Error('expected error');
+          });
+        })
+        .toThrowError(Error, 'expected error');
+    });
+
     describe('Async tests', () => {
       it('should return a promise', (done) => {
         let a = new Mock('a');
