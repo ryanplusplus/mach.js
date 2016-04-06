@@ -336,18 +336,38 @@ describe('mach.js', () => {
   it('should allow ordered and unordered calls to be mixed', () => {
     console.log();
     console.log();
-    let e = a.shouldBeCalledWith(1)
+    a.shouldBeCalledWith(1)
       .andAlso(a.shouldBeCalledWith(2))
       .andThen(a.shouldBeCalledWith(3))
-      .andAlso(a.shouldBeCalledWith(4));
+      .andAlso(a.shouldBeCalledWith(4)).when(() => {
+        a(2);
+        a(1);
+        a(4);
+        a(3);
+      });
+  });
 
-    console.log(e._tree.toString());
+  it('should correctly handle ordering when expectations are nested', () => {
+    a.shouldBeCalledWith(1)
+      .andAlso(a.shouldBeCalledWith(2)
+        .andThen(a.shouldBeCalledWith(3)
+          .andAlso(a.shouldBeCalledWith(4))))
+      .when(() => {
+        a(2);
+        a(1);
+        a(4);
+        a(3);
+      });
+  });
 
-    e.when(() => {
-      a(2);
-      a(1);
-      a(4);
-      a(3);
-    });
+  it('should allow you to mix and match call types', () => {
+    b.shouldBeCalled()
+      .andAlso(c.shouldBeCalledWith(1, 2, 3))
+      .andThen(c.shouldBeCalledWith(1).andWillReturn(4))
+      .when(() => {
+        b();
+        c(1, 2, 3);
+        expect(c(1)).toBe(4);
+      });
   });
 });

@@ -27,13 +27,28 @@ class Tree {
     b.parent = a;
   }
 
+  /**
+   * Last non-{@link TerminusNode} node
+   * @returns {Node} Last non-{@link TerminusNode} node
+   */
+  get _lastNode() {
+    let node = this._root;
+
+    while (!(node.child instanceof TerminusNode)) {
+      node = node.child;
+    }
+
+    return node;
+  }
+
   and(tree) {
     let andNode;
+    let lastNode = this._lastNode;
 
-    if (this._root.child instanceof ExpectedCallNode) {
-      andNode = new AndNode(this._root.child.expectedCall);
-    } else if (this._root.child instanceof AndNode) {
-      andNode = this._root.child;
+    if (lastNode instanceof ExpectedCallNode) {
+      andNode = new AndNode(lastNode.expectedCall);
+    } else if (lastNode instanceof AndNode) {
+      andNode = lastNode;
     } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
@@ -42,7 +57,7 @@ class Tree {
 
     andNode.merge(node);
 
-    this._chainNodes(this._root, andNode);
+    this._chainNodes(lastNode.parent, andNode);
     this._chainNodes(andNode, node.child);
 
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
@@ -51,7 +66,7 @@ class Tree {
   then(tree) {
     let node = tree._root.child;
 
-    this._chainNodes(this._root.child, node);
+    this._chainNodes(this._lastNode, node);
 
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }

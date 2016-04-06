@@ -36,15 +36,7 @@ class Expectation {
   }
 
   and(expectation) {
-    console.log(this._tree.toString());
-    console.log(expectation._tree.toString());
-    console.log('---');
-
     this._tree.and(expectation._tree);
-
-    console.log(this._tree.toString());
-
-    console.log('===');
 
     expectation._tree = this._tree;
 
@@ -56,15 +48,7 @@ class Expectation {
   }
 
   then(expectation) {
-    console.log(this._tree.toString());
-    console.log(expectation._tree.toString());
-    console.log('---');
-
     this._tree.then(expectation._tree);
-
-    console.log(this._tree.toString());
-
-    console.log('===');
 
     expectation._tree = this._tree;
 
