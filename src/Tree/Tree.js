@@ -113,13 +113,17 @@ class Tree {
         this._checkCalls();
       })
       .catch((error) => {
+        console.log('c ' + error);
         return error;
       })
       .then((error) => {
+        console.log('t ' + error);
         this._resetMockHandler();
-
+        
         if (error) {
-          throw error;
+          return Promise.reject(error);
+        } else {
+          return;
         }
       });
   }
