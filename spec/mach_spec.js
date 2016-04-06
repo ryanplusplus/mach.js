@@ -5,6 +5,8 @@ describe('mach.js', () => {
   let a = mach.mockFunction('a');
   let b = mach.mockFunction('b');
   let c = mach.mockFunction('c');
+  
+  // TODO: throw in some callback and promise tests to be safe
 
   let shouldFail = (thunk) => {
     expect(() => thunk()).toThrow();
