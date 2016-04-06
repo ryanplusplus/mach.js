@@ -6,7 +6,7 @@ var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.j
 var _ignoreOtherCalls = false;
 
 class Mock {
-  constructor(name) {    
+  constructor(name) {
     let mock = function() {
       return mock._handler(Array.from(arguments));
     };
@@ -15,7 +15,7 @@ class Mock {
 
     mock._reset = function() {
       _ignoreOtherCalls = false;
-      
+
       mock._handler = function(args) {
         if (!_ignoreOtherCalls) {
           throw new UnexpectedFunctionCallError(mock, args, []);
@@ -24,15 +24,15 @@ class Mock {
     };
 
     mock.shouldBeCalled = function() {
-      let e =  new Expectation(mock, true);
-      
+      let e = new Expectation(mock, true);
+
       return e;
     };
 
     mock.mayBeCalled = function() {
       return new Expectation(mock, false);
     };
-    
+
     mock._ignoreOtherCalls = function() {
       _ignoreOtherCalls = true;
     };

@@ -1,10 +1,10 @@
 'use strict';
 
-var Any = require('.src/Any.js');
+var Any = require('./src/Any.js');
 var Expectation = require('./src/Expectation.js');
-var Mock = require('.src/Mock.js');
-var MockObject = require('.src/MockObject.js');
-var Same = require('.src/Same.js');
+var Mock = require('./src/Mock.js');
+var MockObject = require('./src/MockObject.js');
+var Same = require('./src/Same.js');
 
 class Mach {
   static mockFunction(name) {

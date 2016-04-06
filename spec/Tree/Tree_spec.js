@@ -25,189 +25,191 @@ describe('Tree', () => {
       .toBe(true);
   });
 
-  describe('and', () => {
-    it('ExpectedCallNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
-      let a = new ExpectedCallNode({
-        name: 'a'
+  describe('tree building', () => {
+    describe('and', () => {
+      it('ExpectedCallNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
+        let a = new ExpectedCallNode({
+          name: 'a'
+        });
+
+        let b = new ExpectedCallNode({
+          name: 'b'
+        });
+
+        let tree = new Tree(a);
+
+        tree.and(new Tree(b));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }');
       });
 
-      let b = new ExpectedCallNode({
-        name: 'b'
+      it('ExpectedCallNode + AndNode => Root -> AndNode -> Terminus', () => {
+        let a = new ExpectedCallNode({
+          name: 'a'
+        });
+
+        let b = new AndNode({
+          name: 'b'
+        });
+
+        b.merge(new AndNode({
+          name: 'c'
+        }));
+
+        let tree = new Tree(a);
+
+        tree.and(new Tree(b));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
       });
 
-      let tree = new Tree(a);
+      it('AndNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
+        let a = new AndNode({
+          name: 'a'
+        });
 
-      tree.and(new Tree(b));
+        a.merge(new AndNode({
+          name: 'b'
+        }));
 
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }');
+        let c = new ExpectedCallNode({
+          name: 'c'
+        });
+
+        let tree = new Tree(a);
+
+        tree.and(new Tree(c));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
+      });
+
+      it('AndNode + AndNode => Root -> AndNode -> Terminus', () => {
+        let a = new AndNode({
+          name: 'a'
+        });
+
+        a.merge(new AndNode({
+          name: 'b'
+        }));
+
+        let c = new AndNode({
+          name: 'c'
+        });
+
+        c.merge(new AndNode({
+          name: 'd'
+        }));
+
+        let tree = new Tree(a);
+
+        tree.and(new Tree(c));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ AND {{ a, b, c, d }} [{ TERMINUS }] }] }');
+      });
+
+      it('should throw an error if current node is invalid type', () => {
+        let a = new Node('a');
+
+        let tree = new Tree(a);
+
+        expect(() => tree.and(new Tree(new Node('b'))))
+          .toThrowError('Unexpected type for this node, expected AndNode or ExpectedCallNode');
+      });
     });
 
-    it('ExpectedCallNode + AndNode => Root -> AndNode -> Terminus', () => {
-      let a = new ExpectedCallNode({
-        name: 'a'
+    describe('then', () => {
+      it('ExpectedCallNode -> ExpectedCallNode => Root -> ExpectedCallNode -> ExpectedCallNode -> Terminus', () => {
+        let a = new ExpectedCallNode({
+          name: 'a'
+        });
+
+        let b = new ExpectedCallNode({
+          name: 'b'
+        });
+
+        let tree = new Tree(a);
+
+        tree.then(new Tree(b));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }');
       });
 
-      let b = new AndNode({
-        name: 'b'
+      it('ExpectedCallNode -> AndNode => Root -> ExpectedCallNode -> AndNode -> Terminus', () => {
+        let a = new ExpectedCallNode({
+          name: 'a'
+        });
+
+        let b = new AndNode({
+          name: 'b'
+        });
+
+        b.merge(new AndNode({
+          name: 'c'
+        }));
+
+        let tree = new Tree(a);
+
+        tree.then(new Tree(b));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ a [{ AND {{ b, c }} [{ TERMINUS }] }] }] }');
       });
 
-      b.merge(new AndNode({
-        name: 'c'
-      }));
+      it('AndNode -> ExpectedCallNode => Root -> AndNode -> ExpectedCallNode -> Terminus', () => {
+        let a = new AndNode({
+          name: 'a'
+        });
 
-      let tree = new Tree(a);
+        a.merge(new AndNode({
+          name: 'b'
+        }));
 
-      tree.and(new Tree(b));
+        let c = new ExpectedCallNode({
+          name: 'c'
+        });
 
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
+        let tree = new Tree(a);
+
+        tree.then(new Tree(c));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ AND {{ a, b }} [{ c [{ TERMINUS }] }] }] }');
+      });
+
+      it('AndNode -> AndNode => Root -> AndNode -> AndNode -> Terminus', () => {
+        let a = new AndNode({
+          name: 'a'
+        });
+
+        a.merge(new AndNode({
+          name: 'b'
+        }));
+
+        let c = new AndNode({
+          name: 'c'
+        });
+
+        c.merge(new AndNode({
+          name: 'd'
+        }));
+
+        let tree = new Tree(a);
+
+        tree.then(new Tree(c));
+
+        expect(tree.toString())
+          .toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
+      });
     });
-
-    it('AndNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
-      let a = new AndNode({
-        name: 'a'
-      });
-
-      a.merge(new AndNode({
-        name: 'b'
-      }));
-
-      let c = new ExpectedCallNode({
-        name: 'c'
-      });
-
-      let tree = new Tree(a);
-
-      tree.and(new Tree(c));
-
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
-    });
-
-    it('AndNode + AndNode => Root -> AndNode -> Terminus', () => {
-      let a = new AndNode({
-        name: 'a'
-      });
-
-      a.merge(new AndNode({
-        name: 'b'
-      }));
-
-      let c = new AndNode({
-        name: 'c'
-      });
-
-      c.merge(new AndNode({
-        name: 'd'
-      }));
-
-      let tree = new Tree(a);
-
-      tree.and(new Tree(c));
-
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ AND {{ a, b, c, d }} [{ TERMINUS }] }] }');
-    });
-
-    it('should throw an error if current node is invalid type', () => {
-      let a = new Node('a');
-
-      let tree = new Tree(a);
-
-      expect(() => tree.and(new Tree(new Node('b'))))
-        .toThrowError('Unexpected type for this node, expected AndNode or ExpectedCallNode');
-    });
-  });
-
-  describe('then', () => {
-    it('ExpectedCallNode -> ExpectedCallNode => Root -> ExpectedCallNode -> ExpectedCallNode -> Terminus', () => {
-      let a = new ExpectedCallNode({
-        name: 'a'
-      });
-
-      let b = new ExpectedCallNode({
-        name: 'b'
-      });
-
-      let tree = new Tree(a);
-
-      tree.then(new Tree(b));
-
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }');
-    });
-
-    it('ExpectedCallNode -> AndNode => Root -> ExpectedCallNode -> AndNode -> Terminus', () => {
-      let a = new ExpectedCallNode({
-        name: 'a'
-      });
-
-      let b = new AndNode({
-        name: 'b'
-      });
-
-      b.merge(new AndNode({
-        name: 'c'
-      }));
-
-      let tree = new Tree(a);
-
-      tree.then(new Tree(b));
-
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ a [{ AND {{ b, c }} [{ TERMINUS }] }] }] }');
-    });
-
-    it('AndNode -> ExpectedCallNode => Root -> AndNode -> ExpectedCallNode -> Terminus', () => {
-      let a = new AndNode({
-        name: 'a'
-      });
-
-      a.merge(new AndNode({
-        name: 'b'
-      }));
-
-      let c = new ExpectedCallNode({
-        name: 'c'
-      });
-
-      let tree = new Tree(a);
-
-      tree.then(new Tree(c));
-
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ AND {{ a, b }} [{ c [{ TERMINUS }] }] }] }');
-    });
-
-    it('AndNode -> AndNode => Root -> AndNode -> AndNode -> Terminus', () => {
-      let a = new AndNode({
-        name: 'a'
-      });
-
-      a.merge(new AndNode({
-        name: 'b'
-      }));
-
-      let c = new AndNode({
-        name: 'c'
-      });
-
-      c.merge(new AndNode({
-        name: 'd'
-      }));
-
-      let tree = new Tree(a);
-
-      tree.then(new Tree(c));
-
-      expect(tree.toString())
-        .toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
-    });
-  });
+  })
 
   describe('completedCalls / incompleteCalls', () => {
-    it('should return status of all expected call', () => {
+    it('should return status of all expected calls', () => {
       let a = new ExpectedCallNode({
         name: 'a',
         completed: false
@@ -227,30 +229,30 @@ describe('Tree', () => {
 
       tree.then(new Tree(b));
 
-      expect(tree._completedCalls.length)
+      expect(tree._calls.filter(c => c.completed).length)
         .toEqual(0);
-      expect(tree._incompleteCalls.length)
+      expect(tree._calls.filter(c => !c.completed).length)
         .toEqual(3);
 
       a.expectedCall.completed = true;
 
-      expect(tree._completedCalls.length)
+      expect(tree._calls.filter(c => c.completed).length)
         .toEqual(1);
-      expect(tree._incompleteCalls.length)
+      expect(tree._calls.filter(c => !c.completed).length)
         .toEqual(2);
 
       b.expectedCalls[0].completed = true;
 
-      expect(tree._completedCalls.length)
+      expect(tree._calls.filter(c => c.completed).length)
         .toEqual(2);
-      expect(tree._incompleteCalls.length)
+      expect(tree._calls.filter(c => !c.completed).length)
         .toEqual(1);
 
       b.expectedCalls[1].completed = true;
 
-      expect(tree._completedCalls.length)
+      expect(tree._calls.filter(c => c.completed).length)
         .toEqual(3);
-      expect(tree._incompleteCalls.length)
+      expect(tree._calls.filter(c => !c.completed).length)
         .toEqual(0);
     });
 
@@ -260,14 +262,14 @@ describe('Tree', () => {
       let tree = new Tree(a);
 
       let error = 'Unexpected type for node, expected AndNode or ExpectedCallNode';
-      expect(() => tree._completedCalls)
+      expect(() => tree._calls.filter(c => c.completed))
         .toThrowError(error);
-      expect(() => tree._incompleteCalls)
+      expect(() => tree._calls.filter(c => !c.completed))
         .toThrowError(error);
     });
   });
 
-  it('_checkCalls should return correct result based on completion state of its expected calls', () => {
+  it('_checkCalls -> NotAllCallsOccurredError when appropriate', () => {
     let a = new ExpectedCallNode({
       name: 'a',
       required: true,
@@ -829,6 +831,7 @@ describe('Tree', () => {
           return new Promise((resolve) => {
             b();
             finished();
+            resolve();
           });
         }).catch((error) => {
           expect(error instanceof UnexpectedFunctionCallError).toBe(true);
@@ -864,7 +867,7 @@ describe('Tree', () => {
             let cb = (callback) => {
               a();
               callback();
-            }
+            };
 
             cb(() => finished());
           })

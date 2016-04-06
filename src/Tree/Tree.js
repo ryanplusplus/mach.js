@@ -55,10 +55,10 @@ class Tree {
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
-  get _calls() {
+  _callsAfter(node) {
     let calls = [];
 
-    let node = this._root.child;
+    node = node.child;
 
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
@@ -77,12 +77,8 @@ class Tree {
     return calls;
   }
 
-  get _completedCalls() {
-    return this._calls.filter(c => c.completed === true);
-  }
-
-  get _incompleteCalls() {
-    return this._calls.filter(c => c.completed === false);
+  get _calls() {
+    return this._callsAfter(this._root);
   }
 
   _checkCalls() {
@@ -169,11 +165,15 @@ class Tree {
         return this._executeNode(mock, args);
       }
 
-      // TODO: Out of order?
-
       if (!this._ignoreOtherCalls) {
         if (expectedCall.matchesFunction(mock)) {
           throw new UnexpectedArgumentsError(mock, args, this._calls);
+        }
+
+        for (let ec of this._callsAfter(this._executingNode)) {
+          if (ec.matches(mock, args)) {
+            throw new OutOfOrderCallError(mock, args, this._calls);
+          }
         }
 
         // no match
@@ -206,13 +206,17 @@ class Tree {
         return this._executeNode(mock, args);
       }
 
-      // TODO: Out of order?
-
       if (!this._ignoreOtherCalls) {
         let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
 
         if (partialMatchExpectedCall !== undefined) {
           throw new UnexpectedArgumentsError(mock, args, this._calls);
+        }
+
+        for (let ec of this._callsAfter(this._executingNode)) {
+          if (ec.matches(mock, args)) {
+            throw new OutOfOrderCallError(mock, args, this._calls);
+          }
         }
 
         // no match
