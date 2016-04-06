@@ -7,6 +7,7 @@ describe('Tree', () => {
   let ExpectedCallNode = require('../../src/Tree/ExpectedCallNode.js');
   let AndNode = require('../../src/Tree/AndNode.js');
   let NotAllCallsOccurredError = require('../../src/Error/NotAllCallsOccurredError.js');
+  let OutOfOrderCallError = require('../../src/Error/OutOfOrderCallError.js');
   let UnexpectedFunctionCallError = require('../../src/Error/UnexpectedFunctionCallError.js');
   let UnexpectedArgumentsError = require('../../src/Error/UnexpectedArgumentsError.js');
   let Mock = require('../../src/Mock.js');
@@ -206,7 +207,7 @@ describe('Tree', () => {
           .toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
       });
     });
-  })
+  });
 
   describe('completedCalls / incompleteCalls', () => {
     it('should return status of all expected calls', () => {
@@ -327,6 +328,14 @@ describe('Tree', () => {
         expect(() => {
             tree.execute(() => {
               b();
+            });
+          })
+          .toThrowError(OutOfOrderCallError);
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+              a();
             });
           })
           .toThrowError(UnexpectedFunctionCallError);
@@ -513,6 +522,14 @@ describe('Tree', () => {
         expect(() => {
             tree.execute(() => {
               c();
+            });
+          })
+          .toThrowError(OutOfOrderCallError);
+
+        expect(() => {
+            tree.execute(() => {
+              a();
+              a();
             });
           })
           .toThrowError(UnexpectedFunctionCallError);

@@ -5,6 +5,7 @@ var TerminusNode = require('./TerminusNode.js');
 var ExpectedCallNode = require('./ExpectedCallNode.js');
 var AndNode = require('./AndNode.js');
 var NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
+var OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
 var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
 var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
