@@ -2,11 +2,23 @@
 
 var Same = require('../Same.js');
 
+/**
+ * Converts arguments into a human readable string
+ */
 class ArgumentsString {
+  /**
+   * Default constructor
+   * @param {Object[]} args Function arguments to convert to string.
+   */
   constructor(args) {
     this._string = this._convertArgsToString(args);
   }
 
+  /**
+   * Recursively converts arguments array into string.
+   * @param {Object[]} args Function arguments to stringify
+   * @returns {string} Function arguments as string.
+   */
   _convertArgsToString(args) {
     var strings = [];
 
@@ -17,9 +29,11 @@ class ArgumentsString {
 
       if (typeof arg === 'string' || arg instanceof String) {
         strings.push('\'' + arg + '\'');
-      } else if (arg instanceof Array) {
+      }
+      else if (arg instanceof Array) {
         strings.push('[' + this._convertArgsToString(arg) + ']');
-      } else {
+      }
+      else {
         strings.push(String(arg));
       }
     }
@@ -27,6 +41,10 @@ class ArgumentsString {
     return strings.join(', ');
   }
 
+  /**
+   * Returns arguments string.
+   * @returns {string} Function arguments as string.
+   */
   toString() {
     return this._string;
   }

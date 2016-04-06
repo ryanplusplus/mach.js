@@ -15,10 +15,10 @@ class Tree {
     this._chainNodes(this._root, node);
     this._chainNodes(node, new TerminusNode());
   }
-  
+
   ignoreOtherCalls() {
     this._ignoreOtherCalls = true;
-    this._getCalls()[0].mock._ignoreOtherCalls();
+    this._calls[0].mock._ignoreOtherCalls();
   }
 
   _chainNodes(a, b) {
@@ -31,9 +31,11 @@ class Tree {
 
     if (this._root.child instanceof ExpectedCallNode) {
       andNode = new AndNode(this._root.child.expectedCall);
-    } else if (this._root.child instanceof AndNode) {
+    }
+    else if (this._root.child instanceof AndNode) {
       andNode = this._root.child;
-    } else {
+    }
+    else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -55,7 +57,7 @@ class Tree {
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
-  _getCalls() {
+  get _calls() {
     let calls = [];
 
     let node = this._root.child;
@@ -63,11 +65,13 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      } else if (node instanceof AndNode) {
+      }
+      else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      } else {
+      }
+      else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -78,18 +82,16 @@ class Tree {
   }
 
   get _completedCalls() {
-    return this._getCalls()
-      .filter(c => c.completed === true);
+    return this._calls.filter(c => c.completed === true);
   }
 
   get _incompleteCalls() {
-    return this._getCalls()
-      .filter(c => c.completed === false);
+    return this._calls.filter(c => c.completed === false);
   }
 
   _checkCalls() {
     let result = true;
-    for (let expectedCall of this._getCalls()) {
+    for (let expectedCall of this._calls) {
       if (expectedCall.required && !expectedCall.completed) {
         result = false;
         break;
@@ -97,10 +99,10 @@ class Tree {
     }
 
     if (!result) {
-      throw new NotAllCallsOccurredError(this._completedCalls, this._incompleteCalls);
+      throw new NotAllCallsOccurredError(this._calls);
     }
   }
-  
+
   _asyncWhen(thunk) {
     return new Promise((resolve) => {
         var done = () => resolve();
@@ -125,7 +127,8 @@ class Tree {
   _syncWhen(thunk) {
     try {
       thunk();
-    } finally {
+    }
+    finally {
       this._resetMockHandler();
     }
 
@@ -133,14 +136,15 @@ class Tree {
   }
 
   _resetMockHandler() {
-    let calls = this._getCalls();
-
-    for (let call of calls) {
+    for (let call of this._calls) {
       call.mock._reset();
     }
   }
 
   _executeNode(mock, args) {
+    // TODO: out of order call error
+    // - if not found in expected calls after current node -> UnexpectedFunctionCallError
+    // - if found later -> OutOfOrderCallError
     if (this._executingNode instanceof ExpectedCallNode) {
       let expectedCall = this._executingNode.expectedCall;
 
@@ -162,13 +166,15 @@ class Tree {
         return this._executeNode(mock, args);
       }
 
+      // TODO: Out of order?
+
       if (!this._ignoreOtherCalls) {
         if (expectedCall.matchesFunction(mock)) {
-          throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
+          throw new UnexpectedArgumentsError(mock, args, this._calls);
         }
 
         // no match
-        throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
+        throw new UnexpectedFunctionCallError(mock, args, this._calls);
       }
 
       return;
@@ -197,31 +203,31 @@ class Tree {
         return this._executeNode(mock, args);
       }
 
+      // TODO: Out of order?
+
       if (!this._ignoreOtherCalls) {
         let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
 
         if (partialMatchExpectedCall !== undefined) {
-          throw new UnexpectedArgumentsError(mock, args, this._completedCalls, this._incompleteCalls);
+          throw new UnexpectedArgumentsError(mock, args, this._calls);
         }
 
         // no match
-        throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
+        throw new UnexpectedFunctionCallError(mock, args, this._calls);
       }
       return;
     }
 
     if (this._executingNode instanceof TerminusNode) {
       if (!this._ignoreOtherCalls) {
-        throw new UnexpectedFunctionCallError(mock, args, this._completedCalls, this._incompleteCalls);
+        throw new UnexpectedFunctionCallError(mock, args, this._calls);
       }
       return;
     }
   }
 
   _setMockExecutionHandler() {
-    let calls = this._getCalls();
-
-    for (let call of calls) {
+    for (let call of this._calls) {
       call.mock._handler = (args) => {
         return this._executeNode(call.mock, args);
       };

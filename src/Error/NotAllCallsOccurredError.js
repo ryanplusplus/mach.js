@@ -3,9 +3,9 @@
 var FunctionCallsString = require('./FunctionCallsString.js');
 
 class NotAllCallsOccurredError extends Error {
-  constructor(completedCalls, incompleteCalls) {
+  constructor(calls) {
     super('Not all calls occurred\n' +
-      new FunctionCallsString(completedCalls, incompleteCalls));
+      new FunctionCallsString(calls));
   }
 }
 

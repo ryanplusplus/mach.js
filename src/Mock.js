@@ -18,7 +18,7 @@ class Mock {
       
       mock._handler = function(args) {
         if (!_ignoreOtherCalls) {
-          throw new UnexpectedFunctionCallError(mock, args, [], []);
+          throw new UnexpectedFunctionCallError(mock, args, []);
         }
       };
     };

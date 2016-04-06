@@ -4,21 +4,28 @@ describe('FunctionCallsString', () => {
   let FunctionCallsString = require('../../src/Error/FunctionCallsString.js');
 
   it('should return empty string if there are no expected calls', () => {
-    expect(new FunctionCallsString([], []).toString()).toEqual('');
+    expect(new FunctionCallsString([], [])
+        .toString())
+      .toEqual('');
   });
 
-  it('should stringify complete and incomplete calls', () => {
+  it('should stringify calls', () => {
     expect(new FunctionCallsString([{
-      name: 'foo',
-      actualArgs: []
-    }], [{
-      name: 'bar',
-      argsChecked: true,
-      expectedArgs: []
-    }, {
-      name: 'baz',
-      argsChecked: false,
-      expectedArgs: []
-    }]).toString()).toEqual('\nCompleted calls:\n\tfoo()\nIncomplete calls:\n\tbar()\n\tbaz(<any>)');
+          name: 'foo',
+          actualArgs: [],
+          completed: true
+        }, {
+          name: 'bar',
+          argsChecked: true,
+          expectedArgs: [],
+          completed: false
+        }, {
+          name: 'baz',
+          argsChecked: false,
+          expectedArgs: [],
+          completed: false
+        }])
+        .toString())
+      .toEqual('\nCompleted calls:\n\tfoo()\nIncomplete calls:\n\tbar()\n\tbaz(<any>)');
   });
 });
