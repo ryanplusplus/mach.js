@@ -1,4 +1,4 @@
-# mach.js
+# [mach.js](https://github.com/H2oBoi89-Forks/mach.js)
 Simple mocking framework for JavaScript inspired by CppUMock and designed for readability
 
 ## Mocking a Function
