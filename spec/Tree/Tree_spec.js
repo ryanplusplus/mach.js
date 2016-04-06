@@ -753,12 +753,28 @@ describe('Tree', () => {
           .toThrowError(Error, 'expected error');
       });
 
+      // TODO: Move
+      it('should allow callbacks', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
+            let cb = (callback) => {
+              a();
+              callback();
+            }
+
+            cb(() => finished());
+          })
+          .then(() => done());
+      });
+
       it('should return an error if the callback thunk throws an exception', (done) => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
         tree.execute((finished) => {
-            let cb = () => {
+            let cb = (callback) => {
               a();
 
               throw new Error('expected error');
@@ -767,7 +783,8 @@ describe('Tree', () => {
             cb(() => finished());
           })
           .catch((error) => {
-            expect(error.message).toEqual('expected error');
+            expect(error.message)
+              .toEqual('expected error');
             done();
           });
       });
@@ -777,16 +794,18 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
         tree.execute((finished) => {
-          return new Promise(() => {
-              throw new Error('expected error');
-            })
-            .then(() => finished());
-        }).catch((error) => {
-          expect(error.message).toEqual('expected error');
-          done();
-        });
+            return new Promise(() => {
+                throw new Error('expected error');
+              })
+              .then(() => finished());
+          })
+          .catch((error) => {
+            expect(error.message)
+              .toEqual('expected error');
+            done();
+          });
       });
-      
+
       // TODO: mach error test
       // - sync
       // - callback
