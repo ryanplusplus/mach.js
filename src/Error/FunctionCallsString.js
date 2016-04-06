@@ -8,7 +8,7 @@ var Any = require('../Any.js');
  */
 class FunctionCallsString {
   /**
-   * @param {ExpectedCall} calls {@link ExpectedCall}s
+   * @param {ExpectedCall} calls {@link ExpectedCall}s to stringify
    */
   constructor(calls) {
     var result = '';

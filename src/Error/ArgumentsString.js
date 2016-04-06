@@ -8,7 +8,7 @@ var Same = require('../Same.js');
 class ArgumentsString {
   /**
    * Default constructor
-   * @param {Object[]} args Function arguments to convert to string.
+   * @param {Object[]} args Function arguments to stringify.
    */
   constructor(args) {
     this._string = this._convertArgsToString(args);
