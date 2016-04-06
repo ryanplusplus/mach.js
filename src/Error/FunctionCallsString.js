@@ -4,7 +4,7 @@ var ArgumentsString = require('./ArgumentsString.js');
 var Any = require('../Any.js');
 
 /**
- * Converts {@link ExpectedCall}s into a string.
+ * Converts an {@link ExpectedCall} stack into a string.
  */
 class FunctionCallsString {
   /**

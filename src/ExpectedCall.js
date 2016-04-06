@@ -4,7 +4,7 @@ var Any = require('./Any.js');
 var Same = require('./Same.js');
 
 /**
- * Represents an expected call to a mock.
+ * Represents an expected call to a {@link Mock}.
  */
 class ExpectedCall {
   constructor(mock, args, required, checkArgs) {
@@ -44,8 +44,7 @@ class ExpectedCall {
       if (this.expectedArgs[i] instanceof Same) {
         if (!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
           return false;
-        }
-        else {
+        } else {
           continue;
         }
       }
