@@ -739,17 +739,58 @@ describe('Tree', () => {
       });
     });
 
-    it('should throw an error if the thunk throws an exception', () => {
-      let a = new Mock('a');
-      let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+    describe('errors', () => {
+      it('should throw an error if the thunk throws an exception', () => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
-      expect(() => {
-          tree.execute(() => {
-            a();
-            throw new Error('expected error');
+        expect(() => {
+            tree.execute(() => {
+              a();
+              throw new Error('expected error');
+            });
+          })
+          .toThrowError(Error, 'expected error');
+      });
+
+      it('should return an error if the callback thunk throws an exception', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
+            let cb = () => {
+              a();
+
+              throw new Error('expected error');
+            };
+
+            cb(() => finished());
+          })
+          .catch((error) => {
+            expect(error.message).toEqual('expected error');
+            done();
           });
-        })
-        .toThrowError(Error, 'expected error');
+      });
+
+      it('should return an error if the promise thunk throws an exception', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
+          return new Promise(() => {
+              throw new Error('expected error');
+            })
+            .then(() => finished());
+        }).catch((error) => {
+          expect(error.message).toEqual('expected error');
+          done();
+        });
+      });
+      
+      // TODO: mach error test
+      // - sync
+      // - callback
+      // - promise
     });
 
     describe('Async tests', () => {
@@ -766,55 +807,6 @@ describe('Tree', () => {
           .toBe(true);
 
         p.then(() => done());
-      });
-
-      it('should return an error if the callback thunk throws an exception', (done) => {
-        let a = new Mock('a');
-        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
-
-        tree.execute((finished) => {
-            let cb = () => {
-              a();
-
-              throw new Error('expected error');
-            };
-
-            cb(() => finished());
-          })
-          .then(() => {
-            fail('expected an error');
-            done();
-          })
-          .catch((error) => {
-            expect(error.message)
-              .toEqual('expected error');
-            done();
-          });
-      });
-
-      it('should return an error if the promise thunk throws an exception', (done) => {
-        let a = new Mock('a');
-        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
-
-        let p = tree.execute((finished) => {
-          return new Promise(() => {
-              throw new Error('expected error');
-            })
-            .then(() => finished());
-        });
-
-        p.then(() => {
-            console.log('oh hai der!');
-            fail('expected an error');
-            done();
-          })
-          .catch((error) => {
-            console.log('oh noes...');
-            console.log(error);
-            expect(error.message)
-              .toEqual('expected error');
-            done();
-          });
       });
     });
   });

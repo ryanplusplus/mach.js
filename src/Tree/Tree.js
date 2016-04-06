@@ -104,26 +104,24 @@ class Tree {
   }
 
   _asyncWhen(thunk) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         var done = () => resolve();
 
-        return thunk(done);
+        return thunk(done).catch((error) => {
+          reject(error);
+        });
       })
       .then(() => {
         this._checkCalls();
       })
       .catch((error) => {
-        console.log('c ' + error);
         return error;
       })
       .then((error) => {
-        console.log('t ' + error);
         this._resetMockHandler();
         
         if (error) {
-          return Promise.reject(error);
-        } else {
-          return;
+          throw error;
         }
       });
   }
