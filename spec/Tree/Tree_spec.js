@@ -425,8 +425,7 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          }
-          catch (error) {
+          } catch (error) {
             actualError = error;
           }
         });
@@ -637,8 +636,7 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          }
-          catch (error) {
+          } catch (error) {
             actualError = error;
           }
         });
@@ -753,22 +751,6 @@ describe('Tree', () => {
           .toThrowError(Error, 'expected error');
       });
 
-      // TODO: Move
-      it('should allow callbacks', (done) => {
-        let a = new Mock('a');
-        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
-
-        tree.execute((finished) => {
-            let cb = (callback) => {
-              a();
-              callback();
-            }
-
-            cb(() => finished());
-          })
-          .then(() => done());
-      });
-
       it('should return an error if the callback thunk throws an exception', (done) => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
@@ -806,10 +788,53 @@ describe('Tree', () => {
           });
       });
 
-      // TODO: mach error test
-      // - sync
-      // - callback
-      // - promise
+      it('should throw the mach error for sync code', () => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        expect(() => {
+          tree.execute(() => {
+            b();
+          });
+        }).toThrowError(UnexpectedFunctionCallError);
+      });
+
+      it('should throw the mach error for callback code', (done) => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
+          let f = ((callback) => {
+            b();
+            callback();
+          });
+
+          f(() => {
+            finished();
+          });
+        }).catch((error) => {
+          expect(error instanceof UnexpectedFunctionCallError).toBe(true);
+          done();
+        });
+      });
+
+      it('should throw the mach error for promise code', (done) => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
+          return new Promise((resolve) => {
+            b();
+            finished();
+          });
+        }).catch((error) => {
+          expect(error instanceof UnexpectedFunctionCallError).toBe(true);
+          done();
+        });
+      });
     });
 
     describe('Async tests', () => {
@@ -818,14 +843,35 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
         let p = tree.execute((finished) => {
-          a();
-          finished();
+          return new Promise((resolve) => {
+            a();
+            finished();
+            resolve();
+          });
         });
 
         expect(p instanceof Promise)
           .toBe(true);
 
         p.then(() => done());
+      });
+
+      it('should allow callbacks', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
+            let cb = (callback) => {
+              a();
+              callback();
+            }
+
+            cb(() => finished());
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .then(() => done());
       });
     });
   });

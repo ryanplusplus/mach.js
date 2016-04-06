@@ -31,11 +31,9 @@ class Tree {
 
     if (this._root.child instanceof ExpectedCallNode) {
       andNode = new AndNode(this._root.child.expectedCall);
-    }
-    else if (this._root.child instanceof AndNode) {
+    } else if (this._root.child instanceof AndNode) {
       andNode = this._root.child;
-    }
-    else {
+    } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -65,13 +63,11 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      }
-      else if (node instanceof AndNode) {
+      } else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      }
-      else {
+      } else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -107,9 +103,15 @@ class Tree {
     return new Promise((resolve, reject) => {
         var done = () => resolve();
 
-        return thunk(done).catch((error) => {
-          reject(error);
-        });
+        let t = thunk(done);
+
+        if (t instanceof Promise) {
+          return t.catch((error) => {
+            reject(error);
+          });
+        } else {
+          return t;
+        }
       })
       .then(() => {
         this._checkCalls();
@@ -119,7 +121,7 @@ class Tree {
       })
       .then((error) => {
         this._resetMockHandler();
-        
+
         if (error) {
           throw error;
         }
@@ -129,8 +131,7 @@ class Tree {
   _syncWhen(thunk) {
     try {
       thunk();
-    }
-    finally {
+    } finally {
       this._resetMockHandler();
     }
 
