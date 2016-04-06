@@ -15,6 +15,11 @@ class Tree {
     this._chainNodes(this._root, node);
     this._chainNodes(node, new TerminusNode());
   }
+  
+  ignoreOtherCalls() {
+    this._ignoreOtherCalls = true;
+    this._getCalls()[0].mock._ignoreOtherCalls();
+  }
 
   _chainNodes(a, b) {
     a.child = b;
@@ -95,7 +100,7 @@ class Tree {
       throw new NotAllCallsOccurredError(this._completedCalls, this._incompleteCalls);
     }
   }
-
+  
   _asyncWhen(thunk) {
     return new Promise((resolve) => {
         var done = () => resolve();
@@ -131,7 +136,7 @@ class Tree {
     let calls = this._getCalls();
 
     for (let call of calls) {
-      call.mock._resetHandler();
+      call.mock._reset();
     }
   }
 

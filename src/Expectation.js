@@ -66,7 +66,7 @@ class Expectation {
   }
 
   andOtherCallsShouldBeIgnored() {
-    this._tree.ignoreOtherCalls = true;
+    this._tree.ignoreOtherCalls();
 
     return this;
   }

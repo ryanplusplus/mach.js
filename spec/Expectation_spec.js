@@ -2,24 +2,31 @@
 
 describe('Expectation', () => {
   let Expectation = require('../src/Expectation.js');
+  let Mock = require('../src/Mock.js');
 
   it('should initialize with an ExpectedCall and Tree', () => {
     let expectation = new Expectation({
       _name: 'foo'
     }, true);
 
-    expect(expectation._expectedCall.name).toEqual('foo');
-    expect(expectation._tree._root.child.name).toEqual('foo');
+    expect(expectation._expectedCall.name)
+      .toEqual('foo');
+    expect(expectation._tree._root.child.name)
+      .toEqual('foo');
   });
 
   it('should set expected call required flag as specified', () => {
     expect(new Expectation({
-      _name: 'foo'
-    }, true)._expectedCall.required).toEqual(true);
+          _name: 'foo'
+        }, true)
+        ._expectedCall.required)
+      .toEqual(true);
 
     expect(new Expectation({
-      _name: 'foo'
-    }, false)._expectedCall.required).toEqual(false);
+          _name: 'foo'
+        }, false)
+        ._expectedCall.required)
+      .toEqual(false);
   });
 
   it('withTheseArguments should set expected call arguments', () => {
@@ -29,11 +36,13 @@ describe('Expectation', () => {
       _name: 'foo'
     });
 
-    expect(expectation._expectedCall.expectedArgs.length).toEqual(0);
+    expect(expectation._expectedCall.expectedArgs.length)
+      .toEqual(0);
 
     expectation.withTheseArguments(args);
 
-    expect(expectation._expectedCall.expectedArgs).toEqual(args);
+    expect(expectation._expectedCall.expectedArgs)
+      .toEqual(args);
   });
 
   it('withAnyArguments should set expected call checkArgs to false', () => {
@@ -41,11 +50,13 @@ describe('Expectation', () => {
       _name: 'foo'
     });
 
-    expect(expectation._expectedCall.checkArgs).toBe(true);
+    expect(expectation._expectedCall.checkArgs)
+      .toBe(true);
 
     expectation.withAnyArguments();
 
-    expect(expectation._expectedCall.checkArgs).toEqual(false);
+    expect(expectation._expectedCall.checkArgs)
+      .toEqual(false);
   });
 
   it('andWillReturn should set expected call return value', () => {
@@ -53,11 +64,13 @@ describe('Expectation', () => {
       _name: 'foo'
     });
 
-    expect(expectation._expectedCall.returnValue).toBeUndefined();
+    expect(expectation._expectedCall.returnValue)
+      .toBeUndefined();
 
     expectation.andWillReturn(0);
 
-    expect(expectation._expectedCall.returnValue).toEqual(0);
+    expect(expectation._expectedCall.returnValue)
+      .toEqual(0);
   });
 
   it('andWillThrow should set expected call throw value', () => {
@@ -67,11 +80,13 @@ describe('Expectation', () => {
 
     let error = new Error('oh noes');
 
-    expect(expectation._expectedCall.throwValue).toBeUndefined();
+    expect(expectation._expectedCall.throwValue)
+      .toBeUndefined();
 
     expectation.andWillThrow(error);
 
-    expect(expectation._expectedCall.throwValue).toEqual(error);
+    expect(expectation._expectedCall.throwValue)
+      .toEqual(error);
   });
 
   it('and should merge the expectations trees', () => {
@@ -86,8 +101,10 @@ describe('Expectation', () => {
     a.and(b);
 
     let expectedTree = '{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }';
-    expect(a._tree.toString()).toEqual(expectedTree);
-    expect(b._tree.toString()).toEqual(expectedTree);
+    expect(a._tree.toString())
+      .toEqual(expectedTree);
+    expect(b._tree.toString())
+      .toEqual(expectedTree);
   });
 
   it('then should merge the expectations tree', () => {
@@ -102,8 +119,10 @@ describe('Expectation', () => {
     a.then(b);
 
     let expectedTree = '{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }';
-    expect(a._tree.toString()).toEqual(expectedTree);
-    expect(b._tree.toString()).toEqual(expectedTree);
+    expect(a._tree.toString())
+      .toEqual(expectedTree);
+    expect(b._tree.toString())
+      .toEqual(expectedTree);
   });
 
   it('multipleTimes should chain same expectation multiple times', () => {
@@ -112,18 +131,50 @@ describe('Expectation', () => {
     });
 
     a.multipleTimes(-1);
-    expect(a._tree.toString()).toEqual('{ ROOT [{ a [{ TERMINUS }] }] }');
+    expect(a._tree.toString())
+      .toEqual('{ ROOT [{ a [{ TERMINUS }] }] }');
 
     a.multipleTimes(0);
-    expect(a._tree.toString()).toEqual('{ ROOT [{ a [{ TERMINUS }] }] }');
+    expect(a._tree.toString())
+      .toEqual('{ ROOT [{ a [{ TERMINUS }] }] }');
 
     a.multipleTimes(1);
-    expect(a._tree.toString()).toEqual('{ ROOT [{ a [{ TERMINUS }] }] }');
+    expect(a._tree.toString())
+      .toEqual('{ ROOT [{ a [{ TERMINUS }] }] }');
 
     a.multipleTimes(2);
-    expect(a._tree.toString()).toEqual('{ ROOT [{ AND {{ a, a }} [{ TERMINUS }] }] }');
+    expect(a._tree.toString())
+      .toEqual('{ ROOT [{ AND {{ a, a }} [{ TERMINUS }] }] }');
 
     a.multipleTimes(3);
-    expect(a._tree.toString()).toEqual('{ ROOT [{ AND {{ a, a, a, a }} [{ TERMINUS }] }] }');
+    expect(a._tree.toString())
+      .toEqual('{ ROOT [{ AND {{ a, a, a, a }} [{ TERMINUS }] }] }');
+  });
+
+  it('andOtherCallsShouldBeIgnored should set tree property', () => {
+    let expectation = new Expectation(new Mock('mock'), true);
+
+    expect(expectation._tree._ignoreOtherCalls)
+      .toBe(false);
+
+    expectation.andOtherCallsShouldBeIgnored();
+
+    expect(expectation._tree._ignoreOtherCalls)
+      .toBe(true);
+  });
+
+  it('when should execute the expecation chain', () => {
+    let a = new Mock('a');
+    let b = new Mock('b');
+    let c = new Mock('c');
+
+    a.shouldBeCalled()
+      .and(b.shouldBeCalled())
+      .then(c.shouldBeCalled())
+      .when(() => {
+        b();
+        a();
+        c();
+      });
   });
 });
