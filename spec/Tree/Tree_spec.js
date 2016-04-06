@@ -425,12 +425,14 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          } catch (error) {
+          }
+          catch (error) {
             actualError = error;
           }
         });
 
-        expect(actualError.message).toEqual(msg);
+        expect(actualError.message)
+          .toEqual(msg);
       });
 
       it('should return a value if the expected call is set up to do so', () => {
@@ -446,7 +448,8 @@ describe('Tree', () => {
           actualReturnValue = a();
         });
 
-        expect(actualReturnValue).toEqual(expectedCall.returnValue);
+        expect(actualReturnValue)
+          .toEqual(expectedCall.returnValue);
       });
 
       describe('_ignoreOtherCalls = true', () => {
@@ -462,12 +465,13 @@ describe('Tree', () => {
           tree._ignoreOtherCalls = true;
 
           expect(() => {
-            tree.execute(() => {
-              a();
-              c();
-              b();
-            });
-          }).not.toThrow(UnexpectedFunctionCallError);
+              tree.execute(() => {
+                a();
+                c();
+                b();
+              });
+            })
+            .not.toThrow(UnexpectedFunctionCallError);
         });
 
         it('should not throw an error for a partial match', () => {
@@ -480,12 +484,13 @@ describe('Tree', () => {
           tree._ignoreOtherCalls = true;
 
           expect(() => {
-            tree.execute(() => {
-              a(1);
-              a();
-              b();
-            });
-          }).not.toThrow(UnexpectedArgumentsError);
+              tree.execute(() => {
+                a(1);
+                a();
+                b();
+              });
+            })
+            .not.toThrow(UnexpectedArgumentsError);
         });
       });
     });
@@ -505,10 +510,11 @@ describe('Tree', () => {
         tree = t;
 
         expect(() => {
-          tree.execute(() => {
-            c();
-          });
-        }).toThrowError(UnexpectedFunctionCallError);
+            tree.execute(() => {
+              c();
+            });
+          })
+          .toThrowError(UnexpectedFunctionCallError);
       });
 
       it('should not throw an error for an expected call', () => {
@@ -631,12 +637,14 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          } catch (error) {
+          }
+          catch (error) {
             actualError = error;
           }
         });
 
-        expect(actualError.message).toEqual(msg);
+        expect(actualError.message)
+          .toEqual(msg);
       });
 
       it('should return a value if the expected call is set up to do so', () => {
@@ -654,7 +662,8 @@ describe('Tree', () => {
           actualReturnValue = a();
         });
 
-        expect(actualReturnValue).toEqual(expectedCall.returnValue);
+        expect(actualReturnValue)
+          .toEqual(expectedCall.returnValue);
       });
 
       describe('_ignoreOtherCalls = true', () => {
@@ -670,12 +679,13 @@ describe('Tree', () => {
           tree._ignoreOtherCalls = true;
 
           expect(() => {
-            tree.execute(() => {
-              a();
-              c();
-              b();
-            });
-          }).not.toThrow(UnexpectedFunctionCallError);
+              tree.execute(() => {
+                a();
+                c();
+                b();
+              });
+            })
+            .not.toThrow(UnexpectedFunctionCallError);
         });
 
         it('should not throw an error for a partial match', () => {
@@ -688,12 +698,13 @@ describe('Tree', () => {
           tree._ignoreOtherCalls = true;
 
           expect(() => {
-            tree.execute(() => {
-              a(1);
-              a();
-              b();
-            });
-          }).not.toThrow(UnexpectedArgumentsError);
+              tree.execute(() => {
+                a(1);
+                a();
+                b();
+              });
+            })
+            .not.toThrow(UnexpectedArgumentsError);
         });
       });
     });
@@ -704,11 +715,12 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
 
         expect(() => {
-          tree.execute(() => {
-            a();
-            a();
-          });
-        }).toThrowError(UnexpectedFunctionCallError);
+            tree.execute(() => {
+              a();
+              a();
+            });
+          })
+          .toThrowError(UnexpectedFunctionCallError);
       });
 
       it('should not throw an error if _ignoreOtherCalls is true', () => {
@@ -718,11 +730,48 @@ describe('Tree', () => {
         tree._ignoreOtherCalls = true;
 
         expect(() => {
-          tree.execute(() => {
+            tree.execute(() => {
+              a();
+              a();
+            });
+          })
+          .not.toThrowError(UnexpectedFunctionCallError);
+      });
+    });
+
+    describe('Async tests', () => {
+      it('should return a promise', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        let p = tree.execute((finished) => {
+          a();
+          finished();
+        });
+
+        expect(p instanceof Promise)
+          .toBe(true);
+
+        p.then(() => done());
+      });
+
+      it('should return an error if the thunk throws an exception', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a, [], true, true)));
+
+        tree.execute((finished) => {
             a();
-            a();
+            throw new Error('expected error');
+          })
+          .then(() => {
+            fail('expected an error');
+            done();
+          })
+          .catch((error) => {
+            expect(error.message)
+              .toEqual('expected error');
+            done();
           });
-        }).not.toThrowError(UnexpectedFunctionCallError);
       });
     });
   });
