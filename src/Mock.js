@@ -3,7 +3,9 @@
 var Expectation = require('./Expectation.js');
 var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
 
+// Some unavoidable global state
 var _ignoreOtherCalls = false;
+var _tree;
 
 class Mock {
   constructor(name) {
@@ -18,7 +20,13 @@ class Mock {
 
       mock._handler = function(args) {
         if (!_ignoreOtherCalls) {
-          throw new UnexpectedFunctionCallError(mock, args, []);
+          let calls = [];
+
+          if (_tree !== undefined) {
+            calls = _tree._calls;
+          }
+
+          throw new UnexpectedFunctionCallError(mock, args, calls);
         }
       };
     };
@@ -49,6 +57,10 @@ class Mock {
 
     mock._ignoreOtherCalls = function() {
       _ignoreOtherCalls = true;
+    };
+
+    mock._tree = function(tree) {
+      _tree = tree;
     };
 
     mock._reset();

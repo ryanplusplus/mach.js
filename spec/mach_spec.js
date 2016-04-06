@@ -15,7 +15,11 @@ describe('mach.js', () => {
   };
 
   let shouldFailWith = (expectedFailure, thunk) => {
-    return shouldFailWithExactly(new RegExp('.*' + expectedFailure + '.*'), thunk);
+    try {
+      thunk();
+    } catch (error) {
+      expect(error.message).toContain(expectedFailure);
+    }
   };
 
   it('should allow anonymous mocks', () => {
@@ -37,7 +41,7 @@ describe('mach.js', () => {
   });
 
   it('should fail when a different mock is called instead of the expected mock', () => {
-    shouldFailWith('Unexpected function call b\(\)', () => {
+    shouldFailWith('Unexpected function call b()', () => {
       a.shouldBeCalled().when(() => {
         b();
       });
@@ -45,7 +49,7 @@ describe('mach.js', () => {
   });
 
   it('should fail when a function is called unexpectedly', () => {
-    shouldFailWith('Unexpected function call a\(\)', () => {
+    shouldFailWith('Unexpected function call a()', () => {
       a();
     });
   });
@@ -55,7 +59,7 @@ describe('mach.js', () => {
       a();
     });
 
-    shouldFailWith('Unexpected function call a\(\)', () => {
+    shouldFailWith('Unexpected function call a()', () => {
       a();
     });
   });
@@ -79,7 +83,7 @@ describe('mach.js', () => {
   });
 
   it('should fail when a function is called with incorrect arguments', () => {
-    shouldFailWith('Unexpected arguments \\(1, \'3\'\\) provided to function a', () => {
+    shouldFailWith('Unexpected arguments (1, \'3\') provided to function a', () => {
       a.shouldBeCalledWith(1, '2').when(() => {
         a(1, '3');
       });
@@ -115,7 +119,7 @@ describe('mach.js', () => {
   });
 
   it('should ensure that other arguments match when using mach.any', () => {
-    var failureMessage = 'Unexpected arguments (1, 3, 2) provided to function a\nIncomplete calls:\n\ta(1, <any>, 3)';
+    let failureMessage = 'Unexpected arguments (1, 3, 2) provided to function a\nIncomplete calls:\n\ta(1, <any>, 3)';
 
     shouldFailWithExactly(failureMessage, () => {
       a.shouldBeCalledWith(1, mach.any, 3).when(() => {
@@ -162,14 +166,14 @@ describe('mach.js', () => {
     let f = function f() {};
     let mock = mach.mockFunction(f);
 
-    shouldFailWith('Unexpected function call f\(\)', () => {
+    shouldFailWith('Unexpected function call f()', () => {
       mock();
     });
 
     f = () => {};
     mock = mach.mockFunction(f);
 
-    shouldFailWith('Unexpected function call <anonymous>\(\)', () => {
+    shouldFailWith('Unexpected function call <anonymous>()', () => {
       mock();
     });
   });
@@ -290,7 +294,7 @@ describe('mach.js', () => {
   });
 
   it('should not allow calls to happen out of order when andThen is used', () => {
-    shouldFailWith('Out of order function call c\(\)', () => {
+    shouldFailWith('Out of order function call c()', () => {
       b.shouldBeCalled()
         .andThen(c.shouldBeCalled())
         .when(() => {
@@ -299,7 +303,7 @@ describe('mach.js', () => {
         });
     });
 
-    shouldFailWith('Unexpected arguments \\(2\\) provided to function b', () => {
+    shouldFailWith('Unexpected arguments (2) provided to function b', () => {
       b.shouldBeCalledWith(1)
         .andThen(c.shouldBeCalled(2))
         .when(() => {
@@ -310,7 +314,7 @@ describe('mach.js', () => {
   });
 
   it('should allow then to be used as a synonym for andThen', () => {
-    shouldFailWith('Out of order function call c\(\)', () => {
+    shouldFailWith('Out of order function call c()', () => {
       b.shouldBeCalled()
         .then(c.shouldBeCalled())
         .when(() => {
@@ -321,7 +325,7 @@ describe('mach.js', () => {
   });
 
   it('should catch out of order calls when mixed with unordered calls', () => {
-    shouldFailWith('Out of order function call c\(\)', () => {
+    shouldFailWith('Out of order function call c()', () => {
       a.shouldBeCalled()
         .and(b.shouldBeCalled())
         .then(c.shouldBeCalled())
@@ -334,8 +338,6 @@ describe('mach.js', () => {
   });
 
   it('should allow ordered and unordered calls to be mixed', () => {
-    console.log();
-    console.log();
     a.shouldBeCalledWith(1)
       .andAlso(a.shouldBeCalledWith(2))
       .andThen(a.shouldBeCalledWith(3))
@@ -369,5 +371,312 @@ describe('mach.js', () => {
         c(1, 2, 3);
         expect(c(1)).toBe(4);
       });
+  });
+
+  it('should maintain independent expectations', () => {
+    a.shouldBeCalled();
+
+    a.shouldBeCalled().when(() => {
+      a();
+    });
+  });
+
+  it('should allow soft expectations to be called', () => {
+    a.mayBeCalled().when(() => {
+      a();
+    });
+  });
+
+  it('should allow soft expectations to be omitted', () => {
+    a.mayBeCalled().when(() => {});
+  });
+
+  it('should allow soft expectations with return values', () => {
+    a.mayBeCalled().andWillReturn(3).when(() => {
+      expect(a()).toBe(3);
+    });
+  });
+
+  it('should allow soft expectations with arguments to be called', () => {
+    a.mayBeCalledWith(4).when(() => {
+      a(4);
+    });
+
+    a.mayBeCalledWith(4).when(() => {
+      a(4);
+    });
+  });
+
+  it('should fail if mayBeCalled is used after a call has already been specified', () => {
+    shouldFail(() => {
+      a.shouldBeCalled().mayBeCalled();
+    });
+  });
+
+  it('should fail if mayBeCalledWith is used after a call has already been specified', () => {
+    shouldFail(() => {
+      a.shouldBeCalled().mayBeCalledWith(4);
+    });
+  });
+
+  it('should handle object arguments in error messages', () => {
+    let o = {};
+
+    shouldFailWithExactly('Unexpected function call a([object Object])', () => {
+      a(o);
+    });
+  });
+
+  it('should allow a strictly ordered call to occur after a missing optional call', () => {
+    b.mayBeCalled().andThen(c.shouldBeCalled()).when(() => {
+      c();
+    });
+  });
+
+  it('should not allow order to be violated for an optional call', () => {
+    shouldFailWith('Unexpected function call b()', () => {
+      b.mayBeCalled().andThen(c.shouldBeCalled()).when(() => {
+        c();
+        b();
+      });
+    });
+  });
+
+  it('should indicate expectation status in unexpected call failures', () => {
+    let failureMessage =
+      'Unexpected function call b()\n' +
+      'Completed calls:\n' +
+      '\tb()\n' +
+      'Incomplete calls:\n' +
+      '\tc()';
+
+    shouldFailWithExactly(failureMessage, () => {
+      b.shouldBeCalled().andThen(c.shouldBeCalled()).when(() => {
+        b();
+        b();
+      });
+    });
+  });
+
+  it('should indicate expectation status in unexpected arguments failures', () => {
+    let failureMessage =
+      'Unexpected arguments (1) provided to function c\n' +
+      'Completed calls:\n' +
+      '\tb()\n' +
+      'Incomplete calls:\n' +
+      '\tc()';
+
+    shouldFailWithExactly(failureMessage, () => {
+      b.shouldBeCalled().andThen(c.shouldBeCalled()).when(() => {
+        b();
+        c(1);
+      });
+    });
+  });
+
+  it('should indicate expectation status in out of order call failures', () => {
+    let failureMessage =
+      'Out of order function call b()\n' +
+      'Completed calls:\n' +
+      '\tb()\n' +
+      'Incomplete calls:\n' +
+      '\tc()\n' +
+      '\tb()';
+
+    shouldFailWithExactly(failureMessage, () => {
+      b.shouldBeCalled().andThen(c.shouldBeCalled()).andThen(b.shouldBeCalled()).when(() => {
+        b();
+        b();
+      });
+    });
+  });
+
+  it('should indicate expectation status when not all calls occur', () => {
+    let failureMessage =
+      'Not all calls occurred\n' +
+      'Completed calls:\n' +
+      '\ta()\n' +
+      'Incomplete calls:\n' +
+      '\tb()';
+
+    shouldFailWithExactly(failureMessage, () => {
+      a.shouldBeCalled().andThen(b.shouldBeCalled()).when(() => {
+        a();
+      });
+    });
+  });
+
+  it('should omit the completed call listing when there are no completed calls', () => {
+    let failureMessage =
+      'Unexpected function call b()\n' +
+      'Incomplete calls:\n' +
+      '\ta()';
+
+    shouldFailWithExactly(failureMessage, () => {
+      a.shouldBeCalled().when(() => {
+        b();
+      });
+    });
+  });
+
+  it('should omit the incomplete call listing when there are no incomplete calls', () => {
+    let failureMessage =
+      'Unexpected function call c()\n' +
+      'Completed calls:\n' +
+      '\tb()';
+
+    shouldFailWithExactly(failureMessage, () => {
+      b.shouldBeCalled().when(() => {
+        b();
+        c();
+      });
+    });
+  });
+
+  it('should indicate when any args are allowed in call listing', () => {
+    let failureMessage =
+      'Unexpected function call c()\n' +
+      'Completed calls:\n' +
+      '\tb(1, 2, 3)\n' +
+      'Incomplete calls:\n' +
+      '\tb(<any>)';
+
+    shouldFailWithExactly(failureMessage, () => {
+      b.shouldBeCalledWithAnyArguments().multipleTimes(2).when(() => {
+        b(1, 2, 3);
+        c();
+      });
+    });
+  });
+
+  it('should show anonymous mocks in call listings', () => {
+    let mock = mach.mockFunction();
+
+    shouldFailWithExactly('Not all calls occurred\nIncomplete calls:\n\t<anonymous>()', () => {
+      mock.shouldBeCalled().when(() => {});
+    });
+  });
+
+  it('should show methods mocked on anonymous objects in call listings', () => {
+    let mockedObject = mach.mockObject({
+      f: () => {}
+    });
+
+    shouldFailWithExactly('Not all calls occurred\nIncomplete calls:\n\t<anonymous>.f()', () => {
+      mockedObject.f.shouldBeCalled().when(() => {});
+    });
+  });
+
+  it('should print arrays in calls properly', () => {
+    shouldFailWith('Unexpected function call a([1, \'2\', 3])', () => {
+      a([1, '2', 3]);
+    });
+  });
+
+  it('should print nested arrays in calls properly', () => {
+    shouldFailWith('Unexpected function call a([1, [2, \'3\'], \'4\'])', () => {
+      a([1, [2, '3'], '4']);
+    });
+  });
+
+  it('should print undefined in calls properly', () => {
+    shouldFailWith('Unexpected function call a(undefined)', () => {
+      a(undefined);
+    });
+  });
+
+  it('should print null in calls properly', () => {
+    shouldFailWith('Unexpected function call a(null)', () => {
+      a(null);
+    });
+  });
+
+  it('should actually check for sameness', () => {
+    shouldFail(() => {
+      a.shouldBeCalledWith(mach.same([1, 2, 3]))
+        .when(() => {
+          a([3, 2, 1]);
+        });
+    });
+  });
+
+  it('should allow some arguments to be checked for sameness and some for equality', () => {
+    shouldFail(() => {
+      a.shouldBeCalledWith(mach.same([1, 2, 3]), [4, 5, 6])
+        .when(() => {
+          a([1, 2, 3], [4, 5, 6]);
+        });
+    });
+
+    a.shouldBeCalledWith(mach.same([1, 2, 3]), 7)
+      .when(() => {
+        a([1, 2, 3], 7);
+      });
+  });
+
+  it('should actually check for sameness when nothing is called', () => {
+    let failureMessage = 'Incomplete calls:\n' + '\ta([1, 2, 3])';
+
+    shouldFailWith(failureMessage, () => {
+      a.shouldBeCalledWith(mach.same([1, 2, 3]))
+        .when(() => {});
+    });
+  });
+
+  it('should allow custom matchers to be used with mach.same', () => {
+    let alwaysMatches = () => {
+      return true;
+    };
+
+    let neverMatches = () => {
+      return false;
+    };
+
+    a.shouldBeCalledWith(mach.same([1, 2, 3], alwaysMatches))
+      .when(() => {
+        a([3, 2, 1]);
+      });
+
+    shouldFail(() => {
+      a.shouldBeCalledWith(mach.same([1, 2, 3], neverMatches))
+        .when(() => {
+          a([1, 2, 3]);
+        });
+    });
+  });
+
+  it('should allow mach.match to be used as an alias for mach.same', () => {
+    a.shouldBeCalledWith(mach.match([1, 2, 3]))
+      .when(() => {
+        a([1, 2, 3]);
+      });
+  });
+
+  it('should allow additional mocked calls to be ignored', () => {
+    b.shouldBeCalled().andOtherCallsShouldBeIgnored().when(() => {
+      b();
+      c();
+    });
+  });
+
+  it('should allow mocked calls to be ignored', function() {
+    let x;
+
+    mach.ignoreMockedCallsWhen(function() {
+      a();
+      x = 4;
+    });
+
+    expect(x).toBe(4);
+  });
+
+  it('should fail when a function is called unexpectedly after calls are ignored', () => {
+    mach.ignoreMockedCallsWhen(() => {
+      a();
+    });
+
+    shouldFailWith('Unexpected function call a()', () => {
+      a();
+    });
   });
 });

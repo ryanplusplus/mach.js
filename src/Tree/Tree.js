@@ -151,15 +151,13 @@ class Tree {
   }
 
   _resetMockHandler() {
+    this._calls[0].mock._tree(undefined);
     for (let call of this._calls) {
       call.mock._reset();
     }
   }
 
   _executeNode(mock, args) {
-    // TODO: out of order call error
-    // - if not found in expected calls after current node -> UnexpectedFunctionCallError
-    // - if found later -> OutOfOrderCallError
     if (this._executingNode instanceof ExpectedCallNode) {
       let expectedCall = this._executingNode.expectedCall;
 
@@ -250,6 +248,8 @@ class Tree {
   }
 
   _setMockExecutionHandler() {
+    this._calls[0].mock._tree(this);
+
     for (let call of this._calls) {
       call.mock._handler = (args) => {
         return this._executeNode(call.mock, args);

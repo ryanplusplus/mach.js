@@ -26,15 +26,23 @@ class Mach {
     return new Same(value, matcher);
   }
 
+  static match(value, matcher) {
+    return Mach.same(value, matcher);
+  }
+
   static get any() {
     return new Any();
   }
 
   static ignoreMockedCallsWhen(thunk) {
-    new Expectation(() => {
-      return () => true;
-    }, false).when(() => {
+    let mock = new Mock();
+
+    mock._ignoreOtherCalls();
+
+    // TODO: handle async code??
+    new Expectation(mock, false).when(() => {
       thunk();
+      mock._reset();
     });
   }
 }
