@@ -20,7 +20,7 @@ var ExpectedCallNode = require('./ExpectedCallNode.js');
  */
 class AndNode extends Node {
   /**
-   * Creates a new {@link AndNode}
+   * Creates a new {@link Tree.AndNode}
    * @param {ExpectedCall} expectedCall Initial expected call for this node.
    */
   constructor(expectedCall) {
@@ -29,8 +29,7 @@ class AndNode extends Node {
   }
 
   /**
-   * Gets the human readable name for this {@link AndNode}.
-   * Form is 'AND {{ expectedCalls[] }}'
+   * Gets the human readable name for this node.
    * @returns {string} Human readable name of this node.
    */
   get name() {
@@ -44,8 +43,8 @@ class AndNode extends Node {
   }
 
   /**
-   * Merges this node and another {@link AndNode} or {@link ExpectedCallNode}
-   * @param {AndNode|ExpectedCallNode} node Node to merge with this node.
+   * Merges this node and another {@link Tree.AndNode} or {@link Tree.ExpectedCallNode}
+   * @param {Tree.AndNode|Tree.ExpectedCallNode} node Node to merge with this node.
    */
   merge(node) {
     let andNode;
@@ -87,7 +86,7 @@ class AndNode extends Node {
   /**
    * Determines the the {@link Mock} partially matches any {@link ExpectedCall}s in this node.
    * @param {Mock} mock Mock that was called.
-   * @return {ExpectedCall|undefined} The matching {@link ExpectedCall} if found; otherwise undefined.
+   * @return {ExpectedCall|undefined} The matching expected call if found; otherwise undefined.
    */
   partialMatch(mock) {
     for (let expectedCall of this.expectedCalls) {

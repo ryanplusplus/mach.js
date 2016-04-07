@@ -10,15 +10,19 @@ var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
 var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
 /** 
-* Classes the make up the expected execution path.
-* @namespace Tree 
-*/
+ * Classes the make up the expected execution path.
+ * @namespace Tree 
+ */
 
 /**
-* Represents the expected execution path of all {@link ExpectedCall}s.
-* @memberof Tree
-*/
+ * Represents the expected execution path of all {@link ExpectedCall}s.
+ * @memberof Tree
+ */
 class Tree {
+  /**
+   * Creates a new {@link Tree.Tree}
+   * @param {Tree.AndNode|Tree.ExpectedCallNode} node Inital node in this tree.
+   */
   constructor(node) {
     this._root = new RootNode();
     this._ignoreOtherCalls = false;
@@ -26,19 +30,28 @@ class Tree {
     this._chainNodes(node, new TerminusNode());
   }
 
+  /**
+   * Tells this tree to ignore unexpected and out of order calls during execution
+   * and focus only on the required ones.
+   */
   ignoreOtherCalls() {
     this._ignoreOtherCalls = true;
     this._calls[0].mock._ignoreOtherCalls();
   }
 
+  /**
+   * Chains two nodes together by making `a` the parent of `b`
+   * @param {Tree.Node} a Node that will be the parent of b
+   * @param {Tree.Node} b Node that will be the child of a
+   */
   _chainNodes(a, b) {
     a.child = b;
     b.parent = a;
   }
 
   /**
-   * Last non-{@link TerminusNode} node
-   * @returns {Node} Last non-{@link TerminusNode} node
+   * Gets last non-{@link Tree.TerminusNode} node in this tree.
+   * @returns {Tree.Node} Last non-terminus node
    */
   get _lastNode() {
     let node = this._root;
@@ -50,15 +63,21 @@ class Tree {
     return node;
   }
 
+  /**
+   * Combines two execution {@link Tree.Tree}s together via an `AND` operation.
+   * @param {Tree.Tree} tree Tree to combine with this tree.
+   */
   and(tree) {
     let andNode;
     let lastNode = this._lastNode;
 
     if (lastNode instanceof ExpectedCallNode) {
       andNode = new AndNode(lastNode.expectedCall);
-    } else if (lastNode instanceof AndNode) {
+    }
+    else if (lastNode instanceof AndNode) {
       andNode = lastNode;
-    } else {
+    }
+    else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -72,6 +91,10 @@ class Tree {
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
+  /**
+   * Combines two execution {@link Tree.Tree}s together via a `THEN` operation.
+   * @param {Tree.Tree} tree Tree to combine with this tree.
+   */
   then(tree) {
     let node = tree._root.child;
 
@@ -80,6 +103,11 @@ class Tree {
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
+  /** 
+   * Gets all {@link ExpectedCall}s that come after the specified node.
+   * @param {Tree.AndNode|Tree.ExpectedCallNode} node Current node in the tree.
+   * @returns {ExpectedCall[]} List of expected calls that come after the specified node.
+   */
   _callsAfter(node) {
     let calls = [];
 
@@ -88,11 +116,13 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      } else if (node instanceof AndNode) {
+      }
+      else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      } else {
+      }
+      else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -102,10 +132,18 @@ class Tree {
     return calls;
   }
 
+  /**
+   * Gets all {@link ExpectedCall}s in this tree.
+   * @return {ExpectedCall[]} All the expected calls in this tree.
+   */
   get _calls() {
     return this._callsAfter(this._root);
   }
 
+  /**
+   * Checks to see if all required {@link ExpectedCall}s in this tree were completed during execution.
+   * @throws {Error.NotAllCallsOccurredError} Will throw an error if any required expected calls are incomplete.
+   */
   _checkCalls() {
     let result = true;
     for (let expectedCall of this._calls) {
@@ -120,6 +158,11 @@ class Tree {
     }
   }
 
+  /**
+   * Performs {@link Tree.Tree#execute} in an asynchronous context.
+   * @param {function} thunk Test code to run during execution.
+   * @returns {Promise} A promise so that test can call `fail` and `done` or their equivalents.
+   */
   _asyncWhen(thunk) {
     return new Promise((resolve, reject) => {
         var done = () => resolve();
@@ -130,7 +173,8 @@ class Tree {
           return t.catch((error) => {
             reject(error);
           });
-        } else {
+        }
+        else {
           return t;
         }
       })
@@ -141,7 +185,7 @@ class Tree {
         return error;
       })
       .then((error) => {
-        this._resetMockHandler();
+        this._resetMocks();
 
         if (error) {
           throw error;
@@ -149,23 +193,38 @@ class Tree {
       });
   }
 
+  /**
+   * Performs {@link Tree.Tree#execute} in a synchronous context.
+   * @param {function} thunk Test code to run during execution.
+   * @throws {Error} Will throw any errors thrown by test code or as a result of failing to satisfy the execution tree requirements.
+   */
   _syncWhen(thunk) {
     try {
       thunk();
-    } finally {
-      this._resetMockHandler();
+    }
+    finally {
+      this._resetMocks();
     }
 
     this._checkCalls();
   }
 
-  _resetMockHandler() {
-    this._calls[0].mock._tree(undefined);
+  /**
+   * Resets all {@link Mock} globals and handlers
+   */
+  _resetMocks() {
     for (let call of this._calls) {
       call.mock._reset();
     }
   }
 
+  /**
+   * Attempts to execute a call to a {@link Mock}.
+   * @param {Mock} mock Mock that was called.
+   * @param {object[]} args Arguments for the call.
+   * @returns {object|undefined} Will return a value if the mock as a return value; otherwise undefined.
+   * @throws {Error} Will throw an error if the mock has a throw value or the call violates an execution requirement.
+   */
   _executeNode(mock, args) {
     if (this._executingNode instanceof ExpectedCallNode) {
       let expectedCall = this._executingNode.expectedCall;
@@ -256,6 +315,9 @@ class Tree {
     }
   }
 
+  /**
+   * Sets execution handlers of all {@link Mock}s in this tree to this trees {@link Tree.Tree#executeNode}.
+   */
   _setMockExecutionHandler() {
     this._calls[0].mock._tree(this);
 
@@ -266,6 +328,11 @@ class Tree {
     }
   }
 
+  /**
+   * Executes the specifed test code.
+   * @param {function} thunk Test code.
+   * @returns {Promise|undefined} Promise if thunk has a callback argument; otherwise undefined.
+   */
   execute(thunk) {
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
@@ -278,6 +345,10 @@ class Tree {
     }
   }
 
+  /**
+   * Convets this tree into a string.
+   * @returns {string} This tree in string form.
+   */
   toString() {
     return this._root.toString();
   }

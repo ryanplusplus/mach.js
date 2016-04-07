@@ -17,6 +17,7 @@ class Mock {
 
     mock._reset = function() {
       _ignoreOtherCalls = false;
+      _tree = undefined;
 
       mock._handler = function(args) {
         if (!_ignoreOtherCalls) {

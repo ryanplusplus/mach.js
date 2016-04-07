@@ -13,7 +13,7 @@ class Node {
   }
 
   /**
-   * Gets the human readable name for this {@link Node}.
+   * Gets the human readable name for this node.
    * @returns {string} Human readable name of this node.
    */
   get name() {
