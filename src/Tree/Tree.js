@@ -324,9 +324,9 @@ class Tree {
     this._calls[0].mock._tree(this);
 
     for (let call of this._calls) {
-      call.mock._handler = (args) => {
+      call.mock._setHandler((args) => {
         return this._executeNode(call.mock, args);
-      };
+      });
     }
   }
 

@@ -25,69 +25,176 @@ class Mock {
    */
   constructor(name) {
     this.name = name || '<anonymous>';
-    
+
+    // class Mock is exposed to the world via a function version of itself
     let mock = function() {
-      return mock._handler(Array.from(arguments));
+      return mock._class.handler(Array.from(arguments));
     };
-    
+
+    this._function = mock;
+    this._function._class = this;
+
     mock._name = this.name;
 
     mock._reset = function() {
-      _ignoreOtherCalls = false;
-      _tree = undefined;
-
-      mock._handler = function(args) {
-        if (!_ignoreOtherCalls) {
-          let calls = [];
-
-          if (_tree !== undefined) {
-            calls = _tree._calls;
-          }
-
-          throw new UnexpectedFunctionCallError(mock, args, calls);
-        }
-      };
+      mock._class.reset();
     };
 
+    mock._setHandler = function(handler) {
+      mock._class.setHandler(handler);
+    }
+
     mock.shouldBeCalled = function() {
-      return new Expectation(mock, true);
+      return mock._class.shouldBeCalled();
     };
 
     mock.shouldBeCalledWith = function() {
-      return mock.shouldBeCalled()
-        .withTheseArguments(...arguments);
+      return mock._class.shouldBeCalledWith(...arguments);
     };
 
     mock.shouldBeCalledWithAnyArguments = function() {
-      return mock.shouldBeCalled()
-        .withAnyArguments();
+      return mock._class.shouldBeCalledWithAnyArguments();
     };
 
     mock.mayBeCalled = function() {
-      return new Expectation(mock, false);
+      return mock._class.mayBeCalled();
     };
 
     mock.mayBeCalledWith = function() {
-      return mock.mayBeCalled()
-        .withTheseArguments(...arguments);
+      return mock._class.mayBeCalledWith(...arguments);
     };
 
     mock.mayBeCalledWithAnyArguments = function() {
-      return mock.mayBeCalled()
-        .withAnyArguments();
+      return mock._class.mayBeCalledWithAnyArguments();
     };
 
     mock._ignoreOtherCalls = function() {
-      _ignoreOtherCalls = true;
+      mock._class.ignoreOtherCalls = true;
     };
 
     mock._tree = function(tree) {
-      _tree = tree;
+      mock._class.tree = tree;
     };
 
-    mock._reset();
+    this.reset();
 
+    // rest of the world sees the function, only the function knows about the class that backs it
     return mock;
+  }
+
+  /**
+   * Gets state of global ignore other calls flag
+   */
+  get ignoreOtherCalls() {
+    return _ignoreOtherCalls;
+  }
+
+  /**
+   * Sets state of the global ignore other calls flag
+   */
+  set ignoreOtherCalls(value) {
+    _ignoreOtherCalls = value;
+  }
+
+  /**
+   * Gets global tree pointer value.
+   */
+  get tree() {
+    return _tree;
+  }
+
+  /**
+   * Sets global tree pointer value
+   */
+  set tree(value) {
+    _tree = value;
+  }
+
+  /**
+   * Sets this mocks excecution handler.
+   */
+  setHandler(value) {
+    this.handler = value;
+  }
+
+  /*
+   * Resets Mock globals and this mocks execution handler
+   */
+  reset() {
+    this.ignoreOtherCalls = false;
+    this.tree = undefined;
+
+    this.setHandler(this.defaultHandler);
+  }
+
+  /*
+   * Default execution handler
+   * @param {object[]} args Arguments passed to mock during execution.
+   */
+  defaultHandler(args) {
+    if (!this.ignoreOtherCalls) {
+      let calls = [];
+
+      if (this.tree !== undefined) {
+        calls = this.tree._calls;
+      }
+
+      throw new UnexpectedFunctionCallError(this._function, args, calls);
+    }
+  }
+
+  /**
+   * Creats a new required {@link Expecatation} from this mock.
+   * @returns {Expectation} Expectation created from this mock.
+   */
+  shouldBeCalled() {
+    return new Expectation(this._function, true);
+  }
+
+  /**
+   * Creats a new required {@link Expecatation} from this mock that expects the specified arguments.
+   * @param {object[]} arguments Expected arguments
+   * @returns {Expectation} Expectation created from this mock.
+   */
+  shouldBeCalledWith() {
+    return this.shouldBeCalled()
+      .withTheseArguments(...arguments);
+  }
+
+  /**
+   * Creats a new required {@link Expecatation} from this mock that will accept any arguments.
+   * @returns {Expectation} Expectation created from this mock.
+   */
+  shouldBeCalledWithAnyArguments() {
+    return this.shouldBeCalled()
+      .withAnyArguments();
+  }
+
+  /**
+   * Creats a new optional {@link Expecatation} from this mock.
+   * @returns {Expectation} Expectation created from this mock.
+   */
+  mayBeCalled() {
+    return new Expectation(this._function, false);
+  }
+
+  /**
+   * Creats a new optional {@link Expecatation} from this mock that expects the specified arguments.
+   * @param {object[]} arguments Expected arguments
+   * @returns {Expectation} Expectation created from this mock.
+   */
+  mayBeCalledWith() {
+    return this.mayBeCalled()
+      .withTheseArguments(...arguments);
+  }
+
+  /**
+   * Creats a new optional {@link Expecatation} from this mock that will accept any arguments.
+   * @returns {Expectation} Expectation created from this mock.
+   */
+  mayBeCalledWithAnyArguments() {
+    return this.mayBeCalled()
+      .withAnyArguments();
   }
 }
 
