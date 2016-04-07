@@ -21,9 +21,9 @@ class Expectation {
   }
 
   /**
-   * Updates this {@link Expectation} to have the specified arguments when it is called.
+   * Updates this expectatations {@link ExpectedCall} to have the specified arguments when it is called.
    * @param {object[]} arguments Required arguments for the {@link Mock}s call.
-   * @return {Expectation} This expectation, which allows chaining.
+   * @returns {Expectation} This expectation, which allows chaining.
    */
   withTheseArguments() {
     this._expectedCall.expectedArgs = Array.from(arguments);
@@ -31,24 +31,43 @@ class Expectation {
     return this;
   }
 
+  /**
+   * Updates this expectatations {@link ExpectedCall} to allow any arguments when it is called.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
   withAnyArguments() {
     this._expectedCall.checkArgs = false;
 
     return this;
   }
 
+  /**
+   * Updates this expectatations {@link ExpectedCall} to return the specified value.
+   * @param {object} returnValue Value that will be returned when the expected call is executed.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
   andWillReturn(returnValue) {
     this._expectedCall.returnValue = returnValue;
 
     return this;
   }
 
-  andWillThrow(throwValue) {
-    this._expectedCall.throwValue = throwValue;
+  /**
+   * Updates this expectatations {@link ExpectedCall} to throw the specified error.
+   * @param {Error} error Error that will be thrown when the expected call is executed.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
+  andWillThrow(error) {
+    this._expectedCall.throwValue = error;
 
     return this;
   }
 
+  /**
+   * Combines this expecation with the specifed expectation using `AND`.
+   * @param {Expectation} expectation Expectation to combine with this expecatation.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
   and(expectation) {
     this._tree.and(expectation._tree);
 
