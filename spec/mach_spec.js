@@ -5,8 +5,6 @@ describe('mach.js', () => {
   let a = mach.mockFunction('a');
   let b = mach.mockFunction('b');
   let c = mach.mockFunction('c');
-  
-  // TODO: throw in some callback and promise tests to be safe
 
   let shouldFail = (thunk) => {
     expect(() => thunk()).toThrow();
@@ -679,6 +677,94 @@ describe('mach.js', () => {
 
     shouldFailWith('Unexpected function call a()', () => {
       a();
+    });
+  });
+
+  describe('async tests', () => {
+    it('should allow callbacks in thunks', (done) => {
+      a.shouldBeCalled().when((finished) => {
+        setTimeout(() => {
+          a();
+          finished();
+        }, 10);
+      }).then(() => done());
+    });
+
+    //  NOTE: works too well. Error stops jasmine execution, need to catch error from callback somehow???
+    // it('should rethrow errors from callbacks in thunks', (done) => {
+    //   console.log();
+    //   console.log('testing...');
+    //   let errorMessage = 'oh hai der!';
+    //
+    //   a.shouldBeCalled().when((finished) => {
+    //     setTimeout(() => {
+    //       a();
+    //       throw new Error(errorMessage);
+    //       finished();
+    //     }, 25);
+    //   }).catch((error) => {
+    //     expect(error.message).toEqual(errorMessage);
+    //     done();
+    //   });
+    // });
+
+    it('should rethrow mach errors from callback thunks', (done) => {
+      let NotAllCallsOccurredError = require('../src/Error/NotAllCallsOccurredError.js');
+
+      a.shouldBeCalled().when((finished) => {
+        finished();
+      }).catch((error) => {
+        expect(error instanceof NotAllCallsOccurredError).toBe(true);
+        done();
+      });
+    });
+  });
+
+  it('should allow promises in thunks', (done) => {
+    a.shouldBeCalled().when((finished) => {
+      return new Promise((resolve) => {
+        a();
+        resolve();
+      }).then(() => {
+        finished();
+      });
+    }).then(() => {
+      done();
+    });
+  });
+
+  it('should rethrow errors from code in promises', (done) => {
+    let errorMessage = 'oh hai der!';
+
+    a.shouldBeCalled().when((finished) => {
+      return new Promise((resolve) => {
+        a();
+        throw new Error(errorMessage);
+        resolve();
+      }).then(() => {
+        finished();
+      });
+    }).catch((error) => {
+      expect(error.message).toEqual(errorMessage);
+      done();
+    });
+  });
+
+  it('should rethrow mach errors from promises', (done) => {
+    let NotAllCallsOccurredError = require('../src/Error/NotAllCallsOccurredError.js');
+
+    a.shouldBeCalled().when((finished) => {
+      return new Promise((resolve) => {
+        resolve();
+      }).then(() => {
+        finished();
+      });
+    }).then(() => {
+      fail('expected an error to happen...');
+      done();
+    }, (error) => {
+      expect(error instanceof NotAllCallsOccurredError).toBe(true);
+      done();
     });
   });
 });

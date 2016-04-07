@@ -161,31 +161,24 @@ class Tree {
    */
   _asyncWhen(thunk) {
     return new Promise((resolve, reject) => {
-        var done = () => resolve();
+      var done = () => resolve();
 
-        let t = thunk(done);
+      let t = thunk(done);
 
-        if (t instanceof Promise) {
-          return t.catch((error) => {
-            reject(error);
-          });
-        } else {
-          return t;
-        }
-      })
-      .then(() => {
-        this._checkCalls();
-      })
-      .catch((error) => {
-        return error;
-      })
-      .then((error) => {
-        this._resetMocks();
-
-        if (error) {
-          throw error;
-        }
-      });
+      if (t instanceof Promise) {
+        return t.catch((error) => {
+          reject(error);
+        });
+      } else {
+        return t;
+      }
+    }).then(() => {
+      this._resetMocks();
+      this._checkCalls();
+    }, (error) => {
+      this._resetMocks();
+      throw error;
+    });
   }
 
   /**
