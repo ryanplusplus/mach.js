@@ -5,6 +5,7 @@ var FunctionCallsString = require('./FunctionCallsString.js');
 
 /**
  * Error thrown when an {@link ExpectedCall} is called and no incomplete expectation matches it.
+ * @memberof Error
  */
 class UnexpectedFunctionCallError extends Error {
   /**

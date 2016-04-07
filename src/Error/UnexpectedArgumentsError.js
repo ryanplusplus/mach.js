@@ -6,6 +6,7 @@ var FunctionCallsString = require('./FunctionCallsString.js');
 /**
  * Error thrown when an {@link Mock} is called with different
  * arguments than specified in it's {@link ExpectedCall}.
+ * @memberof Error
  */
 class UnexpectedArgumentsError extends Error {
   /**

@@ -4,6 +4,7 @@ var FunctionCallsString = require('./FunctionCallsString.js');
 
 /**
  * Error thrown when not all required {@link ExpectedCall}s were called.
+ * @memberof Error
  */
 class NotAllCallsOccurredError extends Error {
   /**

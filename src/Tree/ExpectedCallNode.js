@@ -3,7 +3,8 @@
 var Node = require('./Node.js');
 
 /**
- * Represents an {@link ExpectedCall} in the {@link Tree}.
+ * Represents an {@link ExpectedCall} in the {@link Tree.Tree}.
+ * @memberof Tree
  */
 class ExpectedCallNode extends Node {
   /**

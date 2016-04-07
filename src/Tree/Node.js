@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * Abstract base class for all {@link Tree} node types.
+ * Abstract base class for all {@link Tree.Tree} node types.
  * @abstract
+ * @memberof Tree
  */
 class Node {
   constructor(name) {

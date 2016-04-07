@@ -5,6 +5,7 @@ var FunctionCallsString = require('./FunctionCallsString.js');
 
 /**
  * Error thrown when an {@link ExpectedCall} is called out of order.
+ * @memberof Error
  */
 class OutOfOrderCallError extends Error {
   /**

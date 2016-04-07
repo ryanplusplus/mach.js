@@ -16,6 +16,7 @@ var ExpectedCallNode = require('./ExpectedCallNode.js');
  *  <li>3, 1, 2</li>
  *  <li>3, 2, 1</li>
  * </ul>
+ * @memberof Tree
  */
 class AndNode extends Node {
   /**

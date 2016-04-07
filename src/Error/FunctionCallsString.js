@@ -5,6 +5,7 @@ var Any = require('../Any.js');
 
 /**
  * Converts an {@link ExpectedCall} stack into a string.
+ * @memberof Error
  */
 class FunctionCallsString {
   /**

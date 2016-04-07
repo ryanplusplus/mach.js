@@ -9,6 +9,15 @@ var OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
 var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
 var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
+/** 
+* Classes the make up the expected execution path.
+* @namespace Tree 
+*/
+
+/**
+* Represents the expected execution path of all {@link ExpectedCall}s.
+* @memberof Tree
+*/
 class Tree {
   constructor(node) {
     this._root = new RootNode();
