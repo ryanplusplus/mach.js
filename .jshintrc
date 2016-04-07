@@ -1,0 +1,9 @@
+{
+   "undef": true,
+   "unused": true,
+   "esnext": true,
+   "node": true,
+   "jasmine": true,
+   "newcap": false,
+   "loopfunc": true
+}
