@@ -2,6 +2,9 @@
 
 var Node = require('./Node.js');
 
+/**
+* Represents root of all {@link Tree}s.
+*/
 class RootNode extends Node {
   constructor() {
     super('ROOT');
