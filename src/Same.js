@@ -2,6 +2,10 @@
 
 var _ = require('underscore');
 
+/**
+ * Represents an argument with a custom equality comparison.
+ * Used when `===` does not suffice.
+ */
 class Same {
   constructor(value, matcher) {
     this._value = value;

@@ -4,7 +4,7 @@ var Same = require('../Same.js');
 
 /**
  * Converts arguments into a human readable string
- * @memberof Error
+ * @memberof Errors
  */
 class ArgumentsString {
   /**

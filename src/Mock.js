@@ -3,17 +3,34 @@
 var Expectation = require('./Expectation.js');
 var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.js');
 
-// Some unavoidable global state
+/**
+ * Flag to have mocks not throw an error if they are called unexpectedly
+ * @global
+ */
 var _ignoreOtherCalls = false;
+
+/**
+ * Pointer to currently executing tree so that unexpected calls can display expected calls in error message.
+ * @global
+ */
 var _tree;
 
+/**
+ * Represents a mocked function.
+ */
 class Mock {
+  /**
+   * Creates a new mocked function.
+   * @param {string} [name=<anonymous>] Name of the function.
+   */
   constructor(name) {
+    this.name = name || '<anonymous>';
+    
     let mock = function() {
       return mock._handler(Array.from(arguments));
     };
-
-    mock._name = name || '<anonymous>';
+    
+    mock._name = this.name;
 
     mock._reset = function() {
       _ignoreOtherCalls = false;
@@ -37,11 +54,13 @@ class Mock {
     };
 
     mock.shouldBeCalledWith = function() {
-      return mock.shouldBeCalled().withTheseArguments(...arguments);
+      return mock.shouldBeCalled()
+        .withTheseArguments(...arguments);
     };
 
     mock.shouldBeCalledWithAnyArguments = function() {
-      return mock.shouldBeCalled().withAnyArguments();
+      return mock.shouldBeCalled()
+        .withAnyArguments();
     };
 
     mock.mayBeCalled = function() {
@@ -49,11 +68,13 @@ class Mock {
     };
 
     mock.mayBeCalledWith = function() {
-      return mock.mayBeCalled().withTheseArguments(...arguments);
+      return mock.mayBeCalled()
+        .withTheseArguments(...arguments);
     };
 
     mock.mayBeCalledWithAnyArguments = function() {
-      return mock.mayBeCalled().withAnyArguments();
+      return mock.mayBeCalled()
+        .withAnyArguments();
     };
 
     mock._ignoreOtherCalls = function() {

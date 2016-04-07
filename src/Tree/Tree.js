@@ -142,7 +142,7 @@ class Tree {
 
   /**
    * Checks to see if all required {@link ExpectedCall}s in this tree were completed during execution.
-   * @throws {Error.NotAllCallsOccurredError} Will throw an error if any required expected calls are incomplete.
+   * @throws {Errors.NotAllCallsOccurredError} Will throw an error if any required expected calls are incomplete.
    */
   _checkCalls() {
     let result = true;
@@ -196,7 +196,6 @@ class Tree {
   /**
    * Performs {@link Tree.Tree#execute} in a synchronous context.
    * @param {function} thunk Test code to run during execution.
-   * @throws {Error} Will throw any errors thrown by test code or as a result of failing to satisfy the execution tree requirements.
    */
   _syncWhen(thunk) {
     try {
@@ -223,7 +222,10 @@ class Tree {
    * @param {Mock} mock Mock that was called.
    * @param {object[]} args Arguments for the call.
    * @returns {object|undefined} Will return a value if the mock as a return value; otherwise undefined.
-   * @throws {Error} Will throw an error if the mock has a throw value or the call violates an execution requirement.
+   * @throws {Error} Will throw an error if the mock has a throw value. This is normal and should be handled by the code under test.
+   * @throws {Errors.OutOfOrderCallError} Will throw an error if an expected call is made out of order.
+   * @throws {Errors.UnexpectedArgumentsError} Will throw an error if an expected call is made with the wrong arguments.
+   * @throws {Errors.UnexpectedFunctionCallError} Will throw an error if a call is made and there is not matching expected call.
    */
   _executeNode(mock, args) {
     if (this._executingNode instanceof ExpectedCallNode) {

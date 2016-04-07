@@ -2,6 +2,9 @@
 
 var Mock = require('./Mock.js');
 
+/**
+* Represents a mocked object.
+*/
 class MockObject {
   constructor(object, name) {
     for (let property in object) {

@@ -65,6 +65,7 @@ class Expectation {
 
   /**
    * Combines this expecation with the specifed expectation using `AND`.
+   * This means execution order does not matter and these expecations can be executed in either order.
    * @param {Expectation} expectation Expectation to combine with this expecatation.
    * @returns {Expectation} This expectation, which allows chaining.
    */
@@ -76,10 +77,19 @@ class Expectation {
     return this;
   }
 
+  /**
+   * Alias for {@link Expectation#and}
+   */
   andAlso(expectation) {
     return this.and(expectation);
   }
 
+  /**
+   * Combines this expecation with the specifed expectation using `THEN`.
+   * This means execution order matters and this expectation must come before the other.
+   * @param {Expectation} expectation Expectation to combine with this expecatation.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
   then(expectation) {
     this._tree.then(expectation._tree);
 
@@ -88,10 +98,18 @@ class Expectation {
     return this;
   }
 
+  /**
+   * Alias for {@link Expectation#then}
+   */
   andThen(expectation) {
     return this.then(expectation);
   }
 
+  /**
+   * Clones this expectation so that is is expected the specified number of times.
+   * @param {number} count Number of times this expecation should be expected.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
   multipleTimes(count) {
     for (var i = 0; i < count - 1; i++) {
       let expectation = new Expectation(this._mock, this._expectedCall.required);
@@ -106,16 +124,26 @@ class Expectation {
     return this;
   }
 
+  /**
+   * Makes it so that unexpected calls and out of order calls are ignored and only required calls are checked during execution.
+   */
   andOtherCallsShouldBeIgnored() {
     this._tree.ignoreOtherCalls();
 
     return this;
   }
 
+  /**
+   * Executes the test code and verifies the expectations that were built up.
+   * @param {function} thunk Test code.
+   */
   when(thunk) {
     return this._tree.execute(thunk);
   }
 
+  /**
+   * Alias for {@link Expectation#when}
+   */
   after(thunk) {
     return this.when(thunk);
   }
