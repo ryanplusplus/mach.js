@@ -9,9 +9,9 @@ var OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
 var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
 var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
-/** 
+/**
  * Classes the make up the expected execution path.
- * @namespace Tree 
+ * @namespace Tree
  */
 
 /**
@@ -36,7 +36,7 @@ class Tree {
    */
   ignoreOtherCalls() {
     this._ignoreOtherCalls = true;
-    this._calls[0].mock._ignoreOtherCalls();
+    this._calls[0].mock.ignoreOtherCalls = true;
   }
 
   /**
@@ -73,11 +73,9 @@ class Tree {
 
     if (lastNode instanceof ExpectedCallNode) {
       andNode = new AndNode(lastNode.expectedCall);
-    }
-    else if (lastNode instanceof AndNode) {
+    } else if (lastNode instanceof AndNode) {
       andNode = lastNode;
-    }
-    else {
+    } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -103,7 +101,7 @@ class Tree {
     this._ignoreOtherCalls = tree._ignoreOtherCalls;
   }
 
-  /** 
+  /**
    * Gets all {@link ExpectedCall}s that come after the specified node.
    * @param {Tree.AndNode|Tree.ExpectedCallNode} node Current node in the tree.
    * @returns {ExpectedCall[]} List of expected calls that come after the specified node.
@@ -116,13 +114,11 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      }
-      else if (node instanceof AndNode) {
+      } else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      }
-      else {
+      } else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -173,8 +169,7 @@ class Tree {
           return t.catch((error) => {
             reject(error);
           });
-        }
-        else {
+        } else {
           return t;
         }
       })
@@ -200,8 +195,7 @@ class Tree {
   _syncWhen(thunk) {
     try {
       thunk();
-    }
-    finally {
+    } finally {
       this._resetMocks();
     }
 
@@ -213,7 +207,7 @@ class Tree {
    */
   _resetMocks() {
     for (let call of this._calls) {
-      call.mock._reset();
+      call.mock.reset();
     }
   }
 
@@ -321,12 +315,12 @@ class Tree {
    * Sets execution handlers of all {@link Mock}s in this tree to this trees {@link Tree.Tree#executeNode}.
    */
   _setMockExecutionHandler() {
-    this._calls[0].mock._tree(this);
+    this._calls[0].mock.tree = this;
 
     for (let call of this._calls) {
-      call.mock._setHandler((args) => {
+      call.mock.handler = (args) => {
         return this._executeNode(call.mock, args);
-      });
+      };
     }
   }
 

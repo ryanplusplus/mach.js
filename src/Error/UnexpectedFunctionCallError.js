@@ -16,7 +16,7 @@ class UnexpectedFunctionCallError extends Error {
    */
   constructor(mock, args, calls) {
     super('Unexpected function call ' +
-      mock._name +
+      mock.name +
       '(' + new ArgumentsString(args) + ')' +
       new FunctionCallsString(calls));
   }

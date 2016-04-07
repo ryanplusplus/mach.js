@@ -16,7 +16,7 @@ class OutOfOrderCallError extends Error {
    */
   constructor(mock, args, calls) {
     super('Out of order function call ' +
-      mock._name +
+      mock.name +
       '(' + new ArgumentsString(args) + ')' +
       new FunctionCallsString(calls));
   }

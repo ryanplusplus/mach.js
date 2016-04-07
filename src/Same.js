@@ -7,17 +7,25 @@ var _ = require('underscore');
  * Used when `===` does not suffice.
  */
 class Same {
+  /**
+   * Creates a new {@link Same}
+   * @param {object} value Expected argument.
+   * @param {function} matcher Function to do equality comparison with actual argument.
+   */
   constructor(value, matcher) {
-    this._value = value;
-    this._matcher = matcher || _.isEqual;
-  }
+    /**
+     * The expected argument
+     * @name Same#value
+     * @type {object}
+     */
+    this.value = value;
 
-  get value() {
-    return this._value;
-  }
-
-  get matcher() {
-    return this._matcher;
+    /**
+     * Function to do equality comparison with actual argument.
+     * @name Same#matcher
+     * @type function
+     */
+    this.matcher = matcher || _.isEqual;
   }
 
   toString() {

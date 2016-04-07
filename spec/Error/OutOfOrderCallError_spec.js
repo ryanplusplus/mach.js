@@ -5,7 +5,7 @@ describe('OutOfOrderCallError', () => {
 
   it('should stringify correctly without args', () => {
     expect(new OutOfOrderCallError({
-      _name: 'foo'
+      name: 'foo'
     }, [], [], []).message).toEqual('Out of order function call foo()');
   });
 });

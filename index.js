@@ -37,12 +37,12 @@ class Mach {
   static ignoreMockedCallsWhen(thunk) {
     let mock = new Mock();
 
-    mock._ignoreOtherCalls();
+    mock._class.ignoreOtherCalls = true;
 
     // TODO: handle async code??
-    new Expectation(mock, false).when(() => {
+    new Expectation(mock._class, false).when(() => {
       thunk();
-      mock._reset();
+      mock._class.reset();
     });
   }
 }

@@ -5,13 +5,13 @@ describe('UnexpectedArgumentsError', () => {
 
   it('should stringify correctly without arguments', () => {
     expect(new UnexpectedArgumentsError({
-      _name: 'foo'
+      name: 'foo'
     }, [], [], []).message).toEqual('Unexpected arguments () provided to function foo');
   });
 
   it('should stringify correctly with arguments', () => {
     expect(new UnexpectedArgumentsError({
-      _name: 'foo'
+      name: 'foo'
     }, [0, 1], [], []).message).toEqual('Unexpected arguments (0, 1) provided to function foo');
   });
 });

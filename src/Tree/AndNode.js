@@ -6,7 +6,7 @@ var ExpectedCallNode = require('./ExpectedCallNode.js');
 /**
  * Represent a result of 'and'ing two {@link Expectation}s.
  * Execution order of the {@link ExpectedCall}s in a {@link AndNode} is unrestricted.
- * 
+ *
  * IE: AND(1, 2, 3) can execute in any of the following orders:
  * <ul>
  *  <li>1, 2, 3</li>
@@ -25,6 +25,11 @@ class AndNode extends Node {
    */
   constructor(expectedCall) {
     super('AND');
+    /**
+     * {@link ExpectedCall}s for this node.
+     * @name Tree.AndNode#expectedCalls
+     * @type ExpectedCall[]
+     */
     this.expectedCalls = [expectedCall];
   }
 
@@ -50,11 +55,9 @@ class AndNode extends Node {
     let andNode;
     if (node instanceof ExpectedCallNode) {
       andNode = new AndNode(node.expectedCall);
-    }
-    else if (node instanceof AndNode) {
+    } else if (node instanceof AndNode) {
       andNode = node;
-    }
-    else {
+    } else {
       throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
     }
 
@@ -117,9 +120,9 @@ class AndNode extends Node {
   }
 
   /**
-  * Checks to see if only optional {@link ExpectedCall}s remain in this node.
-  * @return {boolean} True if all incomplete calls are optional; otherwise false.
-  */
+   * Checks to see if only optional {@link ExpectedCall}s remain in this node.
+   * @return {boolean} True if all incomplete calls are optional; otherwise false.
+   */
   onlyOptionalRemain() {
     for (let expectedCall of this.expectedCalls) {
       if (expectedCall.completed) {

@@ -10,13 +10,13 @@ describe('MockObject', () => {
         return 'bar';
       }
     };
-    
+
     let mockObject = new MockObject(a);
-    
+
     expect(mockObject.foo).toEqual('foo');
-    expect(mockObject.bar._name).toEqual('<anonymous>.bar');
+    expect(mockObject.bar._class.name).toEqual('<anonymous>.bar');
   });
-  
+
   it('should have the name specified', () => {
     let a = {
       foo: 'foo',
@@ -24,10 +24,10 @@ describe('MockObject', () => {
         return 'bar';
       }
     };
-    
+
     let mockObject = new MockObject(a, 'a');
-    
+
     expect(mockObject.foo).toEqual('foo');
-    expect(mockObject.bar._name).toEqual('a.bar');
+    expect(mockObject.bar._class.name).toEqual('a.bar');
   });
 });

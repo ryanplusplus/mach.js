@@ -13,6 +13,12 @@ class ExpectedCallNode extends Node {
    */
   constructor(expectedCall) {
     super(expectedCall.name);
+
+    /**
+     * {@link ExpectedCall} for this node.
+     * @name Tree.ExpectedCallNode#expectedCall
+     * @type ExpectedCall
+     */
     this.expectedCall = expectedCall;
   }
 }

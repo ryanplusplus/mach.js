@@ -15,13 +15,60 @@ class ExpectedCall {
    * @param {boolean} checkArgs If true then the arguments passed to the mock should be checked; otherwise they are ignored.
    */
   constructor(mock, args, required, checkArgs) {
+    /**
+     * {@link Mock} this expected call is based on.
+     * @name ExpectedCall#mock
+     * @type Mock
+     */
     this.mock = mock;
+
+    /**
+     * Whether or not this expected call was called during execution.
+     * @name ExpectedCall#completed
+     * @type boolean
+     */
     this.completed = false;
+
+    /**
+     * Whether or not to check the arguments for this expected call during execution.
+     * @name ExpectedCall#checkArgs
+     * @type boolean
+     */
     this.checkArgs = checkArgs;
+
+    /**
+     * Whether or not this expected call is required during execution.
+     * @name ExpectedCall#required
+     * @type boolean
+     */
     this.required = required;
+
+    /**
+     * The arguments this expected call expects during execution.
+     * @name ExpectedCall#expectedArgs
+     * @type object[]
+     */
     this.expectedArgs = args;
+
+    /**
+     * The arguments this expected call received during execution.
+     * @name ExpectedCall#actualArgs
+     * @type object[]
+     */
     this.actualArgs = undefined;
+
+    /**
+     * This expected calls return value.
+     * @name ExpectedCall#returnValue
+     * @type object
+     */
     this.returnValue = undefined;
+
+    /**
+     * This expected calls return value.
+     * @name ExpectedCall#returnValue
+     * @type Error
+     */
     this.throwValue = undefined;
   }
 
@@ -65,8 +112,7 @@ class ExpectedCall {
       if (this.expectedArgs[i] instanceof Same) {
         if (!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
           return false;
-        }
-        else {
+        } else {
           continue;
         }
       }
@@ -94,7 +140,7 @@ class ExpectedCall {
    * @returns {string} The name of this expected calls mock.
    */
   get name() {
-    return this.mock._name;
+    return this.mock.name;
   }
 }
 

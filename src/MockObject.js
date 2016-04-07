@@ -3,9 +3,14 @@
 var Mock = require('./Mock.js');
 
 /**
-* Represents a mocked object.
-*/
+ * Represents a mocked object.
+ */
 class MockObject {
+  /**
+   * Creates a new {@link mockedObject}
+   * @param {object} object Object to mock.
+   * @param {string} [name=<anonymous>] Name of object.
+   */
   constructor(object, name) {
     for (let property in object) {
       if (typeof object[property] === 'function') {

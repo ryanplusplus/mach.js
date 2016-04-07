@@ -6,7 +6,7 @@ describe('Expectation', () => {
 
   it('should initialize with an ExpectedCall and Tree', () => {
     let expectation = new Expectation({
-      _name: 'foo'
+      name: 'foo'
     }, true);
 
     expect(expectation._expectedCall.name)
@@ -17,13 +17,13 @@ describe('Expectation', () => {
 
   it('should set expected call required flag as specified', () => {
     expect(new Expectation({
-          _name: 'foo'
+          name: 'foo'
         }, true)
         ._expectedCall.required)
       .toEqual(true);
 
     expect(new Expectation({
-          _name: 'foo'
+          name: 'foo'
         }, false)
         ._expectedCall.required)
       .toEqual(false);
@@ -33,7 +33,7 @@ describe('Expectation', () => {
     let args = [0, 1, 2, 3];
 
     let expectation = new Expectation({
-      _name: 'foo'
+      name: 'foo'
     });
 
     expect(expectation._expectedCall.expectedArgs.length)
@@ -51,7 +51,7 @@ describe('Expectation', () => {
 
   it('withAnyArguments should set expected call checkArgs to false', () => {
     let expectation = new Expectation({
-      _name: 'foo'
+      name: 'foo'
     });
 
     expect(expectation._expectedCall.checkArgs)
@@ -65,7 +65,7 @@ describe('Expectation', () => {
 
   it('andWillReturn should set expected call return value', () => {
     let expectation = new Expectation({
-      _name: 'foo'
+      name: 'foo'
     });
 
     expect(expectation._expectedCall.returnValue)
@@ -79,7 +79,7 @@ describe('Expectation', () => {
 
   it('andWillThrow should set expected call throw value', () => {
     let expectation = new Expectation({
-      _name: 'foo'
+      name: 'foo'
     });
 
     let error = new Error('oh noes');
@@ -95,11 +95,11 @@ describe('Expectation', () => {
 
   it('and should merge the expectations trees', () => {
     let a = new Expectation({
-      _name: 'a'
+      name: 'a'
     }, true);
 
     let b = new Expectation({
-      _name: 'b'
+      name: 'b'
     }, true);
 
     a.and(b);
@@ -113,11 +113,11 @@ describe('Expectation', () => {
 
   it('then should merge the expectations tree', () => {
     let a = new Expectation({
-      _name: 'a'
+      name: 'a'
     }, true);
 
     let b = new Expectation({
-      _name: 'b'
+      name: 'b'
     }, true);
 
     a.then(b);
@@ -131,7 +131,7 @@ describe('Expectation', () => {
 
   it('multipleTimes should chain same expectation multiple times', () => {
     let a = new Expectation({
-      _name: 'a'
+      name: 'a'
     });
 
     a.multipleTimes(-1);
@@ -156,7 +156,7 @@ describe('Expectation', () => {
   });
 
   it('andOtherCallsShouldBeIgnored should set tree property', () => {
-    let expectation = new Expectation(new Mock('mock'), true);
+    let expectation = new Expectation(new Mock('mock')._class, true);
 
     expect(expectation._tree._ignoreOtherCalls)
       .toBe(false);

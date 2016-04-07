@@ -7,7 +7,7 @@ describe('ExpectedCall', () => {
 
   it('should have the same name as its mock', () => {
     expect(new ExpectedCall({
-      _name: 'foo'
+      name: 'foo'
     }, [], false, false).name).toEqual('foo');
   });
 
@@ -27,10 +27,10 @@ describe('ExpectedCall', () => {
 
   it('should be able to match against a mock', () => {
     let foo = {
-      _name: 'foo'
+      name: 'foo'
     };
     let bar = {
-      _name: 'bar'
+      name: 'bar'
     };
 
     let expectedCall = new ExpectedCall(foo, [], false, false);
@@ -78,17 +78,17 @@ describe('ExpectedCall', () => {
   describe('matches', () => {
     it('should return false if neither mock nor arguments match', () => {
       let expectedCall = new ExpectedCall({
-        _name: 'foo'
+        name: 'foo'
       }, [0], false, true);
 
       expect(expectedCall.matches({
-        _name: 'bar'
+        name: 'bar'
       }, [1])).toBe(false);
     });
 
     it('should return false if arguments do not match', () => {
       let mock = {
-        _name: 'mock'
+        name: 'mock'
       };
       let expectedCall = new ExpectedCall(mock, [0], false, true);
 
@@ -97,17 +97,17 @@ describe('ExpectedCall', () => {
 
     it('should return false if mocks do not match', () => {
       let expectedCall = new ExpectedCall({
-        _name: 'foo'
+        name: 'foo'
       }, [0], false, true);
 
       expect(expectedCall.matches({
-        _name: 'bar'
+        name: 'bar'
       }, [0])).toBe(false);
     });
 
     it('should return true if mocks and arguments match', () => {
       let mock = {
-        _name: 'mock'
+        name: 'mock'
       };
       let expectedCall = new ExpectedCall(mock, [0], false, true);
 

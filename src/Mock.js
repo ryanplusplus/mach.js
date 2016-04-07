@@ -24,25 +24,19 @@ class Mock {
    * @param {string} [name=<anonymous>] Name of the function.
    */
   constructor(name) {
+    /**
+     * Name of the mocked function.
+     * @name Mock#name
+     * @type {string}
+     */
     this.name = name || '<anonymous>';
 
-    // class Mock is exposed to the world via a function version of itself
     let mock = function() {
       return mock._class.handler(Array.from(arguments));
     };
 
-    this._function = mock;
-    this._function._class = this;
-
-    mock._name = this.name;
-
-    mock._reset = function() {
-      mock._class.reset();
-    };
-
-    mock._setHandler = function(handler) {
-      mock._class.setHandler(handler);
-    }
+    this.function = mock;
+    this.function._class = this;
 
     mock.shouldBeCalled = function() {
       return mock._class.shouldBeCalled();
@@ -68,17 +62,10 @@ class Mock {
       return mock._class.mayBeCalledWithAnyArguments();
     };
 
-    mock._ignoreOtherCalls = function() {
-      mock._class.ignoreOtherCalls = true;
-    };
-
-    mock._tree = function(tree) {
-      mock._class.tree = tree;
-    };
-
     this.reset();
 
-    // rest of the world sees the function, only the function knows about the class that backs it
+    // this class is exposed to the user via a function version of itself
+    // internal code sees the class version
     return mock;
   }
 
@@ -110,13 +97,6 @@ class Mock {
     _tree = value;
   }
 
-  /**
-   * Sets this mocks excecution handler.
-   */
-  setHandler(value) {
-    this.handler = value;
-  }
-
   /*
    * Resets Mock globals and this mocks execution handler
    */
@@ -124,14 +104,19 @@ class Mock {
     this.ignoreOtherCalls = false;
     this.tree = undefined;
 
-    this.setHandler(this.defaultHandler);
+    /**
+     * The function that gets executed when the mocked function is called
+     * @name Mock#handler
+     * @type function
+     */
+    this.handler = this._defaultHandler;
   }
 
   /*
    * Default execution handler
    * @param {object[]} args Arguments passed to mock during execution.
    */
-  defaultHandler(args) {
+  _defaultHandler(args) {
     if (!this.ignoreOtherCalls) {
       let calls = [];
 
@@ -139,7 +124,7 @@ class Mock {
         calls = this.tree._calls;
       }
 
-      throw new UnexpectedFunctionCallError(this._function, args, calls);
+      throw new UnexpectedFunctionCallError(this, args, calls);
     }
   }
 
@@ -148,7 +133,7 @@ class Mock {
    * @returns {Expectation} Expectation created from this mock.
    */
   shouldBeCalled() {
-    return new Expectation(this._function, true);
+    return new Expectation(this, true);
   }
 
   /**
@@ -175,7 +160,7 @@ class Mock {
    * @returns {Expectation} Expectation created from this mock.
    */
   mayBeCalled() {
-    return new Expectation(this._function, false);
+    return new Expectation(this, false);
   }
 
   /**

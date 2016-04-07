@@ -5,7 +5,7 @@ var Tree = require('./Tree/Tree.js');
 var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
 
 /**
- * This is a transitional object that helps convert {@link Mock}s into 
+ * This is a transitional object that helps convert {@link Mock}s into
  * {@link ExpectedCall}s and build the resulting execution {@link Tree.Tree}.
  */
 class Expectation {
@@ -15,7 +15,6 @@ class Expectation {
    * @param {boolean} required If true then mock is required to be called; otherwise it is optional and may be skipped during execution.
    */
   constructor(mock, required) {
-    this._mock = mock;
     this._expectedCall = new ExpectedCall(mock, [], required, true);
     this._tree = new Tree(new ExpectedCallNode(this._expectedCall));
   }
@@ -112,7 +111,7 @@ class Expectation {
    */
   multipleTimes(count) {
     for (var i = 0; i < count - 1; i++) {
-      let expectation = new Expectation(this._mock, this._expectedCall.required);
+      let expectation = new Expectation(this._expectedCall.mock, this._expectedCall.required);
 
       expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
       expectation._expectedCall.checkArgs = this._expectedCall.checkArgs;
