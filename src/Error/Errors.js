@@ -1,4 +1,4 @@
-/** 
-* The errors an associated classes for this module.
-* @namespace Errors
-*/
+/**
+ * The errors an associated classes for this module.
+ * @namespace Errors
+ */

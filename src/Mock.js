@@ -6,12 +6,14 @@ var UnexpectedFunctionCallError = require('./Error/UnexpectedFunctionCallError.j
 /**
  * Flag to have mocks not throw an error if they are called unexpectedly
  * @global
+ * @private
  */
 var _ignoreOtherCalls = false;
 
 /**
  * Pointer to currently executing tree so that unexpected calls can display expected calls in error message.
  * @global
+ * @private
  */
 var _tree;
 
@@ -35,6 +37,9 @@ class Mock {
       return mock._class.handler(Array.from(arguments));
     };
 
+    /**
+     *
+     */
     this.function = mock;
     this.function._class = this;
 
