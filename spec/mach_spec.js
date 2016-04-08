@@ -784,10 +784,9 @@ describe('mach.js', () => {
         let errorMessage = 'oh hai der!';
 
         a.shouldBeCalled().when((finished) => {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 a();
-                throw new Error(errorMessage);
-                resolve();
+                reject(new Error(errorMessage));
             }).then(() => {
                 finished();
             });
