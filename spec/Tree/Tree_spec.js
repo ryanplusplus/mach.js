@@ -779,6 +779,7 @@ describe('Tree', () => {
               a();
 
               throw new Error('expected error');
+              callback(); // jshint ignore:line
             };
 
             cb(() => finished());
