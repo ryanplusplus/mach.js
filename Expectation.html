@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Expectation</title>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Class: Expectation</h1>
+<section>
+<header>
+        <h2>Expectation</h2>
+            <div class="class-description"><p>This is a transitional object that helps convert <a href="Mock.html"><code>Mock</code></a>s into
+<a href="ExpectedCall.html"><code>ExpectedCall</code></a>s and build the resulting execution <a href="Tree.Tree.html"><code>Tree.Tree</code></a>.</p></div>
+</header>
+<article>
+    <div class="container-overview">
+    <h2>Constructor</h2>
+    <h4 class="name" id="Expectation"><span class="type-signature"></span>new Expectation<span class="signature">(mock, required)</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Creates a new <a href="Expectation.html"><code>Expectation</code></a></p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>mock</code></td>
+            <td class="type">
+<span class="param-type"><a href="Mock.html">Mock</a></span>
+            </td>
+            <td class="description last"><p>Mock that is being expected.</p></td>
+        </tr>
+        <tr>
+                <td class="name"><code>required</code></td>
+            <td class="type">
+<span class="param-type">boolean</span>
+            </td>
+            <td class="description last"><p>If true then mock is required to be called; otherwise it is optional and may be skipped during execution.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line11">line 11</a>
+    </li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Methods</h3>
+    <h4 class="name" id="after"><span class="type-signature"></span>after<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Alias for <a href="Expectation.html#when"><code>Expectation#when</code></a></p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line146">line 146</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id="and"><span class="type-signature"></span>and<span class="signature">(expectation)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Combines this expecation with the specifed expectation using <code>AND</code>.
+This means execution order does not matter and these expecations can be executed in either order.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>expectation</code></td>
+            <td class="type">
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+            </td>
+            <td class="description last"><p>Expectation to combine with this expecatation.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line71">line 71</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id="andAlso"><span class="type-signature"></span>andAlso<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Alias for <a href="Expectation.html#and"><code>Expectation#and</code></a></p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line82">line 82</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id="andOtherCallsShouldBeIgnored"><span class="type-signature"></span>andOtherCallsShouldBeIgnored<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Makes it so that unexpected calls and out of order calls are ignored and only required calls are checked during execution.</p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line129">line 129</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id="andThen"><span class="type-signature"></span>andThen<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Alias for <a href="Expectation.html#then"><code>Expectation#then</code></a></p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line103">line 103</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id="andWillReturn"><span class="type-signature"></span>andWillReturn<span class="signature">(returnValue)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Updates this expectatations <a href="ExpectedCall.html"><code>ExpectedCall</code></a> to return the specified value.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>returnValue</code></td>
+            <td class="type">
+<span class="param-type">object</span>
+            </td>
+            <td class="description last"><p>Value that will be returned when the expected call is executed.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line48">line 48</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id="andWillThrow"><span class="type-signature"></span>andWillThrow<span class="signature">(error)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Updates this expectatations <a href="ExpectedCall.html"><code>ExpectedCall</code></a> to throw the specified error.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>error</code></td>
+            <td class="type">
+<span class="param-type">Error</span>
+            </td>
+            <td class="description last"><p>Error that will be thrown when the expected call is executed.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line59">line 59</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id="multipleTimes"><span class="type-signature"></span>multipleTimes<span class="signature">(count)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Clones this expectation so that is is expected the specified number of times.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>count</code></td>
+            <td class="type">
+<span class="param-type">number</span>
+            </td>
+            <td class="description last"><p>Number of times this expecation should be expected.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line112">line 112</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id="then"><span class="type-signature"></span>then<span class="signature">(expectation)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Combines this expecation with the specifed expectation using <code>THEN</code>.
+This means execution order matters and this expectation must come before the other.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>expectation</code></td>
+            <td class="type">
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+            </td>
+            <td class="description last"><p>Expectation to combine with this expecatation.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line92">line 92</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id="when"><span class="type-signature"></span>when<span class="signature">(thunk)</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Executes the test code and verifies the expectations that were built up.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>thunk</code></td>
+            <td class="type">
+<span class="param-type">function</span>
+            </td>
+            <td class="description last"><p>Test code.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line139">line 139</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id="withAnyArguments"><span class="type-signature"></span>withAnyArguments<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Updates this expectatations <a href="ExpectedCall.html"><code>ExpectedCall</code></a> to allow any arguments when it is called.</p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line37">line 37</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id="withTheseArguments"><span class="type-signature"></span>withTheseArguments<span class="signature">(arguments)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Updates this expectatations <a href="ExpectedCall.html"><code>ExpectedCall</code></a> to have the specified arguments when it is called.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>arguments</code></td>
+            <td class="type">
+<span class="param-type">Array.&lt;object></span>
+            </td>
+            <td class="description last"><p>Required arguments for the <a href="Mock.html"><code>Mock</code></a>s call.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line27">line 27</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
+</dl>
+</article>
+</section>
+</div>
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+</nav>
+<br class="clear">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Apr 12 2016 14:13:42 GMT-0400 (EDT)
+</footer>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

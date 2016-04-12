@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: Mach</title>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Class: Mach</h1>
+<section>
+<header>
+        <h2>Mach</h2>
+            <div class="class-description"><p>mach.js</p></div>
+</header>
+<article>
+    <div class="container-overview">
+    <h2>Constructor</h2>
+    <h4 class="name" id="Mach"><span class="type-signature"></span>new Mach<span class="signature">()</span><span class="type-signature"></span></h4>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line12">line 12</a>
+    </li></ul></dd>
+</dl>
+    </div>
+        <h3 class="subsection-title">Members</h3>
+<h4 class="name" id=".any"><span class="type-signature">(static) </span>any<span class="type-signature"></span></h4>
+<div class="description">
+    <p>Creates a new <a href="Any.html"><code>Any</code></a> used as a wild card expected argument for a <a href="Mock.html"><code>Mock</code></a> expectation.</p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line59">line 59</a>
+    </li></ul></dd>
+</dl>
+        <h3 class="subsection-title">Methods</h3>
+    <h4 class="name" id=".ignoreMockedCallsWhen"><span class="type-signature">(static) </span>ignoreMockedCallsWhen<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Creates a scope in which unexpected and out of order function calls are ignored and only required calls are checked during execution.
+Consider using <a href="Expectation.html#andOtherCallsShouldBeIgnored"><code>Expectation#andOtherCallsShouldBeIgnored</code></a> instead.</p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line67">line 67</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id=".match"><span class="type-signature">(static) </span>match<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Alias for <code>Mach#Same</code></p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line51">line 51</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id=".mockFunction"><span class="type-signature">(static) </span>mockFunction<span class="signature">(thing)</span><span class="type-signature"> &rarr; {<a href="Mock.html">Mock</a>}</span></h4>
+<div class="description">
+    <p>Creates a new <a href="Mock.html"><code>Mock</code></a>.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>thing</code></td>
+            <td class="type">
+<span class="param-type">function</span>
+|
+<span class="param-type">string</span>
+            </td>
+            <td class="description last"><p>Either an existing function to mock or the name for the mock.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line18">line 18</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>Mocked function.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Mock.html">Mock</a></span>
+    </dd>
+</dl>
+    <h4 class="name" id=".mockObject"><span class="type-signature">(static) </span>mockObject<span class="signature">(object, name)</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Creates a new <a href="MockObject.html"><code>MockObject</code></a></p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>object</code></td>
+            <td class="type">
+<span class="param-type">object</span>
+            </td>
+            <td class="description last"><p>Object to mock.</p></td>
+        </tr>
+        <tr>
+                <td class="name"><code>name</code></td>
+            <td class="type">
+<span class="param-type">string</span>
+            </td>
+            <td class="description last"><p>Name for the mocked object.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line34">line 34</a>
+    </li></ul></dd>
+</dl>
+    <h4 class="name" id=".same"><span class="type-signature">(static) </span>same<span class="signature">(value, matcher)</span><span class="type-signature"> &rarr; {<a href="Same.html">Same</a>}</span></h4>
+<div class="description">
+    <p>Creates a new <a href="Same.html"><code>Same</code></a> which is used as an expected argument for a <a href="Mock.html"><code>Mock</code></a> expectation.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>value</code></td>
+            <td class="type">
+<span class="param-type">object</span>
+            </td>
+            <td class="description last"><p>Expected argument to a <a href="Mock.html"><code>Mock</code></a></p></td>
+        </tr>
+        <tr>
+                <td class="name"><code>matcher</code></td>
+            <td class="type">
+<span class="param-type">function</span>
+            </td>
+            <td class="description last"><p>Custom equality function in the form <code>(expected, actual) =&gt; boolean</code></p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mach.js.html">mach.js</a>, <a href="mach.js.html#line44">line 44</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>Same object to use as an expected argument in an expectation.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Same.html">Same</a></span>
+    </dd>
+</dl>
+</article>
+</section>
+</div>
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+</nav>
+<br class="clear">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Apr 12 2016 14:13:42 GMT-0400 (EDT)
+</footer>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

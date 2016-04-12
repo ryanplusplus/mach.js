@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+<div id="main">
+    <h1 class="page-title">Home</h1>
+    <h3> </h3>
+    <section>
+        <article><h1><a href="https://github.com/ryanplusplus/mach.js">mach.js</a></h1><p>Simple mocking framework for JavaScript inspired by CppUMock and designed for readability</p>
+<h2>Mocking a Function</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalled().when(function() {
+  f();
+});</code></pre><h2>Naming a Mocked Function</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+// Mocked function is now given as 'f' in error messages
+var f = mach.mockFunction('f');</code></pre><h2>Mocking an Object</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var someObject = {
+  foo: function() {},
+  bar: function() {}
+};
+mockedObject = mach.mockObject(someObject);
+mockedObject.foo.shouldBeCalled().when(function() {
+  mockedObject.foo();
+});</code></pre><h2>Naming a Mocked Object</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var someObject = {
+  foo: function() {},
+  bar: function() {}
+};
+// Mocked fields are now given as 'someObject.foo' and 'someObject.bar' in error messages
+mockedObject = mach.mockObject(someObject, 'someObject');</code></pre><h2>Requiring Arguments</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalledWith(1, 2).when(function() {
+  f(1, 2);
+});</code></pre><h2>Ignoring Single Arguments</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalledWith(1, mach.any, 3).when(function() {
+  f(1, 'whatever', 3);
+});</code></pre><h2>Ignoring All Arguments</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalledWithAnyArguments().when(function() {
+  f(1, 2);
+});</code></pre><h2>Ignoring Other Calls</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
+  f();
+  f(1);
+});</code></pre><h2>Returning Values</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalled().andWillReturn(4).when(function() {
+  expect(f()).toBe(4);
+});</code></pre><h2>Throwing Values</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalled().andWillThrow(Error('error')).when(function() {
+  try {
+    f();
+  }
+  catch(e) {
+    console.log(e.message);
+  }
+});</code></pre><h2>Making Multiple Expectations</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f1 = mach.mockFunction();
+var f2 = mach.mockFunction();
+f1.shouldBeCalled()
+  .andAlso(f2.shouldBeCalled())
+  .when(function() {
+    f1();
+    f2();
+  });</code></pre><h2>Making Optional Expectations</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.mayBeCalled().when(function() {});</code></pre><h2>Using Optional Ordering</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+// Use andThen or then when order is important
+f.shouldBeCalledWith(1)
+  .andThen(f.shouldBeCalledWith(2))
+  .when(function() {
+    f(2); // Error, out of order call
+    f(1);
+  });
+f.shouldBeCalledWith(1)
+  .then(f.shouldBeCalledWith(2))
+  .when(function() {
+    f(2); // Error, out of order call
+    f(1);
+  });
+// Use andAlso or and when order is unimportant
+f.shouldBeCalledWith(1)
+  .andAlso(f.shouldBeCalledWith(2))
+  .when(function() {
+    f(2); // No error, order is not fixed when 'andAlso' is used
+    f(1);
+  });
+f.shouldBeCalledWith(1)
+  .and(f.shouldBeCalledWith(2))
+  .when(function() {
+    f(2); // No error, order is not fixed when 'and' is used
+    f(1);
+  });</code></pre><h2>Using Mixed Ordering</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalledWith(1)
+  .and(f.shouldBeCalledWith(2))
+  .then(f.shouldBeCalledWith(3))
+  .and(f.shouldBeCalledWith(4))
+  .when(function() {
+    f(2);
+    f(1);
+    f(4);
+    f(3);
+  });</code></pre><h2>Matching Arguments Using Deep Compare</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+// mach.match can also be used
+f.shouldBeCalledWith(mach.same([1, 2, 3]))
+  .when(function() {
+    f([1, 2, 3]);
+  });</code></pre><h2>Matching Arguments Using a Custom Matcher</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var customMatcher = function(a, b) {
+  return a[0] === b[0]
+};
+var f = mach.mockFunction();
+f.shouldBeCalledWith(mach.same([1, 2, 3], customMatcher))
+  .when(function() {
+    f([1, 4, 9]);
+  });</code></pre><h2>Ignoring Mocked Calls</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+mach.ignoreMockedCallsWhen(function() {
+  f();
+});</code></pre><h2>Flexible Syntax</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f1 = mach.mockFunction();
+var f2 = mach.mockFunction();
+function somethingShouldHappen() {
+  return f1.shouldBeCalled();
+}
+function anotherThingShouldHappen() {
+  return f2.shouldBeCalledWith(1, 2, 3);
+}
+function theCodeUnderTestRuns() {
+  f1();
+  f2(1, 2, 3);
+}
+// Actual test.
+somethingShouldHappen()
+  .and(anotherThingShouldHappen())
+  .when(theCodeUnderTestRuns);</code></pre><h2>Handy Error messages</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f1 = mach.mockFunction('f1');
+var f2 = mach.mockFunction('f2');
+var f2 = mach.mockFunction('f3');
+f1.shouldBeCalledWith(1)
+  .and(f2.shouldBeCalledWith(2))
+  .when(function() {
+    f1(1);
+    f3(3);
+  });</code></pre><pre class="prettyprint source"><code>Unexpected function call f(3)
+Completed calls:
+  f1(1)
+Incomplete calls:
+  f2(2)</code></pre></article>
+    </section>
+</div>
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+</nav>
+<br class="clear">
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Apr 12 2016 14:13:42 GMT-0400 (EDT)
+</footer>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

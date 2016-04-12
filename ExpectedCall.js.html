@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ExpectedCall.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ExpectedCall.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+var Any = require('./Any.js');
+var Same = require('./Same.js');
+
+/**
+ * Represents an expected call to a {@link Mock}.
+ */
+class ExpectedCall {
+  /**
+   * Creates a new {@link ExpectedCall}
+   * @param {Mock} mock Mock that will be called.
+   * @param {object[]} args Arguments that are expected to be used during execution.
+   * @param {boolean} required If true the mock is required to be call during execution; other wise it is optional and can be skipped.
+   * @param {boolean} checkArgs If true then the arguments passed to the mock should be checked; otherwise they are ignored.
+   */
+  constructor(mock, args, required, checkArgs) {
+    /**
+     * {@link Mock} this expected call is based on.
+     * @name ExpectedCall#mock
+     * @type Mock
+     */
+    this.mock = mock;
+
+    /**
+     * Whether or not this expected call was called during execution.
+     * @name ExpectedCall#completed
+     * @type boolean
+     */
+    this.completed = false;
+
+    /**
+     * Whether or not to check the arguments for this expected call during execution.
+     * @name ExpectedCall#checkArgs
+     * @type boolean
+     */
+    this.checkArgs = checkArgs;
+
+    /**
+     * Whether or not this expected call is required during execution.
+     * @name ExpectedCall#required
+     * @type boolean
+     */
+    this.required = required;
+
+    /**
+     * The arguments this expected call expects during execution.
+     * @name ExpectedCall#expectedArgs
+     * @type object[]
+     */
+    this.expectedArgs = args;
+
+    /**
+     * The arguments this expected call received during execution.
+     * @name ExpectedCall#actualArgs
+     * @type object[]
+     */
+    this.actualArgs = undefined;
+
+    /**
+     * This expected calls return value.
+     * @name ExpectedCall#returnValue
+     * @type object
+     */
+    this.returnValue = undefined;
+
+    /**
+     * This expected calls return value.
+     * @name ExpectedCall#returnValue
+     * @type Error
+     */
+    this.throwValue = undefined;
+  }
+
+  /**
+   * Completes this expected call with the specified arguments.
+   * @param {object[]} args Arguments that were used during execution.
+   */
+  complete(args) {
+    this.completed = true;
+    this.actualArgs = args;
+  }
+
+  /**
+   * Checks to see if the specified {@link Mock} is this expected calls mock.
+   * @param {Mock} mock Mock to compare against this expected calls mock.
+   * @returns {boolean} True if the mocks are the same mock; otherwise false.
+   */
+  matchesFunction(mock) {
+    return mock === this.mock;
+  }
+
+  /**
+   * Checks to see if the specified arguments match this expected calls expected arguments.
+   * @param {object[]} args Arguments to compare against this expected calls expected arguments.
+   * @returns {boolean} True if the arguments match the expected arguments; otherwise false.
+   */
+  matchesArguments(args) {
+    if (!this.checkArgs) {
+      return true;
+    }
+
+    if (args.length !== this.expectedArgs.length) {
+      return false;
+    }
+
+    for (let i = 0; i &lt; args.length; i++) {
+      if (this.expectedArgs[i] instanceof Any) {
+        continue;
+      }
+
+      if (this.expectedArgs[i] instanceof Same) {
+        if (!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
+          return false;
+        } else {
+          continue;
+        }
+      }
+
+      if (args[i] !== this.expectedArgs[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Checks to see if the specified {@link Mock} and arguments match this expected call.
+   * @param {Mock} mock Mock to compare against this expected calls mock.
+   * @param {object[]} args Arguments to compare against this expected calls expected arguments.
+   * @returns {boolean} True if the mock and arguments match this expected call; otherwise false.
+   */
+  matches(mock, args) {
+    return this.matchesFunction(mock) &amp;&amp; this.matchesArguments(args);
+  }
+
+  /**
+   * Gets the name of this expected calls mock.
+   * @returns {string} The name of this expected calls mock.
+   */
+  get name() {
+    return this.mock.name;
+  }
+}
+
+module.exports = ExpectedCall;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Apr 12 2016 14:13:41 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
