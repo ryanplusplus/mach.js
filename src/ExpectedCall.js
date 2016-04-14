@@ -112,7 +112,8 @@ class ExpectedCall {
       if (this.expectedArgs[i] instanceof Same) {
         if (!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
           return false;
-        } else {
+        }
+        else {
           continue;
         }
       }

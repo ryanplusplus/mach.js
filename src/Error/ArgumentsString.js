@@ -30,9 +30,11 @@ class ArgumentsString {
 
       if (typeof arg === 'string' || arg instanceof String) {
         strings.push('\'' + arg + '\'');
-      } else if (arg instanceof Array) {
+      }
+      else if (arg instanceof Array) {
         strings.push('[' + this._convertArgsToString(arg) + ']');
-      } else {
+      }
+      else {
         strings.push(String(arg));
       }
     }

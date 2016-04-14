@@ -15,7 +15,8 @@ class MockObject {
     for (let property in object) {
       if (typeof object[property] === 'function') {
         this[property] = new Mock((name || '<anonymous>') + '.' + property);
-      } else {
+      }
+      else {
         this[property] = object[property];
       }
     }

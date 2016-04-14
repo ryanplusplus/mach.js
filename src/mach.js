@@ -20,7 +20,8 @@ class Mach {
 
     if (typeof thing === 'function') {
       name = thing.name;
-    } else {
+    }
+    else {
       name = thing;
     }
     return new Mock(name);
