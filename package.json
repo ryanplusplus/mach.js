@@ -9,6 +9,7 @@
       "test": "gulp test",
       "coverage": "gulp coverage",
       "watch": "gulp watch",
+      "docHelp": "jsdocgen",
       "docClone": "jsdocgen clone",
       "docGenerate": "jsdocgen generate",
       "docPublish": "jsdocgen publish"
@@ -37,7 +38,7 @@
       "gulp-plumber": "^1.0.1",
       "gulp-tap": "^0.1.3",
       "gulp-watch": "^4.3.5",
-      "jsdocgen": "0.2.2"
+      "jsdocgen": "^0.2.3"
   },
   "dependencies": {
     "underscore": "^1.8.3"

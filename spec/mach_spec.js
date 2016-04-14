@@ -18,7 +18,7 @@ describe('mach.js', () => {
     try {
       thunk();
     }
-    catch(error) {
+    catch (error) {
       expect(error.message).toContain(expectedFailure);
     }
   };
@@ -705,7 +705,7 @@ describe('mach.js', () => {
         };
 
         f((error) => {
-          if(error) {
+          if (error) {
             throw error;
           }
           finished();

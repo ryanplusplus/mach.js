@@ -436,7 +436,8 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          } catch (error) {
+          }
+          catch (error) {
             actualError = error;
           }
         });
@@ -655,7 +656,8 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          } catch (error) {
+          }
+          catch (error) {
             actualError = error;
           }
         });
@@ -877,6 +879,22 @@ describe('Tree', () => {
         p.then(() => done());
       });
 
+      it('should provide access to the return value of a promise', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
+        let answer = 42;
+
+        tree.execute((finished) => {
+          return new Promise(() => {
+            a();
+            finished(answer);
+          });
+        }).then((v) => {
+          expect(v).toEqual(answer);
+          done();
+        });
+      });
+
       it('should allow callbacks', (done) => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
@@ -890,6 +908,25 @@ describe('Tree', () => {
             cb(() => finished());
           })
           .then(() => done());
+      });
+
+      it('should provide access to the return value of a callback', (done) => {
+        let a = new Mock('a');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
+        let answer = 42;
+
+        tree.execute((finished) => {
+            let cb = (callback) => {
+              a();
+              callback();
+            };
+
+            cb(() => finished(answer));
+          })
+          .then((v) => {
+            expect(v).toEqual(answer);
+            done();
+          });
       });
     });
   });

@@ -55,9 +55,11 @@ class AndNode extends Node {
     let andNode;
     if (node instanceof ExpectedCallNode) {
       andNode = new AndNode(node.expectedCall);
-    } else if (node instanceof AndNode) {
+    }
+    else if (node instanceof AndNode) {
       andNode = node;
-    } else {
+    }
+    else {
       throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
     }
 
