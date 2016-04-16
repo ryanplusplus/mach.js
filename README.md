@@ -299,12 +299,63 @@ f1.shouldBeCalledWith(1)
     f1(1);
     f3(3);
   });
+`
 ```
 
-```
 Unexpected function call f(3)
-Completed calls:
+Completed calls:   
   f1(1)
 Incomplete calls:
   f2(2)
+
+````
+
+## Testing asynchronous code
+
+```javascript
+describe('Foo', () => {
+  let Foo = require('./Foo.js');
+
+  let mockTemplate = {
+    sync: () => {},
+    callback: : () => {},
+    promise: () => {}
+  }
+
+  let foo;
+  let mock;
+
+  beforeEach() => {
+    mock = new mockObject('mock', mockTemplate);
+    foo = new Foo(mock);
+  };
+
+  it('should return a promise for callback code', (done) => {
+    mock.callback.shouldBeCalled().when((finished) => {
+      foo.bar(() => {
+        finished();
+      });
+    }).catch((error) => {
+      fail(error);
+      done();
+    }).then(() => {
+      done();
+    };
+  });
+
+  it('should return a promise for promise code', (done) => {
+    mock.promise.shouldBeCalled().when((finished) => {
+      return foo.baz().then((value) => {
+        finished();
+        return value;
+      });
+    }).catch((error) => {
+      fail(error);
+      done();
+    }).then((value) => {
+      expect(value).toEqual(something); // value will be return value of foo.baz();
+      done();
+    });
+  });
+});
 ```
