@@ -299,16 +299,15 @@ f1.shouldBeCalledWith(1)
     f1(1);
     f3(3);
   });
-`
 ```
 
+```
 Unexpected function call f(3)
 Completed calls:   
   f1(1)
 Incomplete calls:
   f2(2)
-
-````
+```
 
 ## Testing asynchronous code
 
