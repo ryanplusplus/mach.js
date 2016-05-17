@@ -1,6 +1,8 @@
 # [mach.js](https://github.com/ryanplusplus/mach.js)
 Simple mocking framework for JavaScript inspired by CppUMock and designed for readability
 
+See the [manual](http://ryanplusplus.github.io/mach.js/) for full documentation.
+
 ## Mocking a Function
 
 ```javascript
