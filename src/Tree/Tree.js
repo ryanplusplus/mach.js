@@ -73,11 +73,9 @@ class Tree {
 
     if (lastNode instanceof ExpectedCallNode) {
       andNode = new AndNode(lastNode.expectedCall);
-    }
-    else if (lastNode instanceof AndNode) {
+    } else if (lastNode instanceof AndNode) {
       andNode = lastNode;
-    }
-    else {
+    } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -116,13 +114,11 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      }
-      else if (node instanceof AndNode) {
+      } else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      }
-      else {
+      } else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -173,13 +169,12 @@ class Tree {
         t.catch((error) => {
           reject(error);
         });
-      }
-      else {
+      } else {
         resolve(t);
       }
     }).then((v) => {
-      this._resetMocks();
       this._checkCalls();
+      this._resetMocks();
       return v;
     }, (error) => {
       this._resetMocks();
@@ -194,8 +189,7 @@ class Tree {
   _syncWhen(thunk) {
     try {
       thunk();
-    }
-    finally {
+    } finally {
       this._resetMocks();
     }
 
