@@ -332,9 +332,11 @@ describe('Foo', () => {
   };
 
   it('should return a promise for callback code', (done) => {
-    mock.callback.shouldBeCalled().when((finished) => {
-      foo.bar(() => {
-        finished();
+    mock.callback.shouldBeCalled().when(() => {
+      return new Promise((resolve) => {
+        foo.bar(() => {
+          resolve();
+        });
       });
     }).catch((error) => {
       fail(error);
@@ -345,9 +347,8 @@ describe('Foo', () => {
   });
 
   it('should return a promise for promise code', (done) => {
-    mock.promise.shouldBeCalled().when((finished) => {
+    mock.promise.shouldBeCalled().when(() => {
       return foo.baz().then((value) => {
-        finished();
         return value;
       });
     }).catch((error) => {

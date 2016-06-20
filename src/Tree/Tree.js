@@ -73,11 +73,9 @@ class Tree {
 
     if (lastNode instanceof ExpectedCallNode) {
       andNode = new AndNode(lastNode.expectedCall);
-    }
-    else if (lastNode instanceof AndNode) {
+    } else if (lastNode instanceof AndNode) {
       andNode = lastNode;
-    }
-    else {
+    } else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -116,13 +114,11 @@ class Tree {
     while (!(node instanceof TerminusNode)) {
       if (node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      }
-      else if (node instanceof AndNode) {
+      } else if (node instanceof AndNode) {
         for (let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      }
-      else {
+      } else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -156,50 +152,6 @@ class Tree {
     if (!result) {
       throw new NotAllCallsOccurredError(this._calls);
     }
-  }
-
-  /**
-   * Performs {@link Tree.Tree#execute} in an asynchronous context.
-   * @param {function} thunk Test code to run during execution.
-   * @returns {Promise} A promise so that test can call `fail` and `done` or their equivalents.
-   */
-  _asyncWhen(thunk) {
-    return new Promise((resolve, reject) => {
-      var done = (v) => resolve(v);
-
-      let t = thunk(done);
-
-      if (t instanceof Promise) {
-        t.catch((error) => {
-          reject(error);
-        });
-      }
-      else {
-        resolve(t);
-      }
-    }).then((v) => {
-      this._resetMocks();
-      this._checkCalls();
-      return v;
-    }, (error) => {
-      this._resetMocks();
-      throw error;
-    });
-  }
-
-  /**
-   * Performs {@link Tree.Tree#execute} in a synchronous context.
-   * @param {function} thunk Test code to run during execution.
-   */
-  _syncWhen(thunk) {
-    try {
-      thunk();
-    }
-    finally {
-      this._resetMocks();
-    }
-
-    this._checkCalls();
   }
 
   /**
@@ -333,12 +285,32 @@ class Tree {
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
 
-    switch (thunk.length) {
-      case 0:
-        return this._syncWhen(thunk);
-      default:
-        return this._asyncWhen(thunk);
+    let sync = true;
+
+    try {
+      let t = thunk();
+
+      if (t instanceof Promise) {
+        sync = false;
+
+        return t
+          .then((value) => {
+            this._resetMocks();
+            this._checkCalls();
+            return value;
+          })
+          .catch((error) => {
+            this._resetMocks();
+            throw error;
+          });
+      }
+    } finally {
+      if (sync) {
+        this._resetMocks();
+      }
     }
+
+    this._checkCalls();
   }
 
   /**

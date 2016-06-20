@@ -436,8 +436,7 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          }
-          catch (error) {
+          } catch (error) {
             actualError = error;
           }
         });
@@ -656,8 +655,7 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          }
-          catch (error) {
+          } catch (error) {
             actualError = error;
           }
         });
@@ -776,32 +774,38 @@ describe('Tree', () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute((finished) => {
-            let cb = (callback) => {
-              a();
+        tree.execute(() => {
+          return new Promise((resolve) => {
+              let cb = (callback) => {
+                a();
 
-              throw new Error('expected error');
-              callback(); // jshint ignore:line
-            };
+                throw new Error('expected error');
+                callback(); // jshint ignore:line
+              };
 
-            cb(() => finished());
-          })
-          .catch((error) => {
-            expect(error.message)
-              .toEqual('expected error');
-            done();
-          });
+              cb(() => resolve());
+            })
+            .catch((error) => {
+              expect(error.message)
+                .toEqual('expected error');
+              done();
+            });
+        });
       });
 
       it('should return an error if the promise thunk throws an exception', (done) => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute((finished) => {
+        tree.execute(() => {
             return new Promise(() => {
                 throw new Error('expected error');
               })
-              .then(() => finished());
+              .catch((error) => {
+                throw error;
+              });
+          }).then(() => {
+            done();
           })
           .catch((error) => {
             expect(error.message)
@@ -827,14 +831,16 @@ describe('Tree', () => {
         let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute((finished) => {
-          let f = ((callback) => {
-            b();
-            callback();
-          });
+        tree.execute(() => {
+          return new Promise((resolve) => {
+            let f = ((callback) => {
+              b();
+              callback();
+            });
 
-          f(() => {
-            finished();
+            f(() => {
+              resolve();
+            });
           });
         }).catch((error) => {
           expect(error instanceof UnexpectedFunctionCallError).toBe(true);
@@ -847,10 +853,9 @@ describe('Tree', () => {
         let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute((finished) => {
+        tree.execute(() => {
           return new Promise((resolve) => {
             b();
-            finished();
             resolve();
           });
         }).catch((error) => {
@@ -858,6 +863,7 @@ describe('Tree', () => {
           done();
         });
       });
+
     });
 
     describe('Async tests', () => {
@@ -865,10 +871,9 @@ describe('Tree', () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        let p = tree.execute((finished) => {
+        let p = tree.execute(() => {
           return new Promise((resolve) => {
             a();
-            finished();
             resolve();
           });
         });
@@ -884,10 +889,10 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
         let answer = 42;
 
-        tree.execute((finished) => {
-          return new Promise(() => {
+        tree.execute(() => {
+          return new Promise((resolve) => {
             a();
-            finished(answer);
+            resolve(answer);
           });
         }).then((v) => {
           expect(v).toEqual(answer);
@@ -899,13 +904,15 @@ describe('Tree', () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute((finished) => {
-            let cb = (callback) => {
-              a();
-              callback();
-            };
+        tree.execute(() => {
+            return new Promise((resolve) => {
+              let cb = (callback) => {
+                a();
+                callback();
+              };
 
-            cb(() => finished());
+              cb(() => resolve());
+            });
           })
           .then(() => done());
       });
@@ -915,13 +922,15 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
         let answer = 42;
 
-        tree.execute((finished) => {
-            let cb = (callback) => {
-              a();
-              callback();
-            };
+        tree.execute(() => {
+            return new Promise((resolve) => {
+              let cb = (callback) => {
+                a();
+                callback();
+              };
 
-            cb(() => finished(answer));
+              cb(() => resolve(answer));
+            });
           })
           .then((v) => {
             expect(v).toEqual(answer);
