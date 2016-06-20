@@ -17,8 +17,7 @@ describe('mach.js', () => {
   let shouldFailWith = (expectedFailure, thunk) => {
     try {
       thunk();
-    }
-    catch (error) {
+    } catch (error) {
       expect(error.message).toContain(expectedFailure);
     }
   };
@@ -683,14 +682,16 @@ describe('mach.js', () => {
 
   describe('async tests', () => {
     it('should allow callbacks in thunks', (done) => {
-      a.shouldBeCalled().when((finished) => {
-        let f = (callback) => {
-          a();
-          callback();
-        };
+      a.shouldBeCalled().when(() => {
+        return new Promise((resolve) => {
+          let f = (callback) => {
+            a();
+            callback();
+          };
 
-        f(() => {
-          finished();
+          f(() => {
+            resolve();
+          });
         });
       }).then(() => done());
     });
@@ -698,17 +699,18 @@ describe('mach.js', () => {
     it('should rethrow errors from node style error callbacks in thunks', (done) => {
       let errorMessage = 'oh hai der!';
 
-      a.shouldBeCalled().when((finished) => {
-        let f = (callback) => {
-          a();
-          callback(new Error(errorMessage));
-        };
+      a.shouldBeCalled().when(() => {
+        return new Promise((resolve, reject) => {
+          let f = (callback) => {
+            a();
+            callback(new Error(errorMessage));
+          };
 
-        f((error) => {
-          if (error) {
-            throw error;
-          }
-          finished();
+          f((error) => {
+            if (error) {
+              reject(error);
+            }
+          });
         });
       }).catch((error) => {
         expect(error.message).toEqual(errorMessage);
@@ -719,15 +721,17 @@ describe('mach.js', () => {
     it('should rethrow errors from before callback in thunks', (done) => {
       let errorMessage = 'oh hai der!';
 
-      a.shouldBeCalled().when((finished) => {
-        let f = () => {
-          a();
-          throw new Error(errorMessage);
-          finished(); // jshint ignore:line
-          // Callback would be here...
-        };
+      a.shouldBeCalled().when(() => {
+        return new Promise((resolve) => {
+          let f = () => {
+            a();
+            throw new Error(errorMessage);
+          };
 
-        f(() => {});
+          f(() => {
+            resolve();
+          });
+        });
       }).catch((error) => {
         expect(error.message).toEqual(errorMessage);
         done();
@@ -735,24 +739,23 @@ describe('mach.js', () => {
     });
 
     it('should rethrow mach errors from callback thunks', (done) => {
-      let NotAllCallsOccurredError = require('../src/Error/NotAllCallsOccurredError.js');
-
-      a.shouldBeCalled().when((finished) => {
-        finished();
-      }).catch((error) => {
-        expect(error instanceof NotAllCallsOccurredError).toBe(true);
-        done();
-      });
+      a.shouldBeCalled().when(() => {
+          return new Promise((resolve) => {
+            resolve();
+          });
+        })
+        .catch((error) => {
+          expect(error.message.startsWith('Not all calls occurred')).toBe(true);
+          done();
+        });
     });
   });
 
   it('should allow promises in thunks', (done) => {
-    a.shouldBeCalled().when((finished) => {
+    a.shouldBeCalled().when(() => {
       return new Promise((resolve) => {
         a();
         resolve();
-      }).then(() => {
-        finished();
       });
     }).then(() => {
       done();
@@ -762,12 +765,10 @@ describe('mach.js', () => {
   it('should rethrow errors from code in promises', (done) => {
     let errorMessage = 'oh hai der!';
 
-    a.shouldBeCalled().when((finished) => {
+    a.shouldBeCalled().when(() => {
       return new Promise((resolve, reject) => {
         a();
         reject(new Error(errorMessage));
-      }).then(() => {
-        finished();
       });
     }).catch((error) => {
       expect(error.message).toEqual(errorMessage);
@@ -776,19 +777,15 @@ describe('mach.js', () => {
   });
 
   it('should rethrow mach errors from promises', (done) => {
-    let NotAllCallsOccurredError = require('../src/Error/NotAllCallsOccurredError.js');
-
-    a.shouldBeCalled().when((finished) => {
+    a.shouldBeCalled().when(() => {
       return new Promise((resolve) => {
         resolve();
-      }).then(() => {
-        finished();
       });
     }).then(() => {
       fail('expected an error to happen...');
       done();
     }, (error) => {
-      expect(error instanceof NotAllCallsOccurredError).toBe(true);
+      expect(error.message.startsWith('Not all calls occurred')).toBe(true);
       done();
     });
   });

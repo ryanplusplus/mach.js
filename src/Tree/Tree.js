@@ -155,48 +155,6 @@ class Tree {
   }
 
   /**
-   * Performs {@link Tree.Tree#execute} in an asynchronous context.
-   * @param {function} thunk Test code to run during execution.
-   * @returns {Promise} A promise so that test can call `fail` and `done` or their equivalents.
-   */
-  _asyncWhen(thunk) {
-    return new Promise((resolve, reject) => {
-      var done = (v) => resolve(v);
-
-      let t = thunk(done);
-
-      if (t instanceof Promise) {
-        t.catch((error) => {
-          reject(error);
-        });
-      } else {
-        resolve(t);
-      }
-    }).then((v) => {
-      this._checkCalls();
-      this._resetMocks();
-      return v;
-    }, (error) => {
-      this._resetMocks();
-      throw error;
-    });
-  }
-
-  /**
-   * Performs {@link Tree.Tree#execute} in a synchronous context.
-   * @param {function} thunk Test code to run during execution.
-   */
-  _syncWhen(thunk) {
-    try {
-      thunk();
-    } finally {
-      this._resetMocks();
-    }
-
-    this._checkCalls();
-  }
-
-  /**
    * Resets all {@link Mock} globals and handlers
    */
   _resetMocks() {
@@ -327,11 +285,33 @@ class Tree {
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
 
-    switch (thunk.length) {
-      case 0:
-        return this._syncWhen(thunk);
-      default:
-        return this._asyncWhen(thunk);
+    let sync = true;
+
+    try {
+      let t = thunk();
+
+      if (t instanceof Promise) {
+        sync = false;
+
+        return t
+          .then((value) => {
+            this._resetMocks();
+            this._checkCalls();
+            return value;
+          })
+          .catch((error) => {
+            this._resetMocks();
+            throw error;
+          });
+      }
+    } finally {
+      if (sync) {
+        this._resetMocks();
+      }
+    }
+
+    if (sync) {
+      this._checkCalls();
     }
   }
 
