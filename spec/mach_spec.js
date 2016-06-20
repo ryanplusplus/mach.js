@@ -789,4 +789,38 @@ describe('mach.js', () => {
       done();
     });
   });
+
+  it('should allow for nested promises', (done) => {
+    a.shouldBeCalled()
+      .andWillReturn(
+        new Promise((resolve) => {
+          resolve(0);
+        })
+      )
+      .then(a.shouldBeCalled()
+        .andWillReturn(
+          new Promise((resolve) => {
+            resolve(1);
+          }))
+      )
+      .when(() => {
+        return new Promise((resolve, reject) => {
+          return a().then((v0) => {
+            expect(v0).toEqual(0);
+
+            return a().then((v1) => {
+              expect(v1).toEqual(1);
+              resolve();
+            });
+          });
+        });
+      })
+      .then(() => {
+        done();
+      })
+      .catch((error) => {
+        fail(error);
+        done();
+      });
+  });
 });

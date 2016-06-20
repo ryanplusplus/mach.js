@@ -801,9 +801,6 @@ describe('Tree', () => {
             return new Promise((resolve) => {
                 throw new Error('expected error');
               })
-              .then(() => {
-                resolve();
-              })
               .catch((error) => {
                 throw error;
               });
