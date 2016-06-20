@@ -17,7 +17,8 @@ describe('mach.js', () => {
   let shouldFailWith = (expectedFailure, thunk) => {
     try {
       thunk();
-    } catch (error) {
+    }
+    catch(error) {
       expect(error.message).toContain(expectedFailure);
     }
   };
@@ -341,7 +342,8 @@ describe('mach.js', () => {
     a.shouldBeCalledWith(1)
       .andAlso(a.shouldBeCalledWith(2))
       .andThen(a.shouldBeCalledWith(3))
-      .andAlso(a.shouldBeCalledWith(4)).when(() => {
+      .andAlso(a.shouldBeCalledWith(4))
+      .when(() => {
         a(2);
         a(1);
         a(4);
@@ -365,11 +367,13 @@ describe('mach.js', () => {
   it('should allow you to mix and match call types', () => {
     b.shouldBeCalled()
       .andAlso(c.shouldBeCalledWith(1, 2, 3))
-      .andThen(c.shouldBeCalledWith(1).andWillReturn(4))
+      .andThen(c.shouldBeCalledWith(1)
+        .andWillReturn(4))
       .when(() => {
         b();
         c(1, 2, 3);
-        expect(c(1)).toBe(4);
+        expect(c(1))
+          .toBe(4);
       });
   });
 
@@ -484,10 +488,13 @@ describe('mach.js', () => {
       '\tb()';
 
     shouldFailWithExactly(failureMessage, () => {
-      b.shouldBeCalled().andThen(c.shouldBeCalled()).andThen(b.shouldBeCalled()).when(() => {
-        b();
-        b();
-      });
+      b.shouldBeCalled()
+        .andThen(c.shouldBeCalled())
+        .andThen(b.shouldBeCalled())
+        .when(() => {
+          b();
+          b();
+        });
     });
   });
 
@@ -593,33 +600,29 @@ describe('mach.js', () => {
 
   it('should actually check for sameness', () => {
     shouldFail(() => {
-      a.shouldBeCalledWith(mach.same([1, 2, 3]))
-        .when(() => {
-          a([3, 2, 1]);
-        });
+      a.shouldBeCalledWith(mach.same([1, 2, 3])).when(() => {
+        a([3, 2, 1]);
+      });
     });
   });
 
   it('should allow some arguments to be checked for sameness and some for equality', () => {
     shouldFail(() => {
-      a.shouldBeCalledWith(mach.same([1, 2, 3]), [4, 5, 6])
-        .when(() => {
-          a([1, 2, 3], [4, 5, 6]);
-        });
+      a.shouldBeCalledWith(mach.same([1, 2, 3]), [4, 5, 6]).when(() => {
+        a([1, 2, 3], [4, 5, 6]);
+      });
     });
 
-    a.shouldBeCalledWith(mach.same([1, 2, 3]), 7)
-      .when(() => {
-        a([1, 2, 3], 7);
-      });
+    a.shouldBeCalledWith(mach.same([1, 2, 3]), 7).when(() => {
+      a([1, 2, 3], 7);
+    });
   });
 
   it('should actually check for sameness when nothing is called', () => {
     let failureMessage = 'Incomplete calls:\n' + '\ta([1, 2, 3])';
 
     shouldFailWith(failureMessage, () => {
-      a.shouldBeCalledWith(mach.same([1, 2, 3]))
-        .when(() => {});
+      a.shouldBeCalledWith(mach.same([1, 2, 3])).when(() => {});
     });
   });
 
@@ -632,24 +635,21 @@ describe('mach.js', () => {
       return false;
     };
 
-    a.shouldBeCalledWith(mach.same([1, 2, 3], alwaysMatches))
-      .when(() => {
-        a([3, 2, 1]);
-      });
+    a.shouldBeCalledWith(mach.same([1, 2, 3], alwaysMatches)).when(() => {
+      a([3, 2, 1]);
+    });
 
     shouldFail(() => {
-      a.shouldBeCalledWith(mach.same([1, 2, 3], neverMatches))
-        .when(() => {
-          a([1, 2, 3]);
-        });
+      a.shouldBeCalledWith(mach.same([1, 2, 3], neverMatches)).when(() => {
+        a([1, 2, 3]);
+      });
     });
   });
 
   it('should allow mach.match to be used as an alias for mach.same', () => {
-    a.shouldBeCalledWith(mach.match([1, 2, 3]))
-      .when(() => {
-        a([1, 2, 3]);
-      });
+    a.shouldBeCalledWith(mach.match([1, 2, 3])).when(() => {
+      a([1, 2, 3]);
+    });
   });
 
   it('should allow additional mocked calls to be ignored', () => {
@@ -682,67 +682,72 @@ describe('mach.js', () => {
 
   describe('async tests', () => {
     it('should allow callbacks in thunks', (done) => {
-      a.shouldBeCalled().when(() => {
-        return new Promise((resolve) => {
-          let f = (callback) => {
-            a();
-            callback();
-          };
+      a.shouldBeCalled()
+        .when(() => {
+          return new Promise((resolve) => {
+            let f = (callback) => {
+              a();
+              callback();
+            };
 
-          f(() => {
-            resolve();
+            f(() => {
+              resolve();
+            });
           });
-        });
-      }).then(() => done());
+        })
+        .then(() => done());
     });
 
     it('should rethrow errors from node style error callbacks in thunks', (done) => {
       let errorMessage = 'oh hai der!';
 
-      a.shouldBeCalled().when(() => {
-        return new Promise((resolve, reject) => {
-          let f = (callback) => {
-            a();
-            callback(new Error(errorMessage));
-          };
+      a.shouldBeCalled()
+        .when(() => {
+          return new Promise((resolve, reject) => {
+            let f = (callback) => {
+              a();
+              callback(new Error(errorMessage));
+            };
 
-          f((error) => {
-            if (error) {
-              reject(error);
-            }
+            f((error) => {
+              if(error) {
+                reject(error);
+              }
+            });
           });
+        })
+        .catch((error) => {
+          expect(error.message).toEqual(errorMessage);
+          done();
         });
-      }).catch((error) => {
-        expect(error.message).toEqual(errorMessage);
-        done();
-      });
     });
 
     it('should rethrow errors from before callback in thunks', (done) => {
       let errorMessage = 'oh hai der!';
 
-      a.shouldBeCalled().when(() => {
-        return new Promise((resolve) => {
-          let f = () => {
-            a();
-            throw new Error(errorMessage);
-          };
+      a.shouldBeCalled()
+        .when(() => {
+          return new Promise((resolve) => {
+            let f = () => {
+              a();
+              throw new Error(errorMessage);
+            };
 
-          f(() => {
-            resolve();
+            f(() => {
+              resolve();
+            });
           });
+        })
+        .catch((error) => {
+          expect(error.message).toEqual(errorMessage);
+          done();
         });
-      }).catch((error) => {
-        expect(error.message).toEqual(errorMessage);
-        done();
-      });
     });
 
     it('should rethrow mach errors from callback thunks', (done) => {
-      a.shouldBeCalled().when(() => {
-          return new Promise((resolve) => {
-            resolve();
-          });
+      a.shouldBeCalled()
+        .when(() => {
+          return Promise.resolve();
         })
         .catch((error) => {
           expect(error.message.startsWith('Not all calls occurred')).toBe(true);
@@ -752,64 +757,78 @@ describe('mach.js', () => {
   });
 
   it('should allow promises in thunks', (done) => {
-    a.shouldBeCalled().when(() => {
-      return new Promise((resolve) => {
-        a();
-        resolve();
+    a.shouldBeCalled()
+      .when(() => {
+        return Promise.resolve(a());
+      })
+      .then(() => {
+        done();
       });
-    }).then(() => {
-      done();
-    });
+  });
+
+  it('should return values from promises', (done) => {
+    a.shouldBeCalled()
+      .andWillReturn(1)
+      .when(() => {
+        return Promise.resolve(a());
+      })
+      .catch((error) => {
+        fail(error);
+      })
+      .then((value) => {
+        expect(value).toEqual(1);
+        done();
+      });
   });
 
   it('should rethrow errors from code in promises', (done) => {
     let errorMessage = 'oh hai der!';
 
-    a.shouldBeCalled().when(() => {
-      return new Promise((resolve, reject) => {
-        a();
-        reject(new Error(errorMessage));
+    a.shouldBeCalled()
+      .when(() => {
+        return Promise.reject(new Error(errorMessage));
+      })
+      .catch((error) => {
+        expect(error.message).toEqual(errorMessage);
+        done();
       });
-    }).catch((error) => {
-      expect(error.message).toEqual(errorMessage);
-      done();
-    });
   });
 
   it('should rethrow mach errors from promises', (done) => {
-    a.shouldBeCalled().when(() => {
-      return new Promise((resolve) => {
-        resolve();
+    a.shouldBeCalled()
+      .when(() => {
+        return Promise.resolve();
+      })
+      .then(() => {
+        fail('expected an error to happen...');
+        done();
+      }, (error) => {
+        expect(error.message.startsWith('Not all calls occurred'))
+          .toBe(true);
+        done();
       });
-    }).then(() => {
-      fail('expected an error to happen...');
-      done();
-    }, (error) => {
-      expect(error.message.startsWith('Not all calls occurred')).toBe(true);
-      done();
-    });
   });
 
   it('should allow for nested promises', (done) => {
-    a.shouldBeCalled().andWillReturn(Promise.resolve(0))
-      .then(a.shouldBeCalled().andWillReturn(Promise.resolve(1)))
+    a.shouldBeCalled()
+      .andWillReturn(Promise.resolve(0))
+      .then(a.shouldBeCalled()
+        .andWillReturn(Promise.resolve(1)))
       .when(() => {
-        return new Promise((resolve) => {
-          return a().then((v0) => {
+        return a()
+          .then((v0) => {
             expect(v0).toEqual(0);
 
-            return a().then((v1) => {
-              expect(v1).toEqual(1);
-              resolve();
-            });
+            return a()
+              .then((v1) => {
+                expect(v1).toEqual(1);
+              });
           });
-        });
-      })
-      .then(() => {
-        done();
       })
       .catch((error) => {
         fail(error);
+      })
+      .then(() => {
         done();
       });
   });
