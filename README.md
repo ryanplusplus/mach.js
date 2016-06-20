@@ -353,7 +353,6 @@ describe('Foo', () => {
       });
     }).catch((error) => {
       fail(error);
-      done();
     }).then((value) => {
       expect(value).toEqual(something); // value will be return value of foo.baz();
       done();
