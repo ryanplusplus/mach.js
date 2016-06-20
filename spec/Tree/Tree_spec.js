@@ -798,7 +798,7 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
         tree.execute(() => {
-            return new Promise((resolve) => {
+            return new Promise(() => {
                 throw new Error('expected error');
               })
               .catch((error) => {
@@ -863,6 +863,7 @@ describe('Tree', () => {
           done();
         });
       });
+
     });
 
     describe('Async tests', () => {

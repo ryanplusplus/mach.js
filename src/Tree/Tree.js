@@ -310,9 +310,7 @@ class Tree {
       }
     }
 
-    if (sync) {
-      this._checkCalls();
-    }
+    this._checkCalls();
   }
 
   /**
