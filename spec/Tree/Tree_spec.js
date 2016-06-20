@@ -863,7 +863,6 @@ describe('Tree', () => {
           done();
         });
       });
-
     });
 
     describe('Async tests', () => {
