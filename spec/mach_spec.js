@@ -726,9 +726,76 @@ describe('mach.js', () => {
         .then(done);
     });
 
+    it('should support node style error callbacks: error case', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback('oh noes')
+        .when(() => {
+          return new Promise((resolve, reject) => {
+            a((err, val) => {
+              if (err) {
+                reject(err);
+              }
+              resolve(val);
+            });
+          });
+        })
+        .then(() => fail('should have rejected'))
+        .catch((error) => {
+          expect(error).toEqual('oh noes');
+          done();
+        });
+    });
+
+    it('should support node style error callbacks: non-error case', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback(undefined, 1)
+        .when(() => {
+          return new Promise((resolve, reject) => {
+            a((err, val) => {
+              if (err) {
+                reject(err);
+              }
+              resolve(val);
+            });
+          });
+        })
+        .catch(fail)
+        .then((value) => {
+          expect(value).toEqual(1);
+          done();
+        });
+    });
+
     it('should throw a mach error when callback expected argument is not specified', (done) => {
       shouldFailWith('expectation has no arguments to callback', () => {
         a.shouldBeCalled().andWillCallback()
+          .when(() => {
+            return new Promise((resolve) => {
+              a(() => resolve);
+            });
+          })
+          .then(() => {
+            fail('should have errored out');
+            done();
+          });
+      });
+      done();
+    });
+
+    it('should throw a mach error when callback and return value are specified', (done) => {
+      shouldFailWith('expectation can not have return value and callback', () => {
+        a.shouldBeCalledWith(mach.callback).andWillCallback().andWillReturn(0)
+          .when(() => {
+            return new Promise((resolve) => {
+              a(() => resolve);
+            });
+          })
+          .then(() => {
+            fail('should have errored out');
+            done();
+          });
+      });
+
+      shouldFailWith('expectation can not have return value and callback', () => {
+        a.shouldBeCalledWith(mach.callback).andWillReturn(0).andWillCallback()
           .when(() => {
             return new Promise((resolve) => {
               a(() => resolve);
