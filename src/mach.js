@@ -1,10 +1,11 @@
 'use strict';
 
-var Any = require('./Any.js');
-var Expectation = require('./Expectation.js');
-var Mock = require('./Mock.js');
-var MockObject = require('./MockObject.js');
-var Same = require('./Same.js');
+let Any = require('./Any.js');
+let Callback = require('./Callback.js');
+let Expectation = require('./Expectation.js');
+let Mock = require('./Mock.js');
+let MockObject = require('./MockObject.js');
+let Same = require('./Same.js');
 
 /**
  * mach.js
@@ -18,7 +19,7 @@ class Mach {
   static mockFunction(thing) {
     let name;
 
-    if (typeof thing === 'function') {
+    if(typeof thing === 'function') {
       name = thing.name;
     }
     else {
@@ -59,6 +60,14 @@ class Mach {
    */
   static get any() {
     return new Any();
+  }
+
+  /**
+   * Creates a new {@link Callback} used as an expected argument for a {@link Mock} expectation that has a callback.
+   * @returns {Callback} Callback
+   */
+  static get callback() {
+    return new Callback();
   }
 
   /**

@@ -1,13 +1,13 @@
 'use strict';
 
-var RootNode = require('./RootNode.js');
-var TerminusNode = require('./TerminusNode.js');
-var ExpectedCallNode = require('./ExpectedCallNode.js');
-var AndNode = require('./AndNode.js');
-var NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
-var OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
-var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
-var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
+let RootNode = require('./RootNode.js');
+let TerminusNode = require('./TerminusNode.js');
+let ExpectedCallNode = require('./ExpectedCallNode.js');
+let AndNode = require('./AndNode.js');
+let NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
+let OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
+let UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
+let UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
 /**
  * Classes the make up the expected execution path.
@@ -56,7 +56,7 @@ class Tree {
   get _lastNode() {
     let node = this._root;
 
-    while (!(node.child instanceof TerminusNode)) {
+    while(!(node.child instanceof TerminusNode)) {
       node = node.child;
     }
 
@@ -71,11 +71,13 @@ class Tree {
     let andNode;
     let lastNode = this._lastNode;
 
-    if (lastNode instanceof ExpectedCallNode) {
+    if(lastNode instanceof ExpectedCallNode) {
       andNode = new AndNode(lastNode.expectedCall);
-    } else if (lastNode instanceof AndNode) {
+    }
+    else if(lastNode instanceof AndNode) {
       andNode = lastNode;
-    } else {
+    }
+    else {
       throw new Error('Unexpected type for this node, expected AndNode or ExpectedCallNode');
     }
 
@@ -111,14 +113,16 @@ class Tree {
 
     node = node.child;
 
-    while (!(node instanceof TerminusNode)) {
-      if (node instanceof ExpectedCallNode) {
+    while(!(node instanceof TerminusNode)) {
+      if(node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
-      } else if (node instanceof AndNode) {
-        for (let expectedCall of node.expectedCalls) {
+      }
+      else if(node instanceof AndNode) {
+        for(let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
-      } else {
+      }
+      else {
         throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
       }
 
@@ -142,14 +146,14 @@ class Tree {
    */
   _checkCalls() {
     let result = true;
-    for (let expectedCall of this._calls) {
-      if (expectedCall.required && !expectedCall.completed) {
+    for(let expectedCall of this._calls) {
+      if(expectedCall.required && !expectedCall.completed) {
         result = false;
         break;
       }
     }
 
-    if (!result) {
+    if(!result) {
       throw new NotAllCallsOccurredError(this._calls);
     }
   }
@@ -158,8 +162,23 @@ class Tree {
    * Resets all {@link Mock} globals and handlers
    */
   _resetMocks() {
-    for (let call of this._calls) {
+    for(let call of this._calls) {
       call.mock.reset();
+    }
+  }
+
+  _checkRemainingExpectations(mock, args) {
+    if(!this._ignoreOtherCalls) {
+      if(this._executingNode.partialMatch(mock)) {
+        throw new UnexpectedArgumentsError(mock, args, this._calls);
+      }
+
+      if(this._callsAfter(this._executingNode).filter((ec) => ec.matches(mock, args)).length > 0) {
+        throw new OutOfOrderCallError(mock, args, this._calls);
+      }
+
+      // no match
+      throw new UnexpectedFunctionCallError(mock, args, this._calls);
     }
   }
 
@@ -174,89 +193,46 @@ class Tree {
    * @throws {Errors.UnexpectedFunctionCallError} Will throw an error if a call is made and there is not matching expected call.
    */
   _executeNode(mock, args) {
-    if (this._executingNode instanceof ExpectedCallNode) {
+    if(this._executingNode instanceof ExpectedCallNode) {
       let expectedCall = this._executingNode.expectedCall;
 
-      if (expectedCall.matches(mock, args)) {
-        expectedCall.complete(args);
-
+      if(expectedCall.matches(mock, args)) {
         this._executingNode = this._executingNode.child;
 
-        if (expectedCall.throwValue !== undefined) {
-          throw expectedCall.throwValue;
-        }
-
-        return expectedCall.returnValue;
+        return expectedCall.execute(args);
       }
 
-      if (!expectedCall.required) {
+      if(!expectedCall.required) {
         this._executingNode = this._executingNode.child;
 
         return this._executeNode(mock, args);
       }
 
-      if (!this._ignoreOtherCalls) {
-        if (expectedCall.matchesFunction(mock)) {
-          throw new UnexpectedArgumentsError(mock, args, this._calls);
-        }
-
-        for (let ec of this._callsAfter(this._executingNode)) {
-          if (ec.matches(mock, args)) {
-            throw new OutOfOrderCallError(mock, args, this._calls);
-          }
-        }
-
-        // no match
-        throw new UnexpectedFunctionCallError(mock, args, this._calls);
-      }
+      this._checkRemainingExpectations(mock, args);
 
       return;
     }
 
-    if (this._executingNode instanceof AndNode) {
+    if(this._executingNode instanceof AndNode) {
       let matchedExpectedCall = this._executingNode.match(mock, args);
 
-      if (matchedExpectedCall !== undefined) {
-        matchedExpectedCall.complete(args);
-
-        if (this._executingNode.allDone()) {
-          this._executingNode = this._executingNode.child;
-        }
-
-        if (matchedExpectedCall.throwValue !== undefined) {
-          throw matchedExpectedCall.throwValue;
-        }
-
-        return matchedExpectedCall.returnValue;
+      if(matchedExpectedCall !== undefined) {
+        return matchedExpectedCall.execute(args);
       }
 
-      if (this._executingNode.onlyOptionalRemain()) {
+      if(this._executingNode.onlyOptionalRemain()) {
         this._executingNode = this._executingNode.child;
 
         return this._executeNode(mock, args);
       }
 
-      if (!this._ignoreOtherCalls) {
-        let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
+      this._checkRemainingExpectations(mock, args);
 
-        if (partialMatchExpectedCall !== undefined) {
-          throw new UnexpectedArgumentsError(mock, args, this._calls);
-        }
-
-        for (let ec of this._callsAfter(this._executingNode)) {
-          if (ec.matches(mock, args)) {
-            throw new OutOfOrderCallError(mock, args, this._calls);
-          }
-        }
-
-        // no match
-        throw new UnexpectedFunctionCallError(mock, args, this._calls);
-      }
       return;
     }
 
-    if (this._executingNode instanceof TerminusNode) {
-      if (!this._ignoreOtherCalls) {
+    if(this._executingNode instanceof TerminusNode) {
+      if(!this._ignoreOtherCalls) {
         throw new UnexpectedFunctionCallError(mock, args, this._calls);
       }
       return;
@@ -269,7 +245,7 @@ class Tree {
   _setMockExecutionHandler() {
     this._calls[0].mock.tree = this;
 
-    for (let call of this._calls) {
+    for(let call of this._calls) {
       call.mock.handler = (args) => {
         return this._executeNode(call.mock, args);
       };
@@ -290,7 +266,7 @@ class Tree {
     try {
       let t = thunk();
 
-      if (t instanceof Promise) {
+      if(t instanceof Promise) {
         sync = false;
 
         return t
@@ -304,8 +280,9 @@ class Tree {
             throw error;
           });
       }
-    } finally {
-      if (sync) {
+    }
+    finally {
+      if(sync) {
         this._resetMocks();
       }
     }

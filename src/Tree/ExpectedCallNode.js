@@ -21,6 +21,15 @@ class ExpectedCallNode extends Node {
      */
     this.expectedCall = expectedCall;
   }
+
+  /**
+   * Determines the the {@link Mock} partially matches the {@link ExpectedCall} in this node.
+   * @param {Mock} mock Mock that was called.
+   * @return {boolean} True if the mock partially matches; otherwise false.
+   */
+  partialMatch(mock) {
+    return this.expectedCall.matchesFunction(mock);
+  }
 }
 
 module.exports = ExpectedCallNode;

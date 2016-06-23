@@ -1,7 +1,8 @@
 'use strict';
 
-var Any = require('./Any.js');
-var Same = require('./Same.js');
+let Any = require('./Any.js');
+let Callback = require('./Callback.js');
+let Same = require('./Same.js');
 
 /**
  * Represents an expected call to a {@link Mock}.
@@ -70,15 +71,39 @@ class ExpectedCall {
      * @type Error
      */
     this.throwValue = undefined;
+
+    /**
+     * If this expected call will invoke a callback this will be the index of
+     * that callback in the arguments array that is passed to it at runtime.
+     * @type number
+     */
+    this.callbackIndex = -1;
+
+    /**
+     * If this expected call will invoke a callback these are the arguments that will be passed to it.
+     * @type {object[]}
+     */
+    this.callbackArgs = [];
   }
 
   /**
    * Completes this expected call with the specified arguments.
    * @param {object[]} args Arguments that were used during execution.
    */
-  complete(args) {
+  execute(args) {
     this.completed = true;
     this.actualArgs = args;
+
+    if(this.throwValue !== undefined) {
+      throw this.throwValue;
+    }
+
+    if(this.callbackIndex !== -1) {
+      args[this.callbackIndex](...this.callbackArgs);
+    }
+    else {
+      return this.returnValue;
+    }
   }
 
   /**
@@ -96,21 +121,21 @@ class ExpectedCall {
    * @returns {boolean} True if the arguments match the expected arguments; otherwise false.
    */
   matchesArguments(args) {
-    if (!this.checkArgs) {
+    if(!this.checkArgs) {
       return true;
     }
 
-    if (args.length !== this.expectedArgs.length) {
+    if(args.length !== this.expectedArgs.length) {
       return false;
     }
 
-    for (let i = 0; i < args.length; i++) {
-      if (this.expectedArgs[i] instanceof Any) {
+    for(let i = 0; i < args.length; i++) {
+      if(this.expectedArgs[i] instanceof Any) {
         continue;
       }
 
-      if (this.expectedArgs[i] instanceof Same) {
-        if (!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
+      if(this.expectedArgs[i] instanceof Same) {
+        if(!this.expectedArgs[i].matcher(args[i], this.expectedArgs[i].value)) {
           return false;
         }
         else {
@@ -118,7 +143,16 @@ class ExpectedCall {
         }
       }
 
-      if (args[i] !== this.expectedArgs[i]) {
+      if(this.expectedArgs[i] instanceof Callback) {
+        if(typeof args[i] !== 'function') {
+          return false;
+        }
+        else {
+          continue;
+        }
+      }
+
+      if(args[i] !== this.expectedArgs[i]) {
         return false;
       }
     }

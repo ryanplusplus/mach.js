@@ -17,8 +17,7 @@ describe('mach.js', () => {
   let shouldFailWith = (expectedFailure, thunk) => {
     try {
       thunk();
-    }
-    catch(error) {
+    } catch (error) {
       expect(error.message).toContain(expectedFailure);
     }
   };
@@ -680,6 +679,108 @@ describe('mach.js', () => {
     });
   });
 
+  describe('callback expectations', () => {
+    it('should allow an expectation to have a callback', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback()
+        .when(() => {
+          return new Promise((resolve) => {
+            a(() => {
+              resolve(1);
+            });
+          });
+        })
+        .catch(fail)
+        .then((value) => {
+          expect(value).toEqual(1);
+          done();
+        });
+    });
+
+    it('should allow an expectation to have a callback with arguments', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback(0, 1, 2)
+        .when(() => {
+          return new Promise((resolve) => {
+            a((...args) => {
+              resolve(args.reduce((p, c) => p + c));
+            });
+          });
+        })
+        .catch(fail)
+        .then((value) => {
+          expect(value).toEqual(3);
+          done();
+        });
+    });
+
+    it('should allow mixing callbacks and regular arguments', (done) => {
+      a.shouldBeCalledWith(1, mach.callback, 2).andWillCallback(3)
+        .when(() => {
+          return new Promise((resolve) => {
+            a(1, (value) => {
+              expect(value).toEqual(3);
+              resolve();
+            }, 2);
+          });
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should throw a mach error when callback expected argument is not specified', (done) => {
+      shouldFailWith('expectation has no arguments to callback', () => {
+        a.shouldBeCalled().andWillCallback()
+          .when(() => {
+            return new Promise((resolve) => {
+              a(() => resolve);
+            });
+          })
+          .then(() => {
+            fail('should have errored out');
+            done();
+          });
+      });
+      done();
+    });
+
+    it('should throw a mach error if no callback is passed in at runtime', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback()
+        .when(() => {
+          return new Promise((resolve) => {
+            a(0);
+            resolve();
+          });
+        })
+        .then(() => fail('should have rejected'))
+        .catch((error) => {
+          expect(error.message)
+            .toEqual('Unexpected arguments (0) provided to function a\nIncomplete calls:\n\ta(<callback>)');
+          done();
+        });
+    });
+
+    it('should throw a mach error if callback passed in incorrectly at runtime', (done) => {
+      let expectedError = 'Unexpected arguments (0, () => {\n' +
+        '              resolve();\n' +
+        '            }) provided to function a\n' +
+        'Incomplete calls:\n' +
+        '\ta(<callback>, 0)';
+
+      a.shouldBeCalledWith(mach.callback, 0).andWillCallback()
+        .when(() => {
+          return new Promise((resolve) => {
+            a(0, () => {
+              resolve();
+            });
+          });
+        })
+        .then(() => fail('should have rejected'))
+        .catch((error) => {
+          expect(error.message).toEqual(expectedError);
+          done();
+        });
+    });
+  });
+
   describe('async tests', () => {
     it('should allow callbacks in thunks', (done) => {
       a.shouldBeCalled()
@@ -710,7 +811,7 @@ describe('mach.js', () => {
             };
 
             f((error) => {
-              if(error) {
+              if (error) {
                 reject(error);
               }
             });

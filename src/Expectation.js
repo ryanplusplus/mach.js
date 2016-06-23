@@ -1,8 +1,9 @@
 'use strict';
 
-var ExpectedCall = require('./ExpectedCall.js');
-var Tree = require('./Tree/Tree.js');
-var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+let ExpectedCall = require('./ExpectedCall.js');
+let Tree = require('./Tree/Tree.js');
+let ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+let Callback = require('./Callback.js');
 
 /**
  * This is a transitional object that helps convert {@link Mock}s into
@@ -46,6 +47,10 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   andWillReturn(returnValue) {
+    if(this._expectedCall.callbackIndex !== -1) {
+      throw new Error('expectation can not have return value and callback');
+    }
+
     this._expectedCall.returnValue = returnValue;
 
     return this;
@@ -58,6 +63,41 @@ class Expectation {
    */
   andWillThrow(error) {
     this._expectedCall.throwValue = error;
+
+    return this;
+  }
+
+  /**
+   * Updates this expectations {@link ExpectedCall} to invoke a callback.
+   * @param  {object[]} [...args] Arguments that will be passed to the callback when it is invoked.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
+  andWillCallback(...args) {
+    if(this._expectedCall.returnValue !== undefined) {
+      throw new Error('expectation can not have return value and callback');
+    }
+
+    if(this._expectedCall.expectedArgs.length === 0) {
+      throw new Error('expectation has no arguments to callback');
+    }
+
+    let callbackIndex = -1;
+
+    let i = 0;
+    for(let argument of this._expectedCall.expectedArgs) {
+      if(argument instanceof Callback) {
+        callbackIndex = i;
+        break;
+      }
+      i++;
+    }
+
+    if(callbackIndex === -1) {
+      throw new Error('expectation has no callback argument');
+    }
+
+    this._expectedCall.callbackIndex = callbackIndex;
+    this._expectedCall.callbackArgs = args;
 
     return this;
   }
@@ -110,7 +150,7 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   multipleTimes(count) {
-    for (var i = 0; i < count - 1; i++) {
+    for(var i = 0; i < count - 1; i++) {
       let expectation = new Expectation(this._expectedCall.mock, this._expectedCall.required);
 
       expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
