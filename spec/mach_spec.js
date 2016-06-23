@@ -748,12 +748,34 @@ describe('mach.js', () => {
           return new Promise((resolve) => {
             a(0);
             resolve();
-          })
+          });
         })
         .then(() => fail('should have rejected'))
         .catch((error) => {
           expect(error.message)
             .toEqual('Unexpected arguments (0) provided to function a\nIncomplete calls:\n\ta(<callback>)');
+          done();
+        });
+    });
+
+    it('should throw a mach error if callback passed in incorrectly at runtime', (done) => {
+      let expectedError = 'Unexpected arguments (0, () => {\n' +
+        '              resolve();\n' +
+        '            }) provided to function a\n' +
+        'Incomplete calls:\n' +
+        '\ta(<callback>, 0)';
+
+      a.shouldBeCalledWith(mach.callback, 0).andWillCallback()
+        .when(() => {
+          return new Promise((resolve) => {
+            a(0, () => {
+              resolve();
+            });
+          });
+        })
+        .then(() => fail('should have rejected'))
+        .catch((error) => {
+          expect(error.message).toEqual(expectedError);
           done();
         });
     });
