@@ -1,8 +1,9 @@
 'use strict';
 
-var ExpectedCall = require('./ExpectedCall.js');
-var Tree = require('./Tree/Tree.js');
-var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+let ExpectedCall = require('./ExpectedCall.js');
+let Tree = require('./Tree/Tree.js');
+let ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+let Callback = require('./Callback.js');
 
 /**
  * This is a transitional object that helps convert {@link Mock}s into
@@ -46,6 +47,10 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   andWillReturn(returnValue) {
+    if(this._expectedCall.callback !== undefined) {
+      throw new Error('expectation can not have return value and callback');
+    }
+
     this._expectedCall.returnValue = returnValue;
 
     return this;
@@ -58,6 +63,34 @@ class Expectation {
    */
   andWillThrow(error) {
     this._expectedCall.throwValue = error;
+
+    return this;
+  }
+
+  andWillCallback(...args) {
+    if(this._expectedCall.returnValue !== undefined) {
+      throw new Error('expectation can not have return value and callback');
+    }
+
+    if(this._expectedCall.expectedArgs.length === 0) {
+      throw new Error('expectation has no arguments to callback');
+    }
+
+    let callback;
+
+    for(let argument of this._expectedCall.expectedArgs) {
+      if(argument instanceof Callback) {
+        callback = argument;
+        break;
+      }
+    }
+
+    if(callback === undefined) {
+      throw new Error('expectation has no callback argument');
+    }
+
+    this._expectedCall.callback = callback;
+    this._expectedCall.callbackArgs = args;
 
     return this;
   }
@@ -110,7 +143,7 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   multipleTimes(count) {
-    for (var i = 0; i < count - 1; i++) {
+    for(var i = 0; i < count - 1; i++) {
       let expectation = new Expectation(this._expectedCall.mock, this._expectedCall.required);
 
       expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
