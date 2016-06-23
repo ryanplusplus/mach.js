@@ -37,7 +37,7 @@ describe('Expectation', () => {
 
     expect(expectation._expectedCall.expectedArgs.length).toEqual(args.length);
 
-    for(let i = 0; i < args.length; i++) {
+    for (let i = 0; i < args.length; i++) {
       expect(expectation._expectedCall.expectedArgs[i]).toEqual(args[i]);
     }
   });
@@ -203,7 +203,6 @@ describe('Expectation', () => {
 
       expect(expectation._expectedCall.callbackIndex).toEqual(0);
       expect(expectation._expectedCall.callbackArgs.length).toEqual(0);
-
     });
 
     it('should set callback value with arguments', () => {

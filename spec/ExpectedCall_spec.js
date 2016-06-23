@@ -109,7 +109,6 @@ describe('ExpectedCall', () => {
 
       expect(expectedCall.matchesArguments([0])).toBe(false);
       expect(expectedCall.matchesArguments([() => {}])).toBe(true);
-
     });
 
     it('should use basic equality to validate an argument', () => {
