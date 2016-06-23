@@ -47,7 +47,7 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   andWillReturn(returnValue) {
-    if(this._expectedCall.callback !== undefined) {
+    if(this._expectedCall.callbackIndex !== -1) {
       throw new Error('expectation can not have return value and callback');
     }
 
@@ -67,6 +67,11 @@ class Expectation {
     return this;
   }
 
+  /**
+   * Updates this expectations {@link ExpectedCall} to invoke a callback.
+   * @param  {object[]} [...args] Arguments that will be passed to the callback when it is invoked.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
   andWillCallback(...args) {
     if(this._expectedCall.returnValue !== undefined) {
       throw new Error('expectation can not have return value and callback');
@@ -76,20 +81,22 @@ class Expectation {
       throw new Error('expectation has no arguments to callback');
     }
 
-    let callback;
+    let callbackIndex = -1;
 
+    let i = 0;
     for(let argument of this._expectedCall.expectedArgs) {
       if(argument instanceof Callback) {
-        callback = argument;
+        callbackIndex = i;
         break;
       }
+      i++;
     }
 
-    if(callback === undefined) {
+    if(callbackIndex === -1) {
       throw new Error('expectation has no callback argument');
     }
 
-    this._expectedCall.callback = callback;
+    this._expectedCall.callbackIndex = callbackIndex;
     this._expectedCall.callbackArgs = args;
 
     return this;

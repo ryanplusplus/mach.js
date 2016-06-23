@@ -74,8 +74,8 @@ describe('AndNode', () => {
 
       a.merge(b);
 
-      for (let expectedCall of a.expectedCalls) {
-        expectedCall.complete([]);
+      for(let expectedCall of a.expectedCalls) {
+        expectedCall.execute([]);
       }
 
       expect(a.match(mock._class, [])).toBeUndefined();
@@ -100,63 +100,35 @@ describe('AndNode', () => {
   });
 
   describe('partialMatch', () => {
-    it('should return undefined if all the calls are completed', () => {
+    it('should return false if all the calls are completed', () => {
       let mock = new Mock('mock');
       let a = new AndNode(new ExpectedCall(mock._class, [], true, false));
       let b = new AndNode(new ExpectedCall(mock._class, [], true, false));
 
       a.merge(b);
 
-      for (let expectedCall of a.expectedCalls) {
-        expectedCall.complete([]);
+      for(let expectedCall of a.expectedCalls) {
+        expectedCall.execute([]);
       }
 
-      expect(a.partialMatch(mock, [])).toBeUndefined();
+      expect(a.partialMatch(mock, [])).toBe(false);
     });
 
-    it('should return undefined if no expected calls match', () => {
+    it('should return false if no expected calls match', () => {
       let mock = new Mock('mock');
       let a = new AndNode(new ExpectedCall(new Mock('a')._class, [], true, true));
       let b = new AndNode(new ExpectedCall(new Mock('b')._class, [], true, true));
 
       a.merge(b);
 
-      expect(a.partialMatch(mock, [])).toBeUndefined();
+      expect(a.partialMatch(mock, [])).toBe(false);
     });
 
     it('should return an expected call if the expected call matches', () => {
       let mock = new Mock('mock');
       let a = new AndNode(new ExpectedCall(mock._class, [], true, true));
 
-      expect(a.partialMatch(mock._class, [])).not.toBeUndefined();
-    });
-  });
-
-  describe('allDone', () => {
-    it('should return false if not all calls are done', () => {
-      let mock = new Mock('mock');
-      let a = new AndNode(new ExpectedCall(mock._class, [], true, false));
-      let b = new AndNode(new ExpectedCall(mock._class, [], true, false));
-
-      a.merge(b);
-
-      a.expectedCalls[0].complete([]);
-
-      expect(a.allDone()).toBe(false);
-    });
-
-    it('should return true if all calls are done', () => {
-      let mock = new Mock('mock');
-      let a = new AndNode(new ExpectedCall(mock._class, [], true, false));
-      let b = new AndNode(new ExpectedCall(mock._class, [], true, false));
-
-      a.merge(b);
-
-      for (let expectedCall of a.expectedCalls) {
-        expectedCall.complete([]);
-      }
-
-      expect(a.allDone()).toBe(true);
+      expect(a.partialMatch(mock._class, [])).toBe(true);
     });
   });
 
@@ -168,8 +140,8 @@ describe('AndNode', () => {
 
       a.merge(b);
 
-      for (let expectedCall of a.expectedCalls) {
-        expectedCall.complete([]);
+      for(let expectedCall of a.expectedCalls) {
+        expectedCall.execute([]);
       }
 
       expect(a.onlyOptionalRemain()).toBe(true);
@@ -182,7 +154,7 @@ describe('AndNode', () => {
 
       a.merge(b);
 
-      a.expectedCalls[0].complete([]);
+      a.expectedCalls[0].execute([]);
 
       expect(a.onlyOptionalRemain()).toBe(false);
     });
@@ -194,7 +166,7 @@ describe('AndNode', () => {
 
       a.merge(b);
 
-      a.expectedCalls[0].complete([]);
+      a.expectedCalls[0].execute([]);
 
       expect(a.onlyOptionalRemain()).toBe(true);
     });

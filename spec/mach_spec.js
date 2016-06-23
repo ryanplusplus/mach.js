@@ -680,6 +680,40 @@ describe('mach.js', () => {
     });
   });
 
+  describe('callback expectations', () => {
+    it('should allow an expectation to have a callback', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback()
+        .when(() => {
+          return new Promise((resolve) => {
+            a(() => {
+              resolve(1);
+            });
+          });
+        })
+        .catch(fail)
+        .then((value) => {
+          expect(value).toEqual(1);
+          done();
+        });
+    });
+
+    it('should allow an expectation to have a callback with arguments', (done) => {
+      a.shouldBeCalledWith(mach.callback).andWillCallback(0, 1, 2)
+        .when(() => {
+          return new Promise((resolve) => {
+            a((...args) => {
+              resolve(args.reduce((p, c) => p + c));
+            });
+          });
+        })
+        .catch(fail)
+        .then((value) => {
+          expect(value).toEqual(3);
+          done();
+        });
+    });
+  });
+
   describe('async tests', () => {
     it('should allow callbacks in thunks', (done) => {
       a.shouldBeCalled()

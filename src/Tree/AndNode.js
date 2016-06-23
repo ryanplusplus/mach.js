@@ -40,7 +40,7 @@ class AndNode extends Node {
   get name() {
     let calls = [];
 
-    for (let expectedCall of this.expectedCalls) {
+    for(let expectedCall of this.expectedCalls) {
       calls.push(expectedCall.name);
     }
 
@@ -53,17 +53,17 @@ class AndNode extends Node {
    */
   merge(node) {
     let andNode;
-    if (node instanceof ExpectedCallNode) {
+    if(node instanceof ExpectedCallNode) {
       andNode = new AndNode(node.expectedCall);
     }
-    else if (node instanceof AndNode) {
+    else if(node instanceof AndNode) {
       andNode = node;
     }
     else {
       throw new Error('Unexpected type for node, expected AndNode or ExpectedCallNode');
     }
 
-    for (let expectedCall of andNode.expectedCalls) {
+    for(let expectedCall of andNode.expectedCalls) {
       this.expectedCalls.push(expectedCall);
     }
   }
@@ -75,12 +75,12 @@ class AndNode extends Node {
    * @return {ExpectedCall|undefined} The matching {@link ExpectedCall} if found; otherwise undefined.
    */
   match(mock, args) {
-    for (let expectedCall of this.expectedCalls) {
-      if (expectedCall.completed) {
+    for(let expectedCall of this.expectedCalls) {
+      if(expectedCall.completed) {
         continue;
       }
 
-      if (expectedCall.matches(mock, args)) {
+      if(expectedCall.matches(mock, args)) {
         return expectedCall;
       }
     }
@@ -91,34 +91,20 @@ class AndNode extends Node {
   /**
    * Determines the the {@link Mock} partially matches any {@link ExpectedCall}s in this node.
    * @param {Mock} mock Mock that was called.
-   * @return {ExpectedCall|undefined} The matching expected call if found; otherwise undefined.
+   * @return {boolean} True if the mock partially matches; otherwise false.
    */
   partialMatch(mock) {
-    for (let expectedCall of this.expectedCalls) {
-      if (expectedCall.completed) {
+    for(let expectedCall of this.expectedCalls) {
+      if(expectedCall.completed) {
         continue;
       }
 
-      if (expectedCall.matchesFunction(mock)) {
-        return expectedCall;
+      if(expectedCall.matchesFunction(mock)) {
+        return true;
       }
     }
 
-    return undefined;
-  }
-
-  /**
-   * Checks to see if all {@link ExpectedCall}s in this node have been completed.
-   * @return {boolean} True if all calls are completed; otherwise false.
-   */
-  allDone() {
-    for (let expectedCall of this.expectedCalls) {
-      if (!expectedCall.completed) {
-        return false;
-      }
-    }
-
-    return true;
+    return false;
   }
 
   /**
@@ -126,12 +112,12 @@ class AndNode extends Node {
    * @return {boolean} True if all incomplete calls are optional; otherwise false.
    */
   onlyOptionalRemain() {
-    for (let expectedCall of this.expectedCalls) {
-      if (expectedCall.completed) {
+    for(let expectedCall of this.expectedCalls) {
+      if(expectedCall.completed) {
         continue;
       }
 
-      if (expectedCall.required) {
+      if(expectedCall.required) {
         return false;
       }
     }

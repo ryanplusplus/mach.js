@@ -12,6 +12,7 @@ describe('Tree', () => {
   let UnexpectedArgumentsError = require('../../src/Error/UnexpectedArgumentsError.js');
   let Mock = require('../../src/Mock.js');
   let ExpectedCall = require('../../src/ExpectedCall.js');
+  let Callback = require('../../src/Callback.js');
 
   it('should have a node when initialized', () => {
     let node = new ExpectedCallNode({
@@ -436,13 +437,36 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          } catch (error) {
+          }
+          catch(error) {
             actualError = error;
           }
         });
 
         expect(actualError.message)
           .toEqual(msg);
+      });
+
+      it('should invoke a callback if the expected call is set up to do so', (done) => {
+        let a = new Mock('a');
+        let expectedCall = new ExpectedCall(a._class, [new Callback()], true, false);
+        expectedCall.callbackIndex = 0;
+        expectedCall.callbackArgs = [1];
+
+        let tree = new Tree(new ExpectedCallNode(expectedCall));
+
+        new Promise((resolve) => {
+            tree.execute(() => {
+              a((value) => {
+                resolve(value);
+              });
+            });
+          })
+          .catch(fail)
+          .then((value) => {
+            expect(value).toEqual(1);
+            done();
+          });
       });
 
       it('should return a value if the expected call is set up to do so', () => {
@@ -655,13 +679,42 @@ describe('Tree', () => {
         tree.execute(() => {
           try {
             a();
-          } catch (error) {
+          }
+          catch(error) {
             actualError = error;
           }
         });
 
         expect(actualError.message)
           .toEqual(msg);
+      });
+
+      it('should invoke a callback if the expected call is set up to do so', (done) => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+
+        let expectedCallA = new ExpectedCall(a._class, [], true, false);
+        expectedCallA.returnValue = 1;
+
+        let expectedCallB = new ExpectedCall(b._class, [new Callback()], false, true);
+        expectedCallB.callbackIndex = 0;
+        expectedCallB.callbackArgs = [1];
+
+        let tree = new Tree(new ExpectedCallNode(expectedCallA));
+        tree.and(new Tree(new ExpectedCallNode(expectedCallB)));
+
+        new Promise((resolve) => {
+            tree.execute(() => {
+              b((value) => {
+                resolve(a() + value);
+              });
+            });
+          })
+          .catch(fail)
+          .then((value) => {
+            expect(value).toEqual(2);
+            done();
+          });
       });
 
       it('should return a value if the expected call is set up to do so', () => {

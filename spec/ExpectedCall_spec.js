@@ -3,6 +3,7 @@
 describe('ExpectedCall', () => {
   let ExpectedCall = require('../src/ExpectedCall.js');
   let Any = require('../src/Any.js');
+  let Callback = require('../src/Callback.js');
   let Same = require('../src/Same.js');
 
   it('should have the same name as its mock', () => {
@@ -11,18 +12,54 @@ describe('ExpectedCall', () => {
     }, [], false, false).name).toEqual('foo');
   });
 
-  it('should be marked as done when complete is called', () => {
-    let expectedCall = new ExpectedCall({}, [], false, false);
+  describe('execute', () => {
+    let expectedCall;
 
-    expect(expectedCall.completed).toBe(false);
-    expect(expectedCall.actualArgs).toBeUndefined();
+    beforeEach(() => {
+      expectedCall = new ExpectedCall({}, [], false, false);
+    });
 
-    let args = [0, 1, 2];
+    it('should throw an error if a throwValue is defined', () => {
+      expectedCall.throwValue = new Error('oh noes!');
 
-    expectedCall.complete(args);
+      expect(() => expectedCall.execute()).toThrowError('oh noes!');
+    });
 
-    expect(expectedCall.completed).toBe(true);
-    expect(expectedCall.actualArgs).toEqual(args);
+    it('should invoke a callback if a callback is defined', (done) => {
+      expectedCall.callbackIndex = 0;
+      expectedCall.callbackArgs = [1];
+
+      new Promise((resolve) => {
+          expectedCall.execute([(value) => {
+            resolve(value);
+          }]);
+        })
+        .catch(fail)
+        .then((value) => {
+          expect(value).toEqual(1);
+          done();
+        });
+    });
+
+    it('should return a value if a returnValue is defined', () => {
+      expectedCall.returnValue = 1;
+
+      expect(expectedCall.execute()).toEqual(1);
+    });
+
+    it('should be marked as done when execute is called', () => {
+      let expectedCall = new ExpectedCall({}, [], false, false);
+
+      expect(expectedCall.completed).toBe(false);
+      expect(expectedCall.actualArgs).toBeUndefined();
+
+      let args = [0, 1, 2];
+
+      expectedCall.execute(args);
+
+      expect(expectedCall.completed).toBe(true);
+      expect(expectedCall.actualArgs).toEqual(args);
+    });
   });
 
   it('should be able to match against a mock', () => {
@@ -65,6 +102,14 @@ describe('ExpectedCall', () => {
 
       expect(expectedCall.matchesArguments([0])).toBe(true);
       expect(expectedCall.matchesArguments([1])).toBe(false);
+    });
+
+    it('should check callbacks', () => {
+      let expectedCall = new ExpectedCall({}, [new Callback()], false, true);
+
+      expect(expectedCall.matchesArguments([0])).toBe(false);
+      expect(expectedCall.matchesArguments([() => {}])).toBe(true);
+
     });
 
     it('should use basic equality to validate an argument', () => {

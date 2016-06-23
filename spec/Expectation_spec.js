@@ -194,27 +194,27 @@ describe('Expectation', () => {
     });
 
     it('should set callback value', () => {
-      expect(expectation._expectedCall.callback).toBeUndefined();
+      expect(expectation._expectedCall.callbackIndex).toEqual(-1);
       expect(expectation._expectedCall.callbackArgs.length).toEqual(0);
 
       expectation.withTheseArguments(new Callback());
 
       expectation.andWillCallback();
 
-      expect(expectation._expectedCall.callback).toBeDefined();
+      expect(expectation._expectedCall.callbackIndex).toEqual(0);
       expect(expectation._expectedCall.callbackArgs.length).toEqual(0);
 
     });
 
     it('should set callback value with arguments', () => {
-      expect(expectation._expectedCall.callback).toBeUndefined();
+      expect(expectation._expectedCall.callbackIndex).toEqual(-1);
       expect(expectation._expectedCall.callbackArgs.length).toEqual(0);
 
       expectation.withTheseArguments(new Callback());
 
       expectation.andWillCallback(0);
 
-      expect(expectation._expectedCall.callback).toBeDefined();
+      expect(expectation._expectedCall.callbackIndex).toEqual(0);
       expect(expectation._expectedCall.callbackArgs).toEqual([0]);
     });
   });
