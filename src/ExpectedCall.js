@@ -99,11 +99,12 @@ class ExpectedCall {
     }
 
     if(this.callbackIndex !== -1) {
-      args[this.callbackIndex](...this.callbackArgs);
+      process.nextTick(() => {
+        args[this.callbackIndex](...this.callbackArgs);
+      });
     }
-    else {
-      return this.returnValue;
-    }
+
+    return this.returnValue;
   }
 
   /**

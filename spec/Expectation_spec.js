@@ -37,7 +37,7 @@ describe('Expectation', () => {
 
     expect(expectation._expectedCall.expectedArgs.length).toEqual(args.length);
 
-    for (let i = 0; i < args.length; i++) {
+    for(let i = 0; i < args.length; i++) {
       expect(expectation._expectedCall.expectedArgs[i]).toEqual(args[i]);
     }
   });
@@ -175,22 +175,6 @@ describe('Expectation', () => {
 
       expect(() => expectation.andWillCallback())
         .toThrowError('expectation has no callback argument');
-    });
-
-    it('should throw an error if a return value is defined', () => {
-      expectation.andWillReturn(0);
-
-      expect(() => expectation.andWillCallback())
-        .toThrowError('expectation can not have return value and callback');
-    });
-
-    it('andWillReturn should throw and error if a callback is defined', () => {
-      expectation.withTheseArguments(new Callback());
-
-      expectation.andWillCallback();
-
-      expect(() => expectation.andWillReturn())
-        .toThrowError('expectation can not have return value and callback');
     });
 
     it('should set callback value', () => {
