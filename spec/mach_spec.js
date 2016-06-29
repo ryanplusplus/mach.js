@@ -1001,4 +1001,25 @@ describe('mach.js', () => {
         done();
       });
   });
+
+  it('should mock setTimeout', (done) => {
+    let _setTimeout = global.setTimeout;
+    global.setTimeout = mach.mockFunction('setTimeout');
+    let timer = {
+      _name: 'timer object'
+    };
+
+    global.setTimeout.shouldBeCalledWith(mach.callback, 1000).andWillReturn(timer).andWillCallback()
+      .when(() => {
+        return new Promise((resolve) => {
+          let t = setTimeout(() => {
+            expect(t).toEqual(timer);
+            resolve();
+          }, 1000);
+        });
+      })
+      .catch(fail)
+      .then(() => global.setTimeout = _setTimeout)
+      .then(done);
+  });
 });
