@@ -700,15 +700,18 @@ describe('Tree', () => {
         expectedCallB.callbackIndex = 0;
         expectedCallB.callbackArgs = [1];
 
-        let tree = new Tree(new ExpectedCallNode(expectedCallA));
-        tree.and(new Tree(new ExpectedCallNode(expectedCallB)));
+        let tree = new Tree(new ExpectedCallNode(expectedCallB));
+        tree.then(new Tree(new ExpectedCallNode(expectedCallA)));
 
         new Promise((resolve) => {
             tree.execute(() => {
-              b((value) => {
-                resolve(a() + value);
-              });
-            });
+                return new Promise((r) => {
+                  b((value) => {
+                    r(a() + value);
+                  });
+                });
+              })
+              .then(resolve);
           })
           .catch(fail)
           .then((value) => {
@@ -719,13 +722,11 @@ describe('Tree', () => {
 
       it('should return a value if the expected call is set up to do so', () => {
         let a = new Mock('a');
-        let b = new Mock('b');
         let expectedCall = new ExpectedCall(a._class, [], true, false);
 
         expectedCall.returnValue = 0;
 
         let tree = new Tree(new ExpectedCallNode(expectedCall));
-        tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], false, true))));
 
         let actualReturnValue;
         tree.execute(() => {

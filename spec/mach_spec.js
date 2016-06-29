@@ -17,7 +17,8 @@ describe('mach.js', () => {
   let shouldFailWith = (expectedFailure, thunk) => {
     try {
       thunk();
-    } catch (error) {
+    }
+    catch(error) {
       expect(error.message).toContain(expectedFailure);
     }
   };
@@ -731,7 +732,7 @@ describe('mach.js', () => {
         .when(() => {
           return new Promise((resolve, reject) => {
             a((err, val) => {
-              if (err) {
+              if(err) {
                 reject(err);
               }
               resolve(val);
@@ -750,7 +751,7 @@ describe('mach.js', () => {
         .when(() => {
           return new Promise((resolve, reject) => {
             a((err, val) => {
-              if (err) {
+              if(err) {
                 reject(err);
               }
               resolve(val);
@@ -827,8 +828,8 @@ describe('mach.js', () => {
 
     it('should throw a mach error if callback passed in incorrectly at runtime', (done) => {
       let expectedError = 'Unexpected arguments (0, () => {\n' +
-        '              resolve();\n' +
-        '            }) provided to function a\n' +
+        ' resolve();\n' +
+        ' }) provided to function a\n' +
         'Incomplete calls:\n' +
         '\ta(<callback>, 0)';
 
@@ -842,7 +843,7 @@ describe('mach.js', () => {
         })
         .then(() => fail('should have rejected'))
         .catch((error) => {
-          expect(error.message).toEqual(expectedError);
+          expect(error.message.replace(/\s+/g, '')).toEqual(expectedError.replace(/\s+/g, ''));
           done();
         });
     });
@@ -878,7 +879,7 @@ describe('mach.js', () => {
             };
 
             f((error) => {
-              if (error) {
+              if(error) {
                 reject(error);
               }
             });
@@ -999,5 +1000,26 @@ describe('mach.js', () => {
       .then(() => {
         done();
       });
+  });
+
+  it('should mock setTimeout', (done) => {
+    let _setTimeout = global.setTimeout;
+    global.setTimeout = mach.mockFunction('setTimeout');
+    let timer = {
+      _name: 'timer object'
+    };
+
+    global.setTimeout.shouldBeCalledWith(mach.callback, 1000).andWillReturn(timer).andWillCallback()
+      .when(() => {
+        return new Promise((resolve) => {
+          let t = setTimeout(() => {
+            expect(t).toEqual(timer);
+            resolve();
+          }, 1000);
+        });
+      })
+      .catch(fail)
+      .then(() => global.setTimeout = _setTimeout)
+      .then(done);
   });
 });
