@@ -675,9 +675,7 @@ describe('mach.js', () => {
 
     mach.ignoreMockedCallsWhen(() => new Promise((resolve) => {
       process.nextTick(a);
-      process.nextTick(() => {
-        x = 4;
-      });
+      process.nextTick(() => x = 4);
       process.nextTick(resolve);
     })).then(() => {
       expect(x).toBe(4);
