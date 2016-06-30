@@ -257,7 +257,6 @@ class Tree {
    */
   execute(thunk) {
     this._setMockExecutionHandler();
-
     this._executingNode = this._root.child;
 
     let sync = true;
