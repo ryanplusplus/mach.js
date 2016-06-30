@@ -659,15 +659,30 @@ describe('mach.js', () => {
     });
   });
 
-  it('should allow mocked calls to be ignored', function() {
+  it('should allow mocked calls to be ignored', () => {
     let x;
 
-    mach.ignoreMockedCallsWhen(function() {
+    mach.ignoreMockedCallsWhen(() => {
       a();
       x = 4;
     });
 
     expect(x).toBe(4);
+  });
+
+  it('should allow mocked calls to be ignored asynchronously', (done) => {
+    let x;
+
+    mach.ignoreMockedCallsWhen(() => new Promise((resolve) => {
+      process.nextTick(a);
+      process.nextTick(() => {
+        x = 4
+      });
+      process.nextTick(resolve);
+    })).then(() => {
+      expect(x).toBe(4);
+      done();
+    });
   });
 
   it('should fail when a function is called unexpectedly after calls are ignored', () => {
@@ -683,13 +698,11 @@ describe('mach.js', () => {
   describe('callback expectations', () => {
     it('should allow an expectation to have a callback', (done) => {
       a.shouldBeCalledWith(mach.callback).andWillCallback()
-        .when(() => {
-          return new Promise((resolve) => {
-            a(() => {
-              resolve(1);
-            });
+        .when(() => new Promise((resolve) => {
+          a(() => {
+            resolve(1);
           });
-        })
+        }))
         .catch(fail)
         .then((value) => {
           expect(value).toEqual(1);
@@ -699,13 +712,11 @@ describe('mach.js', () => {
 
     it('should allow an expectation to have a callback with arguments', (done) => {
       a.shouldBeCalledWith(mach.callback).andWillCallback(0, 1, 2)
-        .when(() => {
-          return new Promise((resolve) => {
-            a((...args) => {
-              resolve(args.reduce((p, c) => p + c));
-            });
+        .when(() => new Promise((resolve) => {
+          a((...args) => {
+            resolve(args.reduce((p, c) => p + c));
           });
-        })
+        }))
         .catch(fail)
         .then((value) => {
           expect(value).toEqual(3);
@@ -715,30 +726,26 @@ describe('mach.js', () => {
 
     it('should allow mixing callbacks and regular arguments', (done) => {
       a.shouldBeCalledWith(1, mach.callback, 2).andWillCallback(3)
-        .when(() => {
-          return new Promise((resolve) => {
-            a(1, (value) => {
-              expect(value).toEqual(3);
-              resolve();
-            }, 2);
-          });
-        })
+        .when(() => new Promise((resolve) => {
+          a(1, (value) => {
+            expect(value).toEqual(3);
+            resolve();
+          }, 2);
+        }))
         .catch(fail)
         .then(done);
     });
 
     it('should support node style error callbacks: error case', (done) => {
       a.shouldBeCalledWith(mach.callback).andWillCallback('oh noes')
-        .when(() => {
-          return new Promise((resolve, reject) => {
-            a((err, val) => {
-              if(err) {
-                reject(err);
-              }
-              resolve(val);
-            });
+        .when(() => new Promise((resolve, reject) => {
+          a((err, val) => {
+            if(err) {
+              reject(err);
+            }
+            resolve(val);
           });
-        })
+        }))
         .then(() => fail('should have rejected'))
         .catch((error) => {
           expect(error).toEqual('oh noes');
@@ -748,16 +755,14 @@ describe('mach.js', () => {
 
     it('should support node style error callbacks: non-error case', (done) => {
       a.shouldBeCalledWith(mach.callback).andWillCallback(undefined, 1)
-        .when(() => {
-          return new Promise((resolve, reject) => {
-            a((err, val) => {
-              if(err) {
-                reject(err);
-              }
-              resolve(val);
-            });
+        .when(() => new Promise((resolve, reject) => {
+          a((err, val) => {
+            if(err) {
+              reject(err);
+            }
+            resolve(val);
           });
-        })
+        }))
         .catch(fail)
         .then((value) => {
           expect(value).toEqual(1);
@@ -768,11 +773,9 @@ describe('mach.js', () => {
     it('should throw a mach error when callback expected argument is not specified', (done) => {
       shouldFailWith('expectation has no arguments to callback', () => {
         a.shouldBeCalled().andWillCallback()
-          .when(() => {
-            return new Promise((resolve) => {
-              a(() => resolve);
-            });
-          })
+          .when(() => new Promise((resolve) => {
+            a(() => resolve);
+          }))
           .then(() => {
             fail('should have errored out');
             done();
@@ -784,11 +787,9 @@ describe('mach.js', () => {
     it('should throw a mach error when callback and return value are specified', (done) => {
       shouldFailWith('expectation can not have return value and callback', () => {
         a.shouldBeCalledWith(mach.callback).andWillCallback().andWillReturn(0)
-          .when(() => {
-            return new Promise((resolve) => {
-              a(() => resolve);
-            });
-          })
+          .when(() => new Promise((resolve) => {
+            a(() => resolve);
+          }))
           .then(() => {
             fail('should have errored out');
             done();
@@ -797,11 +798,9 @@ describe('mach.js', () => {
 
       shouldFailWith('expectation can not have return value and callback', () => {
         a.shouldBeCalledWith(mach.callback).andWillReturn(0).andWillCallback()
-          .when(() => {
-            return new Promise((resolve) => {
-              a(() => resolve);
-            });
-          })
+          .when(() => new Promise((resolve) => {
+            a(() => resolve);
+          }))
           .then(() => {
             fail('should have errored out');
             done();
@@ -812,12 +811,10 @@ describe('mach.js', () => {
 
     it('should throw a mach error if no callback is passed in at runtime', (done) => {
       a.shouldBeCalledWith(mach.callback).andWillCallback()
-        .when(() => {
-          return new Promise((resolve) => {
-            a(0);
-            resolve();
-          });
-        })
+        .when(() => new Promise((resolve) => {
+          a(0);
+          resolve();
+        }))
         .then(() => fail('should have rejected'))
         .catch((error) => {
           expect(error.message)
@@ -834,13 +831,11 @@ describe('mach.js', () => {
         '\ta(<callback>, 0)';
 
       a.shouldBeCalledWith(mach.callback, 0).andWillCallback()
-        .when(() => {
-          return new Promise((resolve) => {
-            a(0, () => {
-              resolve();
-            });
+        .when(() => new Promise((resolve) => {
+          a(0, () => {
+            resolve();
           });
-        })
+        }))
         .then(() => fail('should have rejected'))
         .catch((error) => {
           expect(error.message.replace(/\s+/g, '')).toEqual(expectedError.replace(/\s+/g, ''));
@@ -852,18 +847,16 @@ describe('mach.js', () => {
   describe('async tests', () => {
     it('should allow callbacks in thunks', (done) => {
       a.shouldBeCalled()
-        .when(() => {
-          return new Promise((resolve) => {
-            let f = (callback) => {
-              a();
-              callback();
-            };
+        .when(() => new Promise((resolve) => {
+          let f = (callback) => {
+            a();
+            callback();
+          };
 
-            f(() => {
-              resolve();
-            });
+          f(() => {
+            resolve();
           });
-        })
+        }))
         .then(() => done());
     });
 
@@ -871,20 +864,18 @@ describe('mach.js', () => {
       let errorMessage = 'oh hai der!';
 
       a.shouldBeCalled()
-        .when(() => {
-          return new Promise((resolve, reject) => {
-            let f = (callback) => {
-              a();
-              callback(new Error(errorMessage));
-            };
+        .when(() => new Promise((resolve, reject) => {
+          let f = (callback) => {
+            a();
+            callback(new Error(errorMessage));
+          };
 
-            f((error) => {
-              if(error) {
-                reject(error);
-              }
-            });
+          f((error) => {
+            if(error) {
+              reject(error);
+            }
           });
-        })
+        }))
         .catch((error) => {
           expect(error.message).toEqual(errorMessage);
           done();
@@ -895,18 +886,16 @@ describe('mach.js', () => {
       let errorMessage = 'oh hai der!';
 
       a.shouldBeCalled()
-        .when(() => {
-          return new Promise((resolve) => {
-            let f = () => {
-              a();
-              throw new Error(errorMessage);
-            };
+        .when(() => new Promise((resolve) => {
+          let f = () => {
+            a();
+            throw new Error(errorMessage);
+          };
 
-            f(() => {
-              resolve();
-            });
+          f(() => {
+            resolve();
           });
-        })
+        }))
         .catch((error) => {
           expect(error.message).toEqual(errorMessage);
           done();
@@ -915,9 +904,7 @@ describe('mach.js', () => {
 
     it('should rethrow mach errors from callback thunks', (done) => {
       a.shouldBeCalled()
-        .when(() => {
-          return Promise.resolve();
-        })
+        .when(() => Promise.resolve())
         .catch((error) => {
           expect(error.message.startsWith('Not all calls occurred')).toBe(true);
           done();
@@ -927,9 +914,7 @@ describe('mach.js', () => {
 
   it('should allow promises in thunks', (done) => {
     a.shouldBeCalled()
-      .when(() => {
-        return Promise.resolve(a());
-      })
+      .when(() => Promise.resolve(a()))
       .then(() => {
         done();
       });
@@ -938,9 +923,7 @@ describe('mach.js', () => {
   it('should return values from promises', (done) => {
     a.shouldBeCalled()
       .andWillReturn(1)
-      .when(() => {
-        return Promise.resolve(a());
-      })
+      .when(() => Promise.resolve(a()))
       .catch((error) => {
         fail(error);
       })
@@ -954,9 +937,7 @@ describe('mach.js', () => {
     let errorMessage = 'oh hai der!';
 
     a.shouldBeCalled()
-      .when(() => {
-        return Promise.reject(new Error(errorMessage));
-      })
+      .when(() => Promise.reject(new Error(errorMessage)))
       .catch((error) => {
         expect(error.message).toEqual(errorMessage);
         done();
@@ -965,9 +946,7 @@ describe('mach.js', () => {
 
   it('should rethrow mach errors from promises', (done) => {
     a.shouldBeCalled()
-      .when(() => {
-        return Promise.resolve();
-      })
+      .when(() => Promise.resolve())
       .then(() => {
         fail('expected an error to happen...');
         done();
@@ -1010,14 +989,12 @@ describe('mach.js', () => {
     };
 
     global.setTimeout.shouldBeCalledWith(mach.callback, 1000).andWillReturn(timer).andWillCallback()
-      .when(() => {
-        return new Promise((resolve) => {
-          let t = setTimeout(() => {
-            expect(t).toEqual(timer);
-            resolve();
-          }, 1000);
-        });
-      })
+      .when(() => new Promise((resolve) => {
+        let t = setTimeout(() => {
+          expect(t).toEqual(timer);
+          resolve();
+        }, 1000);
+      }))
       .catch(fail)
       .then(() => global.setTimeout = _setTimeout)
       .then(done);
