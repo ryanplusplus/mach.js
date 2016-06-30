@@ -246,9 +246,7 @@ class Tree {
     this._calls[0].mock.tree = this;
 
     for(let call of this._calls) {
-      call.mock.handler = (args) => {
-        return this._executeNode(call.mock, args);
-      };
+      call.mock.handler = (args) => this._executeNode(call.mock, args);
     }
   }
 
@@ -291,7 +289,7 @@ class Tree {
   }
 
   /**
-   * Convets this tree into a string.
+   * Converts this tree into a string.
    * @returns {string} This tree in string form.
    */
   toString() {

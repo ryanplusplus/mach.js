@@ -79,11 +79,7 @@ class Mach {
 
     mock._class.ignoreOtherCalls = true;
 
-    // TODO: handle async code??
-    new Expectation(mock._class, false).when(() => {
-      thunk();
-      mock._class.reset();
-    });
+    return new Expectation(mock._class, false).when(thunk);
   }
 }
 
