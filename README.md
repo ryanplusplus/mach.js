@@ -330,7 +330,7 @@ describe('Foo', () => {
 
   let mockTemplate = {
     sync: () => {},
-    callback: : () => {},
+    callback: () => {},
     promise: () => {}
   }
 
@@ -351,7 +351,6 @@ describe('Foo', () => {
       });
     }).catch((error) => {
       fail(error);
-      done();
     }).then(() => {
       done();
     };
