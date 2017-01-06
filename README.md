@@ -104,6 +104,17 @@ f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
 });
 ```
 
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalled().withOtherCallsIgnored().when(function() {
+  f();
+  f(1);
+});
+```
+
 ## Returning Values
 
 ```javascript

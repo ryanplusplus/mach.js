@@ -171,8 +171,7 @@ describe('mach.js', () => {
       mock();
     });
 
-    f = () => {};
-    mock = mach.mockFunction(f);
+    mock = mach.mockFunction(() => {});
 
     shouldFailWith('Unexpected function call <anonymous>()', () => {
       mock();
@@ -654,6 +653,11 @@ describe('mach.js', () => {
 
   it('should allow additional mocked calls to be ignored', () => {
     b.shouldBeCalled().andOtherCallsShouldBeIgnored().when(() => {
+      b();
+      c();
+    });
+
+    b.shouldBeCalled().withOtherCallsIgnored().when(() => {
       b();
       c();
     });
