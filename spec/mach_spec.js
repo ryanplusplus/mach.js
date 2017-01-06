@@ -171,8 +171,7 @@ describe('mach.js', () => {
       mock();
     });
 
-    f = () => {};
-    mock = mach.mockFunction(f);
+    mock = mach.mockFunction(() => {});
 
     shouldFailWith('Unexpected function call <anonymous>()', () => {
       mock();
