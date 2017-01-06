@@ -657,6 +657,11 @@ describe('mach.js', () => {
       b();
       c();
     });
+
+    b.shouldBeCalled().withOtherCallsIgnored().when(() => {
+      b();
+      c();
+    });
   });
 
   it('should allow mocked calls to be ignored', () => {

@@ -143,6 +143,16 @@ describe('Expectation', () => {
     expect(expectation._tree._ignoreOtherCalls).toBe(true);
   });
 
+  it('withOtherCallsIgnored should set tree property', () => {
+    let expectation = new Expectation(new Mock('mock')._class, true);
+
+    expect(expectation._tree._ignoreOtherCalls).toBe(false);
+
+    expectation.withOtherCallsIgnored();
+
+    expect(expectation._tree._ignoreOtherCalls).toBe(true);
+  });
+
   it('when should execute the expecation chain', () => {
     let a = new Mock('a');
     let b = new Mock('b');

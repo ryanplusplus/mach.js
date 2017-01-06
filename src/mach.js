@@ -72,7 +72,7 @@ class Mach {
 
   /**
    * Creates a scope in which unexpected and out of order function calls are ignored and only required calls are checked during execution.
-   * Consider using {@link Expectation#andOtherCallsShouldBeIgnored} instead.
+   * Consider using {@link Expectation#andOtherCallsShouldBeIgnored} or {@link Expectation#withOtherCallsIgnored} instead.
    */
   static ignoreMockedCallsWhen(thunk) {
     let mock = new Mock();

@@ -180,4 +180,6 @@ class Expectation {
   }
 }
 
+Expectation.prototype.withOtherCallsIgnored = Expectation.prototype.andOtherCallsShouldBeIgnored;
+
 module.exports = Expectation;
