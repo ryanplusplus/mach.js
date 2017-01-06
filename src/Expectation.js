@@ -157,6 +157,7 @@ class Expectation {
 
   /**
    * Makes it so that unexpected calls and out of order calls are ignored and only required calls are checked during execution.
+   * @returns {Expectation} This expectation, which allows chaining.
    */
   andOtherCallsShouldBeIgnored() {
     this._tree.ignoreOtherCalls();
@@ -164,6 +165,10 @@ class Expectation {
     return this;
   }
 
+
+  /**
+   * Alias for {@link Expectation#andOtherCallsShouldBeIgnored}
+   */
   withOtherCallsIgnored() {
     return this.andOtherCallsShouldBeIgnored();
   }
