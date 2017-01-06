@@ -165,7 +165,6 @@ class Expectation {
     return this;
   }
 
-
   /**
    * Alias for {@link Expectation#andOtherCallsShouldBeIgnored}
    */
