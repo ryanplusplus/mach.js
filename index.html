@@ -17,6 +17,7 @@
     <h3> </h3>
     <section>
         <article><h1><a href="https://github.com/ryanplusplus/mach.js">mach.js</a></h1><p>Simple mocking framework for JavaScript inspired by CppUMock and designed for readability</p>
+<p>See the <a href="http://ryanplusplus.github.io/mach.js/">manual</a> for full documentation.</p>
 <h2>Mocking a Function</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
 var f = mach.mockFunction();
 f.shouldBeCalled().when(function() {
@@ -52,6 +53,11 @@ f.shouldBeCalledWithAnyArguments().when(function() {
 });</code></pre><h2>Ignoring Other Calls</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
 var f = mach.mockFunction();
 f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
+  f();
+  f(1);
+});</code></pre><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
+var f = mach.mockFunction();
+f.shouldBeCalled().withOtherCallsIgnored().when(function() {
   f();
   f(1);
 });</code></pre><h2>Returning Values</h2><pre class="prettyprint source lang-javascript"><code>var mach = require('mach');
@@ -159,18 +165,57 @@ f1.shouldBeCalledWith(1)
     f1(1);
     f3(3);
   });</code></pre><pre class="prettyprint source"><code>Unexpected function call f(3)
-Completed calls:
+Completed calls:   
   f1(1)
 Incomplete calls:
-  f2(2)</code></pre></article>
+  f2(2)</code></pre><h2>Testing asynchronous code</h2><pre class="prettyprint source lang-javascript"><code>describe('Foo', () => {
+  let Foo = require('./Foo.js');
+  let mockTemplate = {
+    sync: () => {},
+    callback: : () => {},
+    promise: () => {}
+  }
+  let foo;
+  let mock;
+  beforeEach() => {
+    mock = new mockObject('mock', mockTemplate);
+    foo = new Foo(mock);
+  };
+  it('should return a promise for callback code', (done) => {
+    mock.callback.shouldBeCalled().when(() => {
+      return new Promise((resolve) => {
+        foo.bar(() => {
+          resolve();
+        });
+      });
+    }).catch((error) => {
+      fail(error);
+      done();
+    }).then(() => {
+      done();
+    };
+  });
+  it('should return a promise for promise code', (done) => {
+    mock.promise.shouldBeCalled().when(() => {
+      return foo.baz().then((value) => {
+        return value;
+      });
+    }).catch((error) => {
+      fail(error);
+    }).then((value) => {
+      expect(value).toEqual(something); // value will be return value of foo.baz();
+      done();
+    });
+  });
+});</code></pre></article>
     </section>
 </div>
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Callback.html">Callback</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
 </nav>
 <br class="clear">
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Apr 14 2016 18:38:25 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jan 06 2017 09:30:26 GMT-0500 (EST)
 </footer>
 <script> prettyPrint(); </script>
 <script src="scripts/linenumber.js"> </script>

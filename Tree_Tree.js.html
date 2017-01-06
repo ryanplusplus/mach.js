@@ -28,14 +28,14 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var RootNode = require('./RootNode.js');
-var TerminusNode = require('./TerminusNode.js');
-var ExpectedCallNode = require('./ExpectedCallNode.js');
-var AndNode = require('./AndNode.js');
-var NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
-var OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
-var UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
-var UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
+let RootNode = require('./RootNode.js');
+let TerminusNode = require('./TerminusNode.js');
+let ExpectedCallNode = require('./ExpectedCallNode.js');
+let AndNode = require('./AndNode.js');
+let NotAllCallsOccurredError = require('../Error/NotAllCallsOccurredError.js');
+let OutOfOrderCallError = require('../Error/OutOfOrderCallError.js');
+let UnexpectedArgumentsError = require('../Error/UnexpectedArgumentsError.js');
+let UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.js');
 
 /**
  * Classes the make up the expected execution path.
@@ -84,7 +84,7 @@ class Tree {
   get _lastNode() {
     let node = this._root;
 
-    while (!(node.child instanceof TerminusNode)) {
+    while(!(node.child instanceof TerminusNode)) {
       node = node.child;
     }
 
@@ -99,10 +99,10 @@ class Tree {
     let andNode;
     let lastNode = this._lastNode;
 
-    if (lastNode instanceof ExpectedCallNode) {
+    if(lastNode instanceof ExpectedCallNode) {
       andNode = new AndNode(lastNode.expectedCall);
     }
-    else if (lastNode instanceof AndNode) {
+    else if(lastNode instanceof AndNode) {
       andNode = lastNode;
     }
     else {
@@ -141,12 +141,12 @@ class Tree {
 
     node = node.child;
 
-    while (!(node instanceof TerminusNode)) {
-      if (node instanceof ExpectedCallNode) {
+    while(!(node instanceof TerminusNode)) {
+      if(node instanceof ExpectedCallNode) {
         calls.push(node.expectedCall);
       }
-      else if (node instanceof AndNode) {
-        for (let expectedCall of node.expectedCalls) {
+      else if(node instanceof AndNode) {
+        for(let expectedCall of node.expectedCalls) {
           calls.push(expectedCall);
         }
       }
@@ -174,68 +174,39 @@ class Tree {
    */
   _checkCalls() {
     let result = true;
-    for (let expectedCall of this._calls) {
-      if (expectedCall.required &amp;&amp; !expectedCall.completed) {
+    for(let expectedCall of this._calls) {
+      if(expectedCall.required &amp;&amp; !expectedCall.completed) {
         result = false;
         break;
       }
     }
 
-    if (!result) {
+    if(!result) {
       throw new NotAllCallsOccurredError(this._calls);
     }
-  }
-
-  /**
-   * Performs {@link Tree.Tree#execute} in an asynchronous context.
-   * @param {function} thunk Test code to run during execution.
-   * @returns {Promise} A promise so that test can call `fail` and `done` or their equivalents.
-   */
-  _asyncWhen(thunk) {
-    return new Promise((resolve, reject) => {
-      var done = (v) => resolve(v);
-
-      let t = thunk(done);
-
-      if (t instanceof Promise) {
-        t.catch((error) => {
-          reject(error);
-        });
-      }
-      else {
-        resolve(t);
-      }
-    }).then((v) => {
-      this._resetMocks();
-      this._checkCalls();
-      return v;
-    }, (error) => {
-      this._resetMocks();
-      throw error;
-    });
-  }
-
-  /**
-   * Performs {@link Tree.Tree#execute} in a synchronous context.
-   * @param {function} thunk Test code to run during execution.
-   */
-  _syncWhen(thunk) {
-    try {
-      thunk();
-    }
-    finally {
-      this._resetMocks();
-    }
-
-    this._checkCalls();
   }
 
   /**
    * Resets all {@link Mock} globals and handlers
    */
   _resetMocks() {
-    for (let call of this._calls) {
+    for(let call of this._calls) {
       call.mock.reset();
+    }
+  }
+
+  _checkRemainingExpectations(mock, args) {
+    if(!this._ignoreOtherCalls) {
+      if(this._executingNode.partialMatch(mock)) {
+        throw new UnexpectedArgumentsError(mock, args, this._calls);
+      }
+
+      if(this._callsAfter(this._executingNode).filter((ec) => ec.matches(mock, args)).length > 0) {
+        throw new OutOfOrderCallError(mock, args, this._calls);
+      }
+
+      // no match
+      throw new UnexpectedFunctionCallError(mock, args, this._calls);
     }
   }
 
@@ -250,89 +221,46 @@ class Tree {
    * @throws {Errors.UnexpectedFunctionCallError} Will throw an error if a call is made and there is not matching expected call.
    */
   _executeNode(mock, args) {
-    if (this._executingNode instanceof ExpectedCallNode) {
+    if(this._executingNode instanceof ExpectedCallNode) {
       let expectedCall = this._executingNode.expectedCall;
 
-      if (expectedCall.matches(mock, args)) {
-        expectedCall.complete(args);
-
+      if(expectedCall.matches(mock, args)) {
         this._executingNode = this._executingNode.child;
 
-        if (expectedCall.throwValue !== undefined) {
-          throw expectedCall.throwValue;
-        }
-
-        return expectedCall.returnValue;
+        return expectedCall.execute(args);
       }
 
-      if (!expectedCall.required) {
+      if(!expectedCall.required) {
         this._executingNode = this._executingNode.child;
 
         return this._executeNode(mock, args);
       }
 
-      if (!this._ignoreOtherCalls) {
-        if (expectedCall.matchesFunction(mock)) {
-          throw new UnexpectedArgumentsError(mock, args, this._calls);
-        }
-
-        for (let ec of this._callsAfter(this._executingNode)) {
-          if (ec.matches(mock, args)) {
-            throw new OutOfOrderCallError(mock, args, this._calls);
-          }
-        }
-
-        // no match
-        throw new UnexpectedFunctionCallError(mock, args, this._calls);
-      }
+      this._checkRemainingExpectations(mock, args);
 
       return;
     }
 
-    if (this._executingNode instanceof AndNode) {
+    if(this._executingNode instanceof AndNode) {
       let matchedExpectedCall = this._executingNode.match(mock, args);
 
-      if (matchedExpectedCall !== undefined) {
-        matchedExpectedCall.complete(args);
-
-        if (this._executingNode.allDone()) {
-          this._executingNode = this._executingNode.child;
-        }
-
-        if (matchedExpectedCall.throwValue !== undefined) {
-          throw matchedExpectedCall.throwValue;
-        }
-
-        return matchedExpectedCall.returnValue;
+      if(matchedExpectedCall !== undefined) {
+        return matchedExpectedCall.execute(args);
       }
 
-      if (this._executingNode.onlyOptionalRemain()) {
+      if(this._executingNode.onlyOptionalRemain()) {
         this._executingNode = this._executingNode.child;
 
         return this._executeNode(mock, args);
       }
 
-      if (!this._ignoreOtherCalls) {
-        let partialMatchExpectedCall = this._executingNode.partialMatch(mock);
+      this._checkRemainingExpectations(mock, args);
 
-        if (partialMatchExpectedCall !== undefined) {
-          throw new UnexpectedArgumentsError(mock, args, this._calls);
-        }
-
-        for (let ec of this._callsAfter(this._executingNode)) {
-          if (ec.matches(mock, args)) {
-            throw new OutOfOrderCallError(mock, args, this._calls);
-          }
-        }
-
-        // no match
-        throw new UnexpectedFunctionCallError(mock, args, this._calls);
-      }
       return;
     }
 
-    if (this._executingNode instanceof TerminusNode) {
-      if (!this._ignoreOtherCalls) {
+    if(this._executingNode instanceof TerminusNode) {
+      if(!this._ignoreOtherCalls) {
         throw new UnexpectedFunctionCallError(mock, args, this._calls);
       }
       return;
@@ -345,10 +273,8 @@ class Tree {
   _setMockExecutionHandler() {
     this._calls[0].mock.tree = this;
 
-    for (let call of this._calls) {
-      call.mock.handler = (args) => {
-        return this._executeNode(call.mock, args);
-      };
+    for(let call of this._calls) {
+      call.mock.handler = (args) => this._executeNode(call.mock, args);
     }
   }
 
@@ -361,16 +287,37 @@ class Tree {
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
 
-    switch (thunk.length) {
-      case 0:
-        return this._syncWhen(thunk);
-      default:
-        return this._asyncWhen(thunk);
+    let sync = true;
+
+    try {
+      let t = thunk();
+
+      if(t instanceof Promise) {
+        sync = false;
+
+        return t
+          .then((value) => {
+            this._resetMocks();
+            this._checkCalls();
+            return value;
+          })
+          .catch((error) => {
+            this._resetMocks();
+            throw error;
+          });
+      }
     }
+    finally {
+      if(sync) {
+        this._resetMocks();
+      }
+    }
+
+    this._checkCalls();
   }
 
   /**
-   * Convets this tree into a string.
+   * Converts this tree into a string.
    * @returns {string} This tree in string form.
    */
   toString() {
@@ -389,13 +336,13 @@ module.exports = Tree;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Callback.html">Callback</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Apr 14 2016 18:38:25 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jan 06 2017 09:30:26 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -28,9 +28,10 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-var ExpectedCall = require('./ExpectedCall.js');
-var Tree = require('./Tree/Tree.js');
-var ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+let ExpectedCall = require('./ExpectedCall.js');
+let Tree = require('./Tree/Tree.js');
+let ExpectedCallNode = require('./Tree/ExpectedCallNode.js');
+let Callback = require('./Callback.js');
 
 /**
  * This is a transitional object that helps convert {@link Mock}s into
@@ -91,6 +92,37 @@ class Expectation {
   }
 
   /**
+   * Updates this expectations {@link ExpectedCall} to invoke a callback.
+   * @param  {object[]} [...args] Arguments that will be passed to the callback when it is invoked.
+   * @returns {Expectation} This expectation, which allows chaining.
+   */
+  andWillCallback(...args) {
+    if(this._expectedCall.expectedArgs.length === 0) {
+      throw new Error('expectation has no arguments to callback');
+    }
+
+    let callbackIndex = -1;
+
+    let i = 0;
+    for(let argument of this._expectedCall.expectedArgs) {
+      if(argument instanceof Callback) {
+        callbackIndex = i;
+        break;
+      }
+      i++;
+    }
+
+    if(callbackIndex === -1) {
+      throw new Error('expectation has no callback argument');
+    }
+
+    this._expectedCall.callbackIndex = callbackIndex;
+    this._expectedCall.callbackArgs = args;
+
+    return this;
+  }
+
+  /**
    * Combines this expecation with the specifed expectation using `AND`.
    * This means execution order does not matter and these expecations can be executed in either order.
    * @param {Expectation} expectation Expectation to combine with this expecatation.
@@ -138,7 +170,7 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   multipleTimes(count) {
-    for (var i = 0; i &lt; count - 1; i++) {
+    for(var i = 0; i &lt; count - 1; i++) {
       let expectation = new Expectation(this._expectedCall.mock, this._expectedCall.required);
 
       expectation._expectedCall.expectedArgs = this._expectedCall.expectedArgs;
@@ -153,11 +185,19 @@ class Expectation {
 
   /**
    * Makes it so that unexpected calls and out of order calls are ignored and only required calls are checked during execution.
+   * @returns {Expectation} This expectation, which allows chaining.
    */
   andOtherCallsShouldBeIgnored() {
     this._tree.ignoreOtherCalls();
 
     return this;
+  }
+
+  /**
+   * Alias for {@link Expectation#andOtherCallsShouldBeIgnored}
+   */
+  withOtherCallsIgnored() {
+    return this.andOtherCallsShouldBeIgnored();
   }
 
   /**
@@ -187,13 +227,13 @@ module.exports = Expectation;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Callback.html">Callback</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Apr 14 2016 18:38:25 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jan 06 2017 09:30:26 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

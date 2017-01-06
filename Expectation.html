@@ -56,7 +56,7 @@
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line11">line 11</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line12">line 12</a>
     </li></ul></dd>
 </dl>
     </div>
@@ -68,7 +68,7 @@
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line146">line 146</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line186">line 186</a>
     </li></ul></dd>
 </dl>
     <h4 class="name" id="and"><span class="type-signature"></span>and<span class="signature">(expectation)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
@@ -98,7 +98,7 @@ This means execution order does not matter and these expecations can be executed
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line71">line 71</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line103">line 103</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -120,18 +120,30 @@ This means execution order does not matter and these expecations can be executed
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line82">line 82</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line114">line 114</a>
     </li></ul></dd>
 </dl>
-    <h4 class="name" id="andOtherCallsShouldBeIgnored"><span class="type-signature"></span>andOtherCallsShouldBeIgnored<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="andOtherCallsShouldBeIgnored"><span class="type-signature"></span>andOtherCallsShouldBeIgnored<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
 <div class="description">
     <p>Makes it so that unexpected calls and out of order calls are ignored and only required calls are checked during execution.</p>
 </div>
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line129">line 129</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line162">line 162</a>
     </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
 </dl>
     <h4 class="name" id="andThen"><span class="type-signature"></span>andThen<span class="signature">()</span><span class="type-signature"></span></h4>
 <div class="description">
@@ -140,8 +152,53 @@ This means execution order does not matter and these expecations can be executed
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line103">line 103</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line135">line 135</a>
     </li></ul></dd>
+</dl>
+    <h4 class="name" id="andWillCallback"><span class="type-signature"></span>andWillCallback<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
+<div class="description">
+    <p>Updates this expectations <a href="ExpectedCall.html"><code>ExpectedCall</code></a> to invoke a callback.</p>
+</div>
+    <h5>Parameters:</h5>
+<table class="params">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Attributes</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+                <td class="name"><code>...args</code></td>
+            <td class="type">
+<span class="param-type">Array.&lt;object></span>
+            </td>
+                <td class="attributes">
+                    &lt;optional><br>
+                </td>
+            <td class="description last"><p>Arguments that will be passed to the callback when it is invoked.</p></td>
+        </tr>
+    </tbody>
+</table>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line71">line 71</a>
+    </li></ul></dd>
+</dl>
+<h5>Returns:</h5>
+<div class="param-desc">
+    <p>This expectation, which allows chaining.</p>
+</div>
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+<span class="param-type"><a href="Expectation.html">Expectation</a></span>
+    </dd>
 </dl>
     <h4 class="name" id="andWillReturn"><span class="type-signature"></span>andWillReturn<span class="signature">(returnValue)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
 <div class="description">
@@ -169,7 +226,7 @@ This means execution order does not matter and these expecations can be executed
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line48">line 48</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line49">line 49</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -210,7 +267,7 @@ This means execution order does not matter and these expecations can be executed
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line59">line 59</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line60">line 60</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -251,7 +308,7 @@ This means execution order does not matter and these expecations can be executed
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line112">line 112</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line144">line 144</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -293,7 +350,7 @@ This means execution order matters and this expectation must come before the oth
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line92">line 92</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line124">line 124</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -334,7 +391,7 @@ This means execution order matters and this expectation must come before the oth
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line139">line 139</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line179">line 179</a>
     </li></ul></dd>
 </dl>
     <h4 class="name" id="withAnyArguments"><span class="type-signature"></span>withAnyArguments<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
@@ -344,7 +401,7 @@ This means execution order matters and this expectation must come before the oth
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line37">line 37</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line38">line 38</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -358,6 +415,16 @@ This means execution order matters and this expectation must come before the oth
     <dd>
 <span class="param-type"><a href="Expectation.html">Expectation</a></span>
     </dd>
+</dl>
+    <h4 class="name" id="withOtherCallsIgnored"><span class="type-signature"></span>withOtherCallsIgnored<span class="signature">()</span><span class="type-signature"></span></h4>
+<div class="description">
+    <p>Alias for <a href="Expectation.html#andOtherCallsShouldBeIgnored"><code>Expectation#andOtherCallsShouldBeIgnored</code></a></p>
+</div>
+<dl class="details">
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line171">line 171</a>
+    </li></ul></dd>
 </dl>
     <h4 class="name" id="withTheseArguments"><span class="type-signature"></span>withTheseArguments<span class="signature">(arguments)</span><span class="type-signature"> &rarr; {<a href="Expectation.html">Expectation</a>}</span></h4>
 <div class="description">
@@ -385,7 +452,7 @@ This means execution order matters and this expectation must come before the oth
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line27">line 27</a>
+        <a href="Expectation.js.html">Expectation.js</a>, <a href="Expectation.js.html#line28">line 28</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -404,11 +471,11 @@ This means execution order matters and this expectation must come before the oth
 </section>
 </div>
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Callback.html">Callback</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
 </nav>
 <br class="clear">
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Apr 14 2016 18:38:25 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jan 06 2017 09:30:26 GMT-0500 (EST)
 </footer>
 <script> prettyPrint(); </script>
 <script src="scripts/linenumber.js"> </script>

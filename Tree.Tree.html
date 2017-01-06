@@ -77,47 +77,6 @@
     </li></ul></dd>
 </dl>
         <h3 class="subsection-title">Methods</h3>
-    <h4 class="name" id="_asyncWhen"><span class="type-signature"></span>_asyncWhen<span class="signature">(thunk)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-<div class="description">
-    <p>Performs <a href="Tree.Tree.html#execute"><code>Tree.Tree#execute</code></a> in an asynchronous context.</p>
-</div>
-    <h5>Parameters:</h5>
-<table class="params">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr>
-                <td class="name"><code>thunk</code></td>
-            <td class="type">
-<span class="param-type">function</span>
-            </td>
-            <td class="description last"><p>Test code to run during execution.</p></td>
-        </tr>
-    </tbody>
-</table>
-<dl class="details">
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line166">line 166</a>
-    </li></ul></dd>
-</dl>
-<h5>Returns:</h5>
-<div class="param-desc">
-    <p>A promise so that test can call <code>fail</code> and <code>done</code> or their equivalents.</p>
-</div>
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-<span class="param-type">Promise</span>
-    </dd>
-</dl>
     <h4 class="name" id="_callsAfter"><span class="type-signature"></span>_callsAfter<span class="signature">(node)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="ExpectedCall.html">ExpectedCall</a>>}</span></h4>
 <div class="description">
     <p>Gets all <a href="ExpectedCall.html"><code>ExpectedCall</code></a>s that come after the specified node.</p>
@@ -260,7 +219,7 @@
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line224">line 224</a>
+        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line195">line 195</a>
     </li></ul></dd>
 </dl>
 <h5>Throws:</h5>
@@ -371,7 +330,7 @@
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line208">line 208</a>
+        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line164">line 164</a>
     </li></ul></dd>
 </dl>
     <h4 class="name" id="_setMockExecutionHandler"><span class="type-signature"></span>_setMockExecutionHandler<span class="signature">()</span><span class="type-signature"></span></h4>
@@ -381,36 +340,7 @@
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line317">line 317</a>
-    </li></ul></dd>
-</dl>
-    <h4 class="name" id="_syncWhen"><span class="type-signature"></span>_syncWhen<span class="signature">(thunk)</span><span class="type-signature"></span></h4>
-<div class="description">
-    <p>Performs <a href="Tree.Tree.html#execute"><code>Tree.Tree#execute</code></a> in a synchronous context.</p>
-</div>
-    <h5>Parameters:</h5>
-<table class="params">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr>
-                <td class="name"><code>thunk</code></td>
-            <td class="type">
-<span class="param-type">function</span>
-            </td>
-            <td class="description last"><p>Test code to run during execution.</p></td>
-        </tr>
-    </tbody>
-</table>
-<dl class="details">
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line194">line 194</a>
+        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line245">line 245</a>
     </li></ul></dd>
 </dl>
     <h4 class="name" id="and"><span class="type-signature"></span>and<span class="signature">(tree)</span><span class="type-signature"></span></h4>
@@ -468,7 +398,7 @@
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line332">line 332</a>
+        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line258">line 258</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -527,12 +457,12 @@ and focus only on the required ones.</p>
 </dl>
     <h4 class="name" id="toString"><span class="type-signature"></span>toString<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
 <div class="description">
-    <p>Convets this tree into a string.</p>
+    <p>Converts this tree into a string.</p>
 </div>
 <dl class="details">
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line348">line 348</a>
+        <a href="Tree_Tree.js.html">Tree/Tree.js</a>, <a href="Tree_Tree.js.html#line295">line 295</a>
     </li></ul></dd>
 </dl>
 <h5>Returns:</h5>
@@ -551,11 +481,11 @@ and focus only on the required ones.</p>
 </section>
 </div>
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Any.html">Any</a></li><li><a href="Callback.html">Callback</a></li><li><a href="Errors.ArgumentsString.html">Errors.ArgumentsString</a></li><li><a href="Errors.FunctionCallsString.html">Errors.FunctionCallsString</a></li><li><a href="Errors.NotAllCallsOccurredError.html">Errors.NotAllCallsOccurredError</a></li><li><a href="Errors.OutOfOrderCallError.html">Errors.OutOfOrderCallError</a></li><li><a href="Errors.UnexpectedArgumentsError.html">Errors.UnexpectedArgumentsError</a></li><li><a href="Errors.UnexpectedFunctionCallError.html">Errors.UnexpectedFunctionCallError</a></li><li><a href="Expectation.html">Expectation</a></li><li><a href="ExpectedCall.html">ExpectedCall</a></li><li><a href="Mach.html">Mach</a></li><li><a href="Mock.html">Mock</a></li><li><a href="MockObject.html">MockObject</a></li><li><a href="Same.html">Same</a></li><li><a href="Tree.AndNode.html">Tree.AndNode</a></li><li><a href="Tree.ExpectedCallNode.html">Tree.ExpectedCallNode</a></li><li><a href="Tree.Node.html">Tree.Node</a></li><li><a href="Tree.RootNode.html">Tree.RootNode</a></li><li><a href="Tree.TerminusNode.html">Tree.TerminusNode</a></li><li><a href="Tree.Tree.html">Tree.Tree</a></li></ul><h3>Namespaces</h3><ul><li><a href="Errors.html">Errors</a></li><li><a href="Tree.html">Tree</a></li></ul>
 </nav>
 <br class="clear">
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Apr 14 2016 18:38:25 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jan 06 2017 09:30:26 GMT-0500 (EST)
 </footer>
 <script> prettyPrint(); </script>
 <script src="scripts/linenumber.js"> </script>
