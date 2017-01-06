@@ -164,6 +164,10 @@ class Expectation {
     return this;
   }
 
+  withOtherCallsIgnored() {
+    return this.andOtherCallsShouldBeIgnored();
+  }
+
   /**
    * Executes the test code and verifies the expectations that were built up.
    * @param {function} thunk Test code.
@@ -179,7 +183,5 @@ class Expectation {
     return this.when(thunk);
   }
 }
-
-Expectation.prototype.withOtherCallsIgnored = Expectation.prototype.andOtherCallsShouldBeIgnored;
 
 module.exports = Expectation;
