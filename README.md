@@ -144,6 +144,20 @@ f.shouldBeCalled().andWillThrow(Error('error')).when(function() {
 });
 ```
 
+## Requiring Multiple Calls
+
+```javascript
+var mach = require('mach');
+
+var f = mach.mockFunction();
+
+f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(() => {
+  f(2);
+  f(2);
+  f(2);
+});
+```
+
 ## Making Multiple Expectations
 
 ```javascript
