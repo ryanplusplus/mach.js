@@ -26,8 +26,7 @@ class Expectation {
    * @returns {Expectation} This expectation, which allows chaining.
    */
   withTheseArguments() {
-    this._expectedCall.expectedArgs = Array.from(arguments);
-
+    this._expectedCall.expectedArgs = Array.from(arguments || []);
     return this;
   }
 
@@ -37,7 +36,6 @@ class Expectation {
    */
   withAnyArguments() {
     this._expectedCall.checkArgs = false;
-
     return this;
   }
 
@@ -48,7 +46,6 @@ class Expectation {
    */
   andWillReturn(returnValue) {
     this._expectedCall.returnValue = returnValue;
-
     return this;
   }
 
@@ -59,7 +56,6 @@ class Expectation {
    */
   andWillThrow(error) {
     this._expectedCall.throwValue = error;
-
     return this;
   }
 
@@ -68,7 +64,8 @@ class Expectation {
    * @param  {object[]} [...args] Arguments that will be passed to the callback when it is invoked.
    * @returns {Expectation} This expectation, which allows chaining.
    */
-  andWillCallback(...args) {
+  andWillCallback() {
+    const args = Array.from(arguments || []);
     if(this._expectedCall.expectedArgs.length === 0) {
       throw new Error('expectation has no arguments to callback');
     }
@@ -123,9 +120,7 @@ class Expectation {
    */
   then(expectation) {
     this._tree.then(expectation._tree);
-
     expectation._tree = this._tree;
-
     return this;
   }
 
@@ -161,7 +156,6 @@ class Expectation {
    */
   andOtherCallsShouldBeIgnored() {
     this._tree.ignoreOtherCalls();
-
     return this;
   }
 

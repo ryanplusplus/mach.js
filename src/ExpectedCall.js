@@ -100,7 +100,7 @@ class ExpectedCall {
 
     if(this.callbackIndex !== -1) {
       process.nextTick(() => {
-        args[this.callbackIndex](...this.callbackArgs);
+        args[this.callbackIndex].apply(null, this.callbackArgs);
       });
     }
 

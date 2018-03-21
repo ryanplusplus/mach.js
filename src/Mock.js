@@ -48,7 +48,7 @@ class Mock {
     };
 
     mock.shouldBeCalledWith = function() {
-      return mock._class.shouldBeCalledWith(...arguments);
+      return mock._class.shouldBeCalledWith.apply(mock._class, Array.from(arguments));
     };
 
     mock.shouldBeCalledWithAnyArguments = function() {
@@ -60,7 +60,7 @@ class Mock {
     };
 
     mock.mayBeCalledWith = function() {
-      return mock._class.mayBeCalledWith(...arguments);
+      return mock._class.mayBeCalledWith.apply(mock._class, Array.from(arguments));
     };
 
     mock.mayBeCalledWithAnyArguments = function() {
@@ -147,8 +147,8 @@ class Mock {
    * @returns {Expectation} Expectation created from this mock.
    */
   shouldBeCalledWith() {
-    return this.shouldBeCalled()
-      .withTheseArguments(...arguments);
+    let e = this.shouldBeCalled();
+    return e.withTheseArguments.apply(e, Array.from(arguments || []));
   }
 
   /**
@@ -174,8 +174,8 @@ class Mock {
    * @returns {Expectation} Expectation created from this mock.
    */
   mayBeCalledWith() {
-    return this.mayBeCalled()
-      .withTheseArguments(...arguments);
+    let e = this.mayBeCalled()
+    return e.withTheseArguments.apply(e, Array.from(arguments || []));
   }
 
   /**
