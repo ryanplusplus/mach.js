@@ -425,7 +425,7 @@ describe('mach.js', () => {
   it('should handle object arguments in error messages', () => {
     let o = {};
 
-    shouldFailWithExactly('Unexpected function call a([object Object])', () => {
+    shouldFailWithExactly('Unexpected function call a({})', () => {
       a(o);
     });
   });

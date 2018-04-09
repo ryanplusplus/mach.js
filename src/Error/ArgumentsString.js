@@ -1,6 +1,8 @@
 'use strict';
 
 var Same = require('../Same.js');
+var Any = require('../Any.js');
+var Callback = require('../Callback.js');
 
 /**
  * Converts arguments into a human readable string
@@ -34,8 +36,20 @@ class ArgumentsString {
       else if (arg instanceof Array) {
         strings.push('[' + this._convertArgsToString(arg) + ']');
       }
-      else {
+      else if (arg === undefined) {
         strings.push(String(arg));
+      }
+      else if (arg instanceof Any) {
+        strings.push(String(arg));
+      }
+      else if (arg instanceof Callback) {
+        strings.push(String(arg));
+      }
+      else if (typeof arg === 'function') {
+        strings.push(String(arg));
+      }
+      else {
+        strings.push(JSON.stringify(arg));
       }
     }
 
