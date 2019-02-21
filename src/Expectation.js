@@ -18,6 +18,7 @@ class Expectation {
   constructor(mock, required) {
     this._expectedCall = new ExpectedCall(mock, [], required, true);
     this._tree = new Tree(new ExpectedCallNode(this._expectedCall));
+    this.withResult = this.andWillReturn;
   }
 
   /**

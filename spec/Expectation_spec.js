@@ -66,6 +66,14 @@ describe('Expectation', () => {
     expect(expectation._expectedCall.returnValue).toEqual(0);
   });
 
+  it('withResult should be an alias for andWillReturn', () => {
+    let expectation = new Expectation({
+      name: 'foo'
+    });
+
+    expect(expectation.withResult).toBe(expectation.andWillReturn);
+  });
+
   it('andWillThrow should set expected call throw value', () => {
     let expectation = new Expectation({
       name: 'foo'
