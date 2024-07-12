@@ -4,9 +4,9 @@ Simple mocking framework for JavaScript inspired by CppUMock and designed for re
 ## Mocking a Function
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalled().when(function() {
   f();
@@ -16,18 +16,18 @@ f.shouldBeCalled().when(function() {
 ## Naming a Mocked Function
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
 // Mocked function is now given as 'f' in error messages
-var f = mach.mockFunction('f');
+const f = mach.mockFunction('f');
 ```
 
 ## Mocking an Object
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var someObject = {
+const someObject = {
   foo: function() {},
   bar: function() {}
 };
@@ -42,9 +42,9 @@ mockedObject.foo.shouldBeCalled().when(function() {
 ## Naming a Mocked Object
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var someObject = {
+const someObject = {
   foo: function() {},
   bar: function() {}
 };
@@ -56,9 +56,9 @@ mockedObject = mach.mockObject(someObject, 'someObject');
 ## Requiring Arguments
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalledWith(1, 2).when(function() {
   f(1, 2);
@@ -68,9 +68,9 @@ f.shouldBeCalledWith(1, 2).when(function() {
 ## Ignoring Single Arguments
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalledWith(1, mach.any, 3).when(function() {
   f(1, 'whatever', 3);
@@ -80,9 +80,9 @@ f.shouldBeCalledWith(1, mach.any, 3).when(function() {
 ## Ignoring All Arguments
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalledWithAnyArguments().when(function() {
   f(1, 2);
@@ -92,9 +92,9 @@ f.shouldBeCalledWithAnyArguments().when(function() {
 ## Ignoring Other Calls
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
   f();
@@ -103,9 +103,9 @@ f.shouldBeCalled().andOtherCallsShouldBeIgnored().when(function() {
 ```
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalled().withOtherCallsIgnored().when(function() {
   f();
@@ -116,9 +116,9 @@ f.shouldBeCalled().withOtherCallsIgnored().when(function() {
 ## Returning Values
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalled().andWillReturn(4).when(function() {
   expect(f()).toBe(4);
@@ -128,9 +128,9 @@ f.shouldBeCalled().andWillReturn(4).when(function() {
 ## Throwing Values
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalled().andWillThrow(Error('error')).when(function() {
   try {
@@ -145,9 +145,9 @@ f.shouldBeCalled().andWillThrow(Error('error')).when(function() {
 ## Requiring Multiple Calls
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(() => {
   f(2);
@@ -159,10 +159,10 @@ f.shouldBeCalledWith(2).andWillReturn(1).multipleTimes(3).when(() => {
 ## Making Multiple Expectations
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f1 = mach.mockFunction();
-var f2 = mach.mockFunction();
+const f1 = mach.mockFunction();
+const f2 = mach.mockFunction();
 
 f1.shouldBeCalled()
   .andAlso(f2.shouldBeCalled())
@@ -175,9 +175,9 @@ f1.shouldBeCalled()
 ## Making Optional Expectations
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.mayBeCalled().when(function() {});
 ```
@@ -185,9 +185,9 @@ f.mayBeCalled().when(function() {});
 ## Using Optional Ordering
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 // Use andThen or then when order is important
 f.shouldBeCalledWith(1)
@@ -223,9 +223,9 @@ f.shouldBeCalledWith(1)
 ## Using Mixed Ordering
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalledWith(1)
   .and(f.shouldBeCalledWith(2))
@@ -242,9 +242,9 @@ f.shouldBeCalledWith(1)
 ## Matching Arguments Using Deep Compare
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 // mach.match can also be used
 f.shouldBeCalledWith(mach.same([1, 2, 3]))
@@ -256,13 +256,13 @@ f.shouldBeCalledWith(mach.same([1, 2, 3]))
 ## Matching Arguments Using a Custom Matcher
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var customMatcher = function(a, b) {
+const customMatcher = function(a, b) {
   return a[0] === b[0]
 };
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 f.shouldBeCalledWith(mach.same([1, 2, 3], customMatcher))
   .when(function() {
@@ -273,9 +273,9 @@ f.shouldBeCalledWith(mach.same([1, 2, 3], customMatcher))
 ## Ignoring Mocked Calls
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f = mach.mockFunction();
+const f = mach.mockFunction();
 
 mach.ignoreMockedCallsWhen(function() {
   f();
@@ -285,10 +285,10 @@ mach.ignoreMockedCallsWhen(function() {
 ## Flexible Syntax
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f1 = mach.mockFunction();
-var f2 = mach.mockFunction();
+const f1 = mach.mockFunction();
+const f2 = mach.mockFunction();
 
 function somethingShouldHappen() {
   return f1.shouldBeCalled();
@@ -312,11 +312,11 @@ somethingShouldHappen()
 ## Handy Error messages
 
 ```javascript
-var mach = require('mach.js');
+const mach = require('mach.js');
 
-var f1 = mach.mockFunction('f1');
-var f2 = mach.mockFunction('f2');
-var f2 = mach.mockFunction('f3');
+const f1 = mach.mockFunction('f1');
+const f2 = mach.mockFunction('f2');
+const f2 = mach.mockFunction('f3');
 
 f1.shouldBeCalledWith(1)
   .and(f2.shouldBeCalledWith(2))
@@ -338,7 +338,7 @@ Incomplete calls:
 
 ```javascript
 describe('Foo', () => {
-  let Foo = require('./Foo.js');
+  const Foo = require('./Foo.js');
 
   let mockTemplate = {
     sync: () => {},
