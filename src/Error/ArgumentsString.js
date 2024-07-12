@@ -49,7 +49,9 @@ class ArgumentsString {
         strings.push(String(arg));
       }
       else {
-        strings.push(JSON.stringify(arg));
+        strings.push(JSON.stringify(arg, (key, value) => {
+          return value === undefined ? "undefined" : value;
+        }));
       }
     }
 

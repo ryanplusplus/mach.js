@@ -40,4 +40,9 @@ describe('ArgumentsString', () => {
     expect('' + argsString).toEqual('0');
     expect(argsString + '').toEqual('0');
   });
+
+  it('should handle undefined', () => {
+    let argsString = new ArgumentsString({sam: undefined, ryan: 1000});
+    expect('' + argsString).toEqual('{"sam": "undefined", "ryan": 1000});
+  });
 });
