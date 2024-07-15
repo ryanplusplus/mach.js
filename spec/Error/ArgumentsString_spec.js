@@ -42,7 +42,7 @@ describe('ArgumentsString', () => {
   });
 
   it('should handle undefined', () => {
-    let argsString = new ArgumentsString({sam: undefined, ryan: 1000});
-    expect('' + argsString).toEqual('{"sam": "undefined", "ryan": 1000});
+    let argsString = new ArgumentsString([{sam: undefined, ryan: 1000}]);
+    expect('' + argsString).toEqual('{"sam":"undefined","ryan":1000}');
   });
 });
