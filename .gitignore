@@ -4,3 +4,4 @@ coverage
 doc
 npm-debug.log
 .yarn
+dist

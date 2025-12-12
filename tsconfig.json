@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "declarationMap": false,
+    "maxNodeModuleJsDepth": 0,
+    "skipLibCheck": true
+  },
+  "include": [
+    "index.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "spec"
+  ]
+}

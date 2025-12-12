@@ -3,7 +3,9 @@
   "version": "0.8.2",
   "description": "Simple mocking framework for JavaScript inspired by CppUMock and designed for readability",
   "main": "index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "postinstall": "tsc",
     "lint": "eslint '*.js' 'src/**/*.js' 'spec/**/*.js' 'sample/**/*.js'",
     "test": "node --test \"spec/**/*_test.js\" --test-concurrency true",
     "test-jest": "jest",
