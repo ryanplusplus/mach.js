@@ -21,14 +21,14 @@ var ExpectedCallNode = require('./ExpectedCallNode.js');
 class AndNode extends Node {
   /**
    * Creates a new {@link Tree.AndNode}
-   * @param {ExpectedCall} expectedCall Initial expected call for this node.
+   * @param {import('../ExpectedCall.js')} expectedCall Initial expected call for this node.
    */
   constructor(expectedCall) {
     super('AND');
     /**
      * {@link ExpectedCall}s for this node.
      * @name Tree.AndNode#expectedCalls
-     * @type ExpectedCall[]
+     * @type import('../ExpectedCall.js')[]
      */
     this.expectedCalls = [expectedCall];
   }
@@ -49,7 +49,7 @@ class AndNode extends Node {
 
   /**
    * Merges this node and another {@link Tree.AndNode} or {@link Tree.ExpectedCallNode}
-   * @param {Tree.AndNode|Tree.ExpectedCallNode} node Node to merge with this node.
+   * @param {AndNode|ExpectedCallNode} node Node to merge with this node.
    */
   merge(node) {
     let andNode;
@@ -70,9 +70,9 @@ class AndNode extends Node {
 
   /**
    * Determines the the {@link Mock} and args match any {@link ExpectedCall}s in this node.
-   * @param {Mock} mock Mock that was called.
+   * @param {import('../Mock.js').MockFunction} mock Mock that was called.
    * @param {object[]} args Arguments for the call.
-   * @return {ExpectedCall|undefined} The matching {@link ExpectedCall} if found; otherwise undefined.
+   * @return {import('../ExpectedCall.js')|undefined} The matching {@link ExpectedCall} if found; otherwise undefined.
    */
   match(mock, args) {
     for(let expectedCall of this.expectedCalls) {
@@ -90,7 +90,7 @@ class AndNode extends Node {
 
   /**
    * Determines the the {@link Mock} partially matches any {@link ExpectedCall}s in this node.
-   * @param {Mock} mock Mock that was called.
+   * @param {import('../Mock.js').MockFunction} mock Mock that was called.
    * @return {boolean} True if the mock partially matches; otherwise false.
    */
   partialMatch(mock) {

@@ -12,7 +12,7 @@ let Callback = require('./Callback.js');
 class Expectation {
   /**
    * Creates a new {@link Expectation}
-   * @param {Mock} mock Mock that is being expected.
+   * @param {import('./Mock.js')} mock Mock that is being expected.
    * @param {boolean} required If true then mock is required to be called; otherwise it is optional and may be skipped during execution.
    */
   constructor(mock, required) {

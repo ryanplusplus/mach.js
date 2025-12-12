@@ -9,7 +9,7 @@ var Node = require('./Node.js');
 class ExpectedCallNode extends Node {
   /**
    * Creates a new {@link ExpectedCallNode}
-   * @param {ExpectedCall} expectedCall The expected call for this node.
+   * @param {import('../ExpectedCall.js')} expectedCall The expected call for this node.
    */
   constructor(expectedCall) {
     super(expectedCall.name);
@@ -17,14 +17,14 @@ class ExpectedCallNode extends Node {
     /**
      * {@link ExpectedCall} for this node.
      * @name Tree.ExpectedCallNode#expectedCall
-     * @type ExpectedCall
+     * @type import('../ExpectedCall.js')
      */
     this.expectedCall = expectedCall;
   }
 
   /**
    * Determines the the {@link Mock} partially matches the {@link ExpectedCall} in this node.
-   * @param {Mock} mock Mock that was called.
+   * @param {import('../Mock.js').MockFunction} mock Mock that was called.
    * @return {boolean} True if the mock partially matches; otherwise false.
    */
   partialMatch(mock) {

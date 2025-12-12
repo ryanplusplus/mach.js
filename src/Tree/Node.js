@@ -13,7 +13,7 @@ class Node {
      * The node that comes before this node in the {@link Tree.Tree}.
      * This will be undefined for the {@link Tree.RootNode} of a {@link Tree.Tree}.
      * @name Tree.Node#parent
-     * @type Tree.Node
+     * @type {Node}
      */
     this.parent = undefined;
 
@@ -21,7 +21,7 @@ class Node {
      * The node that comes after this node in the {@link Tree.Tree}.
      * This will be undefined for the {@link Tree.TerminusNode} of a {@link Tree.Tree}.
      * @name Tree.Node#child
-     * @type Tree.Node
+     * @type {Node}
      */
     this.child = undefined;
   }
@@ -41,7 +41,7 @@ class Node {
   toString() {
     var result = '{ ' + this.name;
 
-    if (this.child !== undefined) {
+    if(this.child !== undefined) {
       result += ' [' + this.child.toString() + ']';
     }
 

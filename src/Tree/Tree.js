@@ -21,7 +21,7 @@ let UnexpectedFunctionCallError = require('../Error/UnexpectedFunctionCallError.
 class Tree {
   /**
    * Creates a new {@link Tree.Tree}
-   * @param {Tree.AndNode|Tree.ExpectedCallNode} node Inital node in this tree.
+   * @param {AndNode|ExpectedCallNode} node Inital node in this tree.
    */
   constructor(node) {
     this._root = new RootNode();
@@ -41,8 +41,8 @@ class Tree {
 
   /**
    * Chains two nodes together by making `a` the parent of `b`
-   * @param {Tree.Node} a Node that will be the parent of b
-   * @param {Tree.Node} b Node that will be the child of a
+   * @param {import('./Node.js')} a Node that will be the parent of b
+   * @param {import('./Node.js')} b Node that will be the child of a
    */
   _chainNodes(a, b) {
     a.child = b;
@@ -51,7 +51,7 @@ class Tree {
 
   /**
    * Gets last non-{@link Tree.TerminusNode} node in this tree.
-   * @returns {Tree.Node} Last non-terminus node
+   * @returns {import('./Node.js')} Last non-terminus node
    */
   get _lastNode() {
     let node = this._root;
@@ -65,7 +65,7 @@ class Tree {
 
   /**
    * Combines two execution {@link Tree.Tree}s together via an `AND` operation.
-   * @param {Tree.Tree} tree Tree to combine with this tree.
+   * @param {Tree} tree Tree to combine with this tree.
    */
   and(tree) {
     let andNode;
@@ -93,7 +93,7 @@ class Tree {
 
   /**
    * Combines two execution {@link Tree.Tree}s together via a `THEN` operation.
-   * @param {Tree.Tree} tree Tree to combine with this tree.
+   * @param {Tree} tree Tree to combine with this tree.
    */
   then(tree) {
     let node = tree._root.child;
@@ -105,8 +105,8 @@ class Tree {
 
   /**
    * Gets all {@link ExpectedCall}s that come after the specified node.
-   * @param {Tree.AndNode|Tree.ExpectedCallNode} node Current node in the tree.
-   * @returns {ExpectedCall[]} List of expected calls that come after the specified node.
+   * @param {import('./AndNode.js')|import('./ExpectedCallNode.js')} node Current node in the tree.
+   * @returns {import('../ExpectedCall.js')[]} List of expected calls that come after the specified node.
    */
   _callsAfter(node) {
     let calls = [];
@@ -134,7 +134,7 @@ class Tree {
 
   /**
    * Gets all {@link ExpectedCall}s in this tree.
-   * @return {ExpectedCall[]} All the expected calls in this tree.
+   * @return {import('../ExpectedCall.js')[]} All the expected calls in this tree.
    */
   get _calls() {
     return this._callsAfter(this._root);
@@ -184,7 +184,7 @@ class Tree {
 
   /**
    * Attempts to execute a call to a {@link Mock}.
-   * @param {Mock} mock Mock that was called.
+   * @param {import('../Mock.js').MockFunction} mock Mock that was called.
    * @param {object[]} args Arguments for the call.
    * @returns {object|undefined} Will return a value if the mock as a return value; otherwise undefined.
    * @throws {Error} Will throw an error if the mock has a throw value. This is normal and should be handled by the code under test.
@@ -257,7 +257,6 @@ class Tree {
    * @returns {T}
    */
   execute(thunk) {
-
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
 

@@ -10,7 +10,7 @@ let Same = require('./Same.js');
 class ExpectedCall {
   /**
    * Creates a new {@link ExpectedCall}
-   * @param {Mock} mock Mock that will be called.
+   * @param {import('./Mock.js').MockFunction} mock Mock that will be called.
    * @param {object[]} args Arguments that are expected to be used during execution.
    * @param {boolean} required If true the mock is required to be call during execution; other wise it is optional and can be skipped.
    * @param {boolean} checkArgs If true then the arguments passed to the mock should be checked; otherwise they are ignored.
@@ -19,7 +19,7 @@ class ExpectedCall {
     /**
      * {@link Mock} this expected call is based on.
      * @name ExpectedCall#mock
-     * @type Mock
+     * @type import('./Mock.js').MockFunction
      */
     this.mock = mock;
 
@@ -109,7 +109,7 @@ class ExpectedCall {
 
   /**
    * Checks to see if the specified {@link Mock} is this expected calls mock.
-   * @param {Mock} mock Mock to compare against this expected calls mock.
+   * @param {import('./Mock.js').MockFunction} mock Mock to compare against this expected calls mock.
    * @returns {boolean} True if the mocks are the same mock; otherwise false.
    */
   matchesFunction(mock) {
@@ -163,7 +163,7 @@ class ExpectedCall {
 
   /**
    * Checks to see if the specified {@link Mock} and arguments match this expected call.
-   * @param {Mock} mock Mock to compare against this expected calls mock.
+   * @param {import('./Mock.js').MockFunction} mock Mock to compare against this expected calls mock.
    * @param {object[]} args Arguments to compare against this expected calls expected arguments.
    * @returns {boolean} True if the mock and arguments match this expected call; otherwise false.
    */
