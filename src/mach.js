@@ -13,8 +13,8 @@ let Same = require('./Same.js');
 class Mach {
   /**
    * Creates a new {@link Mock}.
-   * @param {function|string} thing Either an existing function to mock or the name for the mock.
-   * @returns {Mock} Mocked function.
+   * @param {function|string} [thing] Either an existing function to mock or the name for the mock.
+   * @returns {module:mach.js/src/Mock~MockFunction} Mocked function.
    */
   static mockFunction(thing) {
     let name;
@@ -30,8 +30,10 @@ class Mach {
 
   /**
    * Creates a new {@link MockObject}
-   * @param {object} object Object to mock.
-   * @param {string} name Name for the mocked object.
+   * @template {Object} T
+   * @param {T} object Object to mock.
+   * @param {string} [name] Name for the mocked object.
+   * @returns {{[K in keyof T]: T[K] extends Function ? import('./Mock').MockFunction : T[K]}} Mocked object where all methods are MockFunctions
    */
   static mockObject(object, name) {
     return new MockObject(object, name);
@@ -40,7 +42,7 @@ class Mach {
   /**
    * Creates a new {@link Same} which is used as an expected argument for a {@link Mock} expectation.
    * @param {object} value Expected argument to a {@link Mock}
-   * @param {function} matcher Custom equality function in the form `(expected, actual) => boolean`
+   * @param {function} [matcher] Custom equality function in the form `(expected, actual) => boolean`
    * @returns {Same} Same object to use as an expected argument in an expectation.
    */
   static same(value, matcher) {

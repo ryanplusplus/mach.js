@@ -97,9 +97,9 @@ class Expectation {
   }
 
   /**
-   * Combines this expecation with the specifed expectation using `AND`.
-   * This means execution order does not matter and these expecations can be executed in either order.
-   * @param {Expectation} expectation Expectation to combine with this expecatation.
+   * Combines this expectation with the specifed expectation using `AND`.
+   * This means execution order does not matter and these expectations can be executed in either order.
+   * @param {Expectation} expectation Expectation to combine with this expectation.
    * @returns {Expectation} This expectation, which allows chaining.
    */
   and(expectation) {
@@ -118,9 +118,9 @@ class Expectation {
   }
 
   /**
-   * Combines this expecation with the specifed expectation using `THEN`.
+   * Combines this expectation with the specifed expectation using `THEN`.
    * This means execution order matters and this expectation must come before the other.
-   * @param {Expectation} expectation Expectation to combine with this expecatation.
+   * @param {Expectation} expectation Expectation to combine with this expectation.
    * @returns {Expectation} This expectation, which allows chaining.
    */
   then(expectation) {
@@ -138,7 +138,7 @@ class Expectation {
 
   /**
    * Clones this expectation so that is is expected the specified number of times.
-   * @param {number} count Number of times this expecation should be expected.
+   * @param {number} count Number of times this expectation should be expected.
    * @returns {Expectation} This expectation, which allows chaining.
    */
   multipleTimes(count) {

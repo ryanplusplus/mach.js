@@ -164,7 +164,7 @@ void describe('Expectation', () => {
     assert.strictEqual(expectation._tree._ignoreOtherCalls, true);
   });
 
-  void it('when should execute the expecation chain', () => {
+  void it('when should execute the expectation chain', () => {
     let a = new Mock('a');
     let b = new Mock('b');
     let c = new Mock('c');

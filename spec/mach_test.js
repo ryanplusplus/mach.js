@@ -240,26 +240,26 @@ void describe('mach.js', () => {
   void it('should fail if andWillReturn is not preceeded by shouldBeCalled or shouldBeCalledWith', () => {
     assert.throws(() => {
       a.andWillReturn(1);
-    });
-  }, /.*/);
+    }, /.*/);
+  });
 
   void it('should fail if when is not preceeded by shouldBeCalled or shouldBeCalledWith', () => {
     assert.throws(() => {
       a.when(() => {});
-    });
-  }, /.*/);
+    }, /.*/);
+  });
 
   void it('should fail if shouldBeCalled is used after a call has already been specified', () => {
     assert.throws(() => {
       a.shouldBeCalled().shouldBeCalled();
-    });
-  }, /.*/);
+    }, /.*/);
+  });
 
   void it('should fail if shouldBeCalledWith is used after a call has already been specified', () => {
     assert.throws(() => {
       a.shouldBeCalled().shouldBeCalledWith(4);
-    });
-  }, /.*/);
+    }, /.*/);
+  });
 
   void it('should allow calls to happen out of order when andAlso is used', () => {
     b.shouldBeCalled()
@@ -728,9 +728,6 @@ void describe('mach.js', () => {
   void it('should return values from promises', async () => {
     await a.shouldBeCalled().andWillReturn(1)
       .when(() => Promise.resolve(a()))
-      .catch((error) => {
-        fail(error);
-      })
       .then((value) => {
         assert.strictEqual(value, 1);
       });

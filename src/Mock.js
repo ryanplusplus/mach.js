@@ -18,7 +18,21 @@ var _ignoreOtherCalls = false;
 var _tree;
 
 /**
+ * A callable mock function that can be invoked and have expectations set on it.
+ * @typedef {{
+ *   (...args: any[]): any,
+ *   shouldBeCalled: () => Expectation,
+ *   shouldBeCalledWith: (...args: any[]) => Expectation,
+ *   shouldBeCalledWithAnyArguments: () => Expectation,
+ *   mayBeCalled: () => Expectation,
+ *   mayBeCalledWith: (...args: any[]) => Expectation,
+ *   mayBeCalledWithAnyArguments: () => Expectation
+ * }} MockFunction
+ */
+
+/**
  * Represents a mocked function.
+ * @class
  */
 class Mock {
   /**
@@ -38,7 +52,8 @@ class Mock {
     };
 
     /**
-     *
+     * The callable mock function instance
+     * @type {MockFunction}
      */
     this.function = mock;
     this.function._class = this;
@@ -134,7 +149,7 @@ class Mock {
   }
 
   /**
-   * Creats a new required {@link Expecatation} from this mock.
+   * Creats a new required {@link Expectation} from this mock.
    * @returns {Expectation} Expectation created from this mock.
    */
   shouldBeCalled() {
@@ -142,7 +157,7 @@ class Mock {
   }
 
   /**
-   * Creats a new required {@link Expecatation} from this mock that expects the specified arguments.
+   * Creats a new required {@link Expectation} from this mock that expects the specified arguments.
    * @param {object[]} arguments Expected arguments
    * @returns {Expectation} Expectation created from this mock.
    */
@@ -152,7 +167,7 @@ class Mock {
   }
 
   /**
-   * Creats a new required {@link Expecatation} from this mock that will accept any arguments.
+   * Creats a new required {@link Expectation} from this mock that will accept any arguments.
    * @returns {Expectation} Expectation created from this mock.
    */
   shouldBeCalledWithAnyArguments() {
@@ -161,7 +176,7 @@ class Mock {
   }
 
   /**
-   * Creats a new optional {@link Expecatation} from this mock.
+   * Creats a new optional {@link Expectation} from this mock.
    * @returns {Expectation} Expectation created from this mock.
    */
   mayBeCalled() {
@@ -169,7 +184,7 @@ class Mock {
   }
 
   /**
-   * Creats a new optional {@link Expecatation} from this mock that expects the specified arguments.
+   * Creats a new optional {@link Expectation} from this mock that expects the specified arguments.
    * @param {object[]} arguments Expected arguments
    * @returns {Expectation} Expectation created from this mock.
    */
@@ -179,7 +194,7 @@ class Mock {
   }
 
   /**
-   * Creats a new optional {@link Expecatation} from this mock that will accept any arguments.
+   * Creats a new optional {@link Expectation} from this mock that will accept any arguments.
    * @returns {Expectation} Expectation created from this mock.
    */
   mayBeCalledWithAnyArguments() {
