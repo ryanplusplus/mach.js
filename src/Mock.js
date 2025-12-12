@@ -122,10 +122,10 @@ class Mock {
    * @param {object[]} args Arguments passed to mock during execution.
    */
   _defaultHandler(args) {
-    if (!this.ignoreOtherCalls) {
+    if(!this.ignoreOtherCalls) {
       let calls = [];
 
-      if (this.tree !== undefined) {
+      if(this.tree !== undefined) {
         calls = this.tree._calls;
       }
 
@@ -174,7 +174,7 @@ class Mock {
    * @returns {Expectation} Expectation created from this mock.
    */
   mayBeCalledWith() {
-    let e = this.mayBeCalled()
+    let e = this.mayBeCalled();
     return e.withTheseArguments.apply(e, Array.from(arguments || []));
   }
 

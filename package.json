@@ -4,15 +4,10 @@
   "description": "Simple mocking framework for JavaScript inspired by CppUMock and designed for readability",
   "main": "index.js",
   "scripts": {
-    "gulp": "gulp",
-    "lint": "gulp lint",
-    "test": "gulp test",
-    "coverage": "gulp coverage",
-    "watch": "gulp watch",
-    "docHelp": "jsdocgen",
-    "docClone": "jsdocgen clone",
-    "docGenerate": "jsdocgen generate",
-    "docPublish": "jsdocgen publish"
+    "lint": "eslint '*.js' 'src/**/*.js' 'spec/**/*.js' 'sample/**/*.js'",
+    "test": "node --test \"spec/**/*_test.js\" --test-concurrency true",
+    "test-jest": "jest",
+    "watch": "node --watch --test \"spec/**/*_test.js\" --test-concurrency true"
   },
   "repository": {
     "type": "git",
@@ -31,18 +26,13 @@
   },
   "homepage": "https://github.com/ryanplusplus/mach.js#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-istanbul": "^1.1.1",
-    "gulp-jasmine": "^2.2.0",
-    "gulp-jshint": "^2.0.4",
-    "gulp-plumber": "^1.0.1",
-    "gulp-tap": "^0.1.3",
-    "jasmine-console-reporter": "^1.2.7",
-    "jsdocgen": "^0.2.4",
-    "jshint": "^2.9.4",
-    "run-sequence": "^1.2.2"
+    "@typescript-eslint/eslint-plugin": "^8.48.1",
+    "@typescript-eslint/parser": "^8.48.1",
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "underscore": "^1.8.3"
-  }
+    "fast-deep-equal": "^3.1.3"
+  },
+  "packageManager": "yarn@4.12.0"
 }

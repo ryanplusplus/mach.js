@@ -252,10 +252,12 @@ class Tree {
 
   /**
    * Executes the specifed test code.
-   * @param {function} thunk Test code.
-   * @returns {Promise|undefined} Promise if thunk has a callback argument; otherwise undefined.
+   * @template T
+   * @param {function(): T} thunk Test code.
+   * @returns {T}
    */
   execute(thunk) {
+
     this._setMockExecutionHandler();
     this._executingNode = this._root.child;
 

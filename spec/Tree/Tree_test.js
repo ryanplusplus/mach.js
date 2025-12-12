@@ -1,6 +1,9 @@
 'use strict';
 
-describe('Tree', () => {
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+
+void describe('Tree', () => {
   let Tree = require('../../src/Tree/Tree.js');
   let Node = require('../../src/Tree/Node.js');
   let TerminusNode = require('../../src/Tree/TerminusNode.js');
@@ -14,22 +17,20 @@ describe('Tree', () => {
   let ExpectedCall = require('../../src/ExpectedCall.js');
   let Callback = require('../../src/Callback.js');
 
-  it('should have a node when initialized', () => {
+  void it('should have a node when initialized', () => {
     let node = new ExpectedCallNode({
       name: 'foo'
     });
 
     let tree = new Tree(node);
 
-    expect(tree._root.child)
-      .toEqual(node);
-    expect(node.child instanceof TerminusNode)
-      .toBe(true);
+    assert.strictEqual(tree._root.child, node);
+    assert.ok(node.child instanceof TerminusNode);
   });
 
-  describe('tree building', () => {
-    describe('and', () => {
-      it('ExpectedCallNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
+  void describe('tree building', () => {
+    void describe('and', () => {
+      void it('ExpectedCallNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
         let a = new ExpectedCallNode({
           name: 'a'
         });
@@ -42,11 +43,10 @@ describe('Tree', () => {
 
         tree.and(new Tree(b));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ AND {{ a, b }} [{ TERMINUS }] }] }');
       });
 
-      it('ExpectedCallNode + AndNode => Root -> AndNode -> Terminus', () => {
+      void it('ExpectedCallNode + AndNode => Root -> AndNode -> Terminus', () => {
         let a = new ExpectedCallNode({
           name: 'a'
         });
@@ -63,11 +63,10 @@ describe('Tree', () => {
 
         tree.and(new Tree(b));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
       });
 
-      it('AndNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
+      void it('AndNode + ExpectedCallNode => Root -> AndNode -> Terminus', () => {
         let a = new AndNode({
           name: 'a'
         });
@@ -84,11 +83,10 @@ describe('Tree', () => {
 
         tree.and(new Tree(c));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ AND {{ a, b, c }} [{ TERMINUS }] }] }');
       });
 
-      it('AndNode + AndNode => Root -> AndNode -> Terminus', () => {
+      void it('AndNode + AndNode => Root -> AndNode -> Terminus', () => {
         let a = new AndNode({
           name: 'a'
         });
@@ -109,22 +107,23 @@ describe('Tree', () => {
 
         tree.and(new Tree(c));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ AND {{ a, b, c, d }} [{ TERMINUS }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ AND {{ a, b, c, d }} [{ TERMINUS }] }] }');
       });
 
-      it('should throw an error if current node is invalid type', () => {
+      void it('should throw an error if current node is invalid type', () => {
         let a = new Node('a');
 
         let tree = new Tree(a);
 
-        expect(() => tree.and(new Tree(new Node('b'))))
-          .toThrowError('Unexpected type for this node, expected AndNode or ExpectedCallNode');
+        assert.throws(
+          () => tree.and(new Tree(new Node('b'))),
+          /Unexpected type for this node, expected AndNode or ExpectedCallNode/
+        );
       });
     });
 
-    describe('then', () => {
-      it('ExpectedCallNode -> ExpectedCallNode => Root -> ExpectedCallNode -> ExpectedCallNode -> Terminus', () => {
+    void describe('then', () => {
+      void it('ExpectedCallNode -> ExpectedCallNode => Root -> ExpectedCallNode -> ExpectedCallNode -> Terminus', () => {
         let a = new ExpectedCallNode({
           name: 'a'
         });
@@ -137,11 +136,10 @@ describe('Tree', () => {
 
         tree.then(new Tree(b));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ a [{ b [{ TERMINUS }] }] }] }');
       });
 
-      it('ExpectedCallNode -> AndNode => Root -> ExpectedCallNode -> AndNode -> Terminus', () => {
+      void it('ExpectedCallNode -> AndNode => Root -> ExpectedCallNode -> AndNode -> Terminus', () => {
         let a = new ExpectedCallNode({
           name: 'a'
         });
@@ -158,11 +156,10 @@ describe('Tree', () => {
 
         tree.then(new Tree(b));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ a [{ AND {{ b, c }} [{ TERMINUS }] }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ a [{ AND {{ b, c }} [{ TERMINUS }] }] }] }');
       });
 
-      it('AndNode -> ExpectedCallNode => Root -> AndNode -> ExpectedCallNode -> Terminus', () => {
+      void it('AndNode -> ExpectedCallNode => Root -> AndNode -> ExpectedCallNode -> Terminus', () => {
         let a = new AndNode({
           name: 'a'
         });
@@ -179,11 +176,10 @@ describe('Tree', () => {
 
         tree.then(new Tree(c));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ AND {{ a, b }} [{ c [{ TERMINUS }] }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ AND {{ a, b }} [{ c [{ TERMINUS }] }] }] }');
       });
 
-      it('AndNode -> AndNode => Root -> AndNode -> AndNode -> Terminus', () => {
+      void it('AndNode -> AndNode => Root -> AndNode -> AndNode -> Terminus', () => {
         let a = new AndNode({
           name: 'a'
         });
@@ -204,14 +200,13 @@ describe('Tree', () => {
 
         tree.then(new Tree(c));
 
-        expect(tree.toString())
-          .toEqual('{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
+        assert.equal(tree.toString(), '{ ROOT [{ AND {{ a, b }} [{ AND {{ c, d }} [{ TERMINUS }] }] }] }');
       });
     });
   });
 
-  describe('completedCalls / incompleteCalls', () => {
-    it('should return status of all expected calls', () => {
+  void describe('completedCalls / incompleteCalls', () => {
+    void it('should return status of all expected calls', () => {
       let a = new ExpectedCallNode({
         name: 'a',
         completed: false
@@ -231,47 +226,41 @@ describe('Tree', () => {
 
       tree.then(new Tree(b));
 
-      expect(tree._calls.filter(c => c.completed).length)
-        .toEqual(0);
-      expect(tree._calls.filter(c => !c.completed).length)
-        .toEqual(3);
+      assert.equal(tree._calls.filter(c => c.completed).length, 0);
+      assert.equal(tree._calls.filter(c => !c.completed).length, 3);
 
       a.expectedCall.completed = true;
 
-      expect(tree._calls.filter(c => c.completed).length)
-        .toEqual(1);
-      expect(tree._calls.filter(c => !c.completed).length)
-        .toEqual(2);
+      assert.equal(tree._calls.filter(c => c.completed).length, 1);
+      assert.equal(tree._calls.filter(c => !c.completed).length, 2);
 
       b.expectedCalls[0].completed = true;
 
-      expect(tree._calls.filter(c => c.completed).length)
-        .toEqual(2);
-      expect(tree._calls.filter(c => !c.completed).length)
-        .toEqual(1);
+      assert.equal(tree._calls.filter(c => c.completed).length, 2);
+      assert.equal(tree._calls.filter(c => !c.completed).length, 1);
 
       b.expectedCalls[1].completed = true;
 
-      expect(tree._calls.filter(c => c.completed).length)
-        .toEqual(3);
-      expect(tree._calls.filter(c => !c.completed).length)
-        .toEqual(0);
+      assert.equal(tree._calls.filter(c => c.completed).length, 3);
+      assert.equal(tree._calls.filter(c => !c.completed).length, 0);
     });
 
-    it('should throw an error if there is an invalid node type', () => {
+    void it('should throw an error if there is an invalid node type', () => {
       let a = new Node('node');
 
       let tree = new Tree(a);
 
       let error = 'Unexpected type for node, expected AndNode or ExpectedCallNode';
-      expect(() => tree._calls.filter(c => c.completed))
-        .toThrowError(error);
-      expect(() => tree._calls.filter(c => !c.completed))
-        .toThrowError(error);
+      assert.throws(() => {
+        tree._calls.filter(c => c.completed);
+      }, new RegExp(error));
+      assert.throws(() => {
+        tree._calls.filter(c => !c.completed);
+      }, new RegExp(error));
     });
   });
 
-  it('_checkCalls -> NotAllCallsOccurredError when appropriate', () => {
+  void it('_checkCalls -> NotAllCallsOccurredError when appropriate', () => {
     let a = new ExpectedCallNode({
       name: 'a',
       required: true,
@@ -294,31 +283,27 @@ describe('Tree', () => {
 
     tree.then(new Tree(b));
 
-    expect(() => tree._checkCalls())
-      .toThrowError(NotAllCallsOccurredError);
+    assert.throws(() => tree._checkCalls(), NotAllCallsOccurredError);
 
     a.expectedCall.completed = true;
     a.expectedCall.actualArgs = [];
 
-    expect(() => tree._checkCalls())
-      .toThrowError(NotAllCallsOccurredError);
+    assert.throws(() => tree._checkCalls(), NotAllCallsOccurredError);
 
     b.expectedCalls[0].completed = true;
     b.expectedCalls[0].actualArgs = [];
 
-    expect(() => tree._checkCalls())
-      .not.toThrowError(NotAllCallsOccurredError);
+    assert.doesNotThrow(() => tree._checkCalls());
 
     b.expectedCalls[1].completed = true;
     b.expectedCalls[1].actualArgs = [];
 
-    expect(() => tree._checkCalls())
-      .not.toThrowError(NotAllCallsOccurredError);
+    assert.doesNotThrow(() => tree._checkCalls());
   });
 
-  describe('execute', () => {
-    describe('ExpectedCallNode tests', () => {
-      it('should throw an error for an unexpected call', () => {
+  void describe('execute', () => {
+    void describe('ExpectedCallNode tests', () => {
+      void it('should throw an error for an unexpected call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
 
@@ -326,48 +311,44 @@ describe('Tree', () => {
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              b();
-            });
-          })
-          .toThrowError(OutOfOrderCallError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            b();
+          });
+        }, OutOfOrderCallError);
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              a();
-            });
-          })
-          .toThrowError(UnexpectedFunctionCallError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a();
+            a();
+          });
+        }, UnexpectedFunctionCallError);
       });
 
-      it('should not throw an error for an expected call', () => {
+      void it('should not throw an error for an expected call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-            });
-          })
-          .not.toThrowError(UnexpectedFunctionCallError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+          });
+        });
 
         tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              b();
-            });
-          })
-          .not.toThrowError(UnexpectedFunctionCallError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+            b();
+          });
+        });
       });
 
-      it('should throw an error for an incomplete call', () => {
+      void it('should throw an error for an incomplete call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
 
@@ -375,15 +356,14 @@ describe('Tree', () => {
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-            });
-          })
-          .toThrowError(NotAllCallsOccurredError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a();
+          });
+        }, NotAllCallsOccurredError);
       });
 
-      it('should not throw an error for an optional incomplete call', () => {
+      void it('should not throw an error for an optional incomplete call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
 
@@ -391,39 +371,36 @@ describe('Tree', () => {
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], false, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-            });
-          })
-          .not.toThrowError(NotAllCallsOccurredError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+          });
+        });
 
         tree = new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], false, true)));
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-            });
-          })
-          .not.toThrowError(NotAllCallsOccurredError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+          });
+        });
       });
 
-      it('should throw an error for invalid arguments', () => {
+      void it('should throw an error for invalid arguments', () => {
         let a = new Mock('a');
 
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        expect(() => {
-            tree.execute(() => {
-              a(0);
-            });
-          })
-          .toThrowError(UnexpectedArgumentsError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a(0);
+          });
+        }, UnexpectedArgumentsError);
       });
 
-      it('should throw an error if the expected call is set up to do so', () => {
+      void it('should throw an error if the expected call is set up to do so', () => {
         let a = new Mock('a');
         let expectedCall = new ExpectedCall(a._class, [], true, true);
 
@@ -434,7 +411,7 @@ describe('Tree', () => {
 
         let actualError;
 
-        tree.execute(() => {
+        void tree.execute(() => {
           try {
             a();
           }
@@ -443,11 +420,10 @@ describe('Tree', () => {
           }
         });
 
-        expect(actualError.message)
-          .toEqual(msg);
+        assert.equal(actualError.message, msg);
       });
 
-      it('should invoke a callback if the expected call is set up to do so', (done) => {
+      void it('should invoke a callback if the expected call is set up to do so', async () => {
         let a = new Mock('a');
         let expectedCall = new ExpectedCall(a._class, [new Callback()], true, false);
         expectedCall.callbackIndex = 0;
@@ -455,21 +431,18 @@ describe('Tree', () => {
 
         let tree = new Tree(new ExpectedCallNode(expectedCall));
 
-        new Promise((resolve) => {
-            tree.execute(() => {
-              a((value) => {
-                resolve(value);
-              });
+        const value = await new Promise((resolve) => {
+          void tree.execute(() => {
+            a((v) => {
+              resolve(v);
             });
-          })
-          .catch(fail)
-          .then((value) => {
-            expect(value).toEqual(1);
-            done();
           });
+        });
+
+        assert.equal(value, 1);
       });
 
-      it('should return a value if the expected call is set up to do so', () => {
+      void it('should return a value if the expected call is set up to do so', () => {
         let a = new Mock('a');
         let expectedCall = new ExpectedCall(a._class, [], true, false);
 
@@ -478,16 +451,15 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(expectedCall));
 
         let actualReturnValue;
-        tree.execute(() => {
+        void tree.execute(() => {
           actualReturnValue = a();
         });
 
-        expect(actualReturnValue)
-          .toEqual(expectedCall.returnValue);
+        assert.equal(actualReturnValue, expectedCall.returnValue);
       });
 
-      describe('_ignoreOtherCalls = true', () => {
-        it('should not throw an error for an unexpected call', () => {
+      void describe('_ignoreOtherCalls = true', () => {
+        void it('should not throw an error for an unexpected call', () => {
           let a = new Mock('a');
           let b = new Mock('b');
           let c = new Mock('c');
@@ -496,41 +468,39 @@ describe('Tree', () => {
 
           tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-          tree._ignoreOtherCalls = true;
+          tree.ignoreOtherCalls();
 
-          expect(() => {
-              tree.execute(() => {
-                a();
-                c();
-                b();
-              });
-            })
-            .not.toThrow(UnexpectedFunctionCallError);
+          assert.doesNotThrow(() => {
+            void tree.execute(() => {
+              a();
+              c();
+              b();
+            });
+          });
         });
 
-        it('should not throw an error for a partial match', () => {
+        void it('should not throw an error for a partial match', () => {
           let a = new Mock('a');
           let b = new Mock('b');
           let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
           tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-          tree._ignoreOtherCalls = true;
+          tree.ignoreOtherCalls();
 
-          expect(() => {
-              tree.execute(() => {
-                a(1);
-                a();
-                b();
-              });
-            })
-            .not.toThrow(UnexpectedArgumentsError);
+          assert.doesNotThrow(() => {
+            void tree.execute(() => {
+              a(1);
+              a();
+              b();
+            });
+          });
         });
       });
     });
 
-    describe('AndNode tests', () => {
-      it('should throw an error for an unexpected call', () => {
+    void describe('AndNode tests', () => {
+      void it('should throw an error for an unexpected call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let c = new Mock('c');
@@ -543,48 +513,44 @@ describe('Tree', () => {
 
         tree = t;
 
-        expect(() => {
-            tree.execute(() => {
-              c();
-            });
-          })
-          .toThrowError(OutOfOrderCallError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            c();
+          });
+        }, OutOfOrderCallError);
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              a();
-            });
-          })
-          .toThrowError(UnexpectedFunctionCallError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a();
+            a();
+          });
+        }, UnexpectedFunctionCallError);
       });
 
-      it('should not throw an error for an expected call', () => {
+      void it('should not throw an error for an expected call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-            });
-          })
-          .not.toThrowError(UnexpectedFunctionCallError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+          });
+        });
 
         tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
         tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              b();
-            });
-          })
-          .not.toThrowError(UnexpectedFunctionCallError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+            b();
+          });
+        });
       });
 
-      it('should throw an error for an incomplete call', () => {
+      void it('should throw an error for an incomplete call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
 
@@ -592,15 +558,14 @@ describe('Tree', () => {
 
         tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-            });
-          })
-          .toThrowError(NotAllCallsOccurredError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a();
+          });
+        }, NotAllCallsOccurredError);
       });
 
-      it('should not throw an error for an optional incomplete call', () => {
+      void it('should not throw an error for an optional incomplete call', () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let c = new Mock('c');
@@ -610,13 +575,12 @@ describe('Tree', () => {
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(c._class, [], false, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              b();
-            });
-          })
-          .not.toThrowError(NotAllCallsOccurredError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+            b();
+          });
+        });
 
         tree = new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true)));
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(c._class, [], false, true))));
@@ -626,28 +590,26 @@ describe('Tree', () => {
 
         tree = t;
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              b();
-            });
-          })
-          .not.toThrowError(NotAllCallsOccurredError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+            b();
+          });
+        });
 
         tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], false, true)));
         tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], false, true))));
 
         tree.then(new Tree(new ExpectedCallNode(new ExpectedCall(c._class, [], true, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              c();
-            });
-          })
-          .not.toThrowError(NotAllCallsOccurredError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            c();
+          });
+        });
       });
 
-      it('should throw an error for invalid arguments', () => {
+      void it('should throw an error for invalid arguments', () => {
         let a = new Mock('a');
         let b = new Mock('b');
 
@@ -655,15 +617,14 @@ describe('Tree', () => {
 
         tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], false, true))));
 
-        expect(() => {
-            tree.execute(() => {
-              a(0);
-            });
-          })
-          .toThrowError(UnexpectedArgumentsError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a(0);
+          });
+        }, UnexpectedArgumentsError);
       });
 
-      it('should throw an error if the expected call is set up to do so', () => {
+      void it('should throw an error if the expected call is set up to do so', () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let expectedCall = new ExpectedCall(a._class, [], true, true);
@@ -676,7 +637,7 @@ describe('Tree', () => {
 
         let actualError;
 
-        tree.execute(() => {
+        void tree.execute(() => {
           try {
             a();
           }
@@ -685,11 +646,10 @@ describe('Tree', () => {
           }
         });
 
-        expect(actualError.message)
-          .toEqual(msg);
+        assert.equal(actualError.message, msg);
       });
 
-      it('should invoke a callback if the expected call is set up to do so', (done) => {
+      void it('should invoke a callback if the expected call is set up to do so', async () => {
         let a = new Mock('a');
         let b = new Mock('b');
 
@@ -703,24 +663,18 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(expectedCallB));
         tree.then(new Tree(new ExpectedCallNode(expectedCallA)));
 
-        new Promise((resolve) => {
-            tree.execute(() => {
-                return new Promise((r) => {
-                  b((value) => {
-                    r(a() + value);
-                  });
-                });
-              })
-              .then(resolve);
-          })
-          .catch(fail)
-          .then((value) => {
-            expect(value).toEqual(2);
-            done();
+        const value = await tree.execute(() => {
+          return new Promise((r) => {
+            b((value) => {
+              r(a() + value);
+            });
           });
+        });
+
+        assert.equal(value, 2);
       });
 
-      it('should return a value if the expected call is set up to do so', () => {
+      void it('should return a value if the expected call is set up to do so', () => {
         let a = new Mock('a');
         let expectedCall = new ExpectedCall(a._class, [], true, false);
 
@@ -729,16 +683,15 @@ describe('Tree', () => {
         let tree = new Tree(new ExpectedCallNode(expectedCall));
 
         let actualReturnValue;
-        tree.execute(() => {
+        void tree.execute(() => {
           actualReturnValue = a();
         });
 
-        expect(actualReturnValue)
-          .toEqual(expectedCall.returnValue);
+        assert.equal(actualReturnValue, expectedCall.returnValue);
       });
 
-      describe('_ignoreOtherCalls = true', () => {
-        it('should not throw an error for an unexpected call', () => {
+      void describe('_ignoreOtherCalls = true', () => {
+        void it('should not throw an error for an unexpected call', () => {
           let a = new Mock('a');
           let b = new Mock('b');
           let c = new Mock('c');
@@ -747,180 +700,175 @@ describe('Tree', () => {
 
           tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-          tree._ignoreOtherCalls = true;
+          tree.ignoreOtherCalls();
 
-          expect(() => {
-              tree.execute(() => {
-                a();
-                c();
-                b();
-              });
-            })
-            .not.toThrow(UnexpectedFunctionCallError);
+          assert.doesNotThrow(() => {
+            void tree.execute(() => {
+              a();
+              c();
+              b();
+            });
+          });
         });
 
-        it('should not throw an error for a partial match', () => {
+        void it('should not throw an error for a partial match', () => {
           let a = new Mock('a');
           let b = new Mock('b');
           let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
           tree.and(new Tree(new ExpectedCallNode(new ExpectedCall(b._class, [], true, true))));
 
-          tree._ignoreOtherCalls = true;
+          tree.ignoreOtherCalls();
 
-          expect(() => {
-              tree.execute(() => {
-                a(1);
-                a();
-                b();
-              });
-            })
-            .not.toThrow(UnexpectedArgumentsError);
+          assert.doesNotThrow(() => {
+            void tree.execute(() => {
+              a(1);
+              a();
+              b();
+            });
+          });
         });
       });
     });
 
-    describe('TerminusNode tests', () => {
-      it('should throw an error for an unexpected call', () => {
+    void describe('TerminusNode tests', () => {
+      void it('should throw an error for an unexpected call', () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              a();
-            });
-          })
-          .toThrowError(UnexpectedFunctionCallError);
+        assert.throws(() => {
+          void tree.execute(() => {
+            a();
+            a();
+          });
+        }, UnexpectedFunctionCallError);
       });
 
-      it('should not throw an error if _ignoreOtherCalls is true', () => {
+      void it('should not throw an error if _ignoreOtherCalls is true', () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree._ignoreOtherCalls = true;
+        tree.ignoreOtherCalls();
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              a();
-            });
-          })
-          .not.toThrowError(UnexpectedFunctionCallError);
+        assert.doesNotThrow(() => {
+          void tree.execute(() => {
+            a();
+            a();
+          });
+        });
       });
     });
 
-    describe('errors', () => {
-      it('should throw an error if the thunk throws an exception', () => {
+    void describe('errors', () => {
+      void it('should throw an error if the thunk throws an exception', () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        expect(() => {
-            tree.execute(() => {
-              a();
-              throw new Error('expected error');
-            });
-          })
-          .toThrowError(Error, 'expected error');
+        assert.throws(() => {
+          void tree.execute(() => {
+            a();
+            throw new Error('expected error');
+          });
+        }, (err) => err instanceof Error && err.message === 'expected error');
       });
 
-      it('should return an error if the callback thunk throws an exception', (done) => {
+      void it('should return an error if the callback thunk throws an exception', async () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute(() => {
-          return new Promise((resolve) => {
+        try {
+          await tree.execute(() => {
+            return new Promise((resolve) => {
               let cb = (callback) => {
                 a();
-
                 throw new Error('expected error');
-                callback(); // jshint ignore:line
               };
 
               cb(() => resolve());
-            })
-            .catch((error) => {
-              expect(error.message)
-                .toEqual('expected error');
-              done();
             });
-        });
+          });
+          assert.fail('Expected error to be thrown');
+        } catch(error) {
+          assert.equal(error.message, 'expected error');
+        }
       });
 
-      it('should return an error if the promise thunk throws an exception', (done) => {
+      void it('should return an error if the promise thunk throws an exception', async () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute(() => {
+        try {
+          await tree.execute(() => {
             return new Promise(() => {
-                throw new Error('expected error');
-              })
+              throw new Error('expected error');
+            })
               .catch((error) => {
                 throw error;
               });
-          }).then(() => {
-            done();
-          })
-          .catch((error) => {
-            expect(error.message)
-              .toEqual('expected error');
-            done();
           });
+          assert.fail('Expected error to be thrown');
+        } catch(error) {
+          assert.equal(error.message, 'expected error');
+        }
       });
 
-      it('should throw the mach error for sync code', () => {
+      void it('should throw the mach error for sync code', () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        expect(() => {
-          tree.execute(() => {
+        assert.throws(() => {
+          void tree.execute(() => {
             b();
           });
-        }).toThrowError(UnexpectedFunctionCallError);
+        }, UnexpectedFunctionCallError);
       });
 
-      it('should throw the mach error for callback code', (done) => {
+      void it('should throw the mach error for callback code', async () => {
         let a = new Mock('a');
         let b = new Mock('b');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute(() => {
-          return new Promise((resolve) => {
-            let f = ((callback) => {
-              b();
-              callback();
-            });
+        try {
+          await tree.execute(() => {
+            return new Promise((resolve) => {
+              let f = ((callback) => {
+                b();
+                callback();
+              });
 
-            f(() => {
+              f(() => {
+                resolve();
+              });
+            });
+          });
+          assert.fail('Expected error to be thrown');
+        } catch(error) {
+          assert.ok(error instanceof UnexpectedFunctionCallError);
+        }
+      });
+
+      void it('should throw the mach error for promise code', async () => {
+        let a = new Mock('a');
+        let b = new Mock('b');
+        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
+
+        try {
+          await tree.execute(() => {
+            return new Promise((resolve) => {
+              b();
               resolve();
             });
           });
-        }).catch((error) => {
-          expect(error instanceof UnexpectedFunctionCallError).toBe(true);
-          done();
-        });
-      });
-
-      it('should throw the mach error for promise code', (done) => {
-        let a = new Mock('a');
-        let b = new Mock('b');
-        let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
-
-        tree.execute(() => {
-          return new Promise((resolve) => {
-            b();
-            resolve();
-          });
-        }).catch((error) => {
-          expect(error instanceof UnexpectedFunctionCallError).toBe(true);
-          done();
-        });
+          assert.fail('Expected error to be thrown');
+        } catch(error) {
+          assert.ok(error instanceof UnexpectedFunctionCallError);
+        }
       });
     });
 
-    describe('Async tests', () => {
-      it('should return a promise', (done) => {
+    void describe('Async tests', () => {
+      void it('should return a promise', async () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
@@ -931,64 +879,59 @@ describe('Tree', () => {
           });
         });
 
-        expect(p instanceof Promise)
-          .toBe(true);
+        assert.ok(p instanceof Promise);
 
-        p.then(() => done());
+        await p;
       });
 
-      it('should provide access to the return value of a promise', (done) => {
+      void it('should provide access to the return value of a promise', async () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
         let answer = 42;
 
-        tree.execute(() => {
+        const v = await tree.execute(() => {
           return new Promise((resolve) => {
             a();
             resolve(answer);
           });
-        }).then((v) => {
-          expect(v).toEqual(answer);
-          done();
         });
+
+        assert.equal(v, answer);
       });
 
-      it('should allow callbacks', (done) => {
+      void it('should allow callbacks', async () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
 
-        tree.execute(() => {
-            return new Promise((resolve) => {
-              let cb = (callback) => {
-                a();
-                callback();
-              };
+        await tree.execute(() => {
+          return new Promise((resolve) => {
+            let cb = (callback) => {
+              a();
+              callback();
+            };
 
-              cb(() => resolve());
-            });
-          })
-          .then(() => done());
+            cb(() => resolve());
+          });
+        });
       });
 
-      it('should provide access to the return value of a callback', (done) => {
+      void it('should provide access to the return value of a callback', async () => {
         let a = new Mock('a');
         let tree = new Tree(new ExpectedCallNode(new ExpectedCall(a._class, [], true, true)));
         let answer = 42;
 
-        tree.execute(() => {
-            return new Promise((resolve) => {
-              let cb = (callback) => {
-                a();
-                callback();
-              };
+        const v = await tree.execute(() => {
+          return new Promise((resolve) => {
+            let cb = (callback) => {
+              a();
+              callback();
+            };
 
-              cb(() => resolve(answer));
-            });
-          })
-          .then((v) => {
-            expect(v).toEqual(answer);
-            done();
+            cb(() => resolve(answer));
           });
+        });
+
+        assert.equal(v, answer);
       });
     });
   });

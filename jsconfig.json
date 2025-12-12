@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "target": "ES2024",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["ES2024"],
+    "strict": false
+  },
+  "include": [
+    "*.js",
+    "*.cjs",
+    "src/**/*.js",
+    "spec/**/*.js",
+    "sample/**/*.js",
+    "node_modules/mach.js/**/*.js"
+  ],
+  "exclude": [
+    "dist",
+    "build",
+    "coverage"
+  ]
+}

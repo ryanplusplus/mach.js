@@ -1,6 +1,8 @@
 'use strict';
 
-var _ = require('underscore');
+const eq = require('fast-deep-equal');
+
+const equal = (a, b) => eq(a, b);
 
 /**
  * Represents an argument with a custom equality comparison.
@@ -25,7 +27,7 @@ class Same {
      * @name Same#matcher
      * @type function
      */
-    this.matcher = matcher || _.isEqual;
+    this.matcher = matcher || equal;
   }
 
   toString() {
