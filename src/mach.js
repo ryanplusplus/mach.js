@@ -14,7 +14,7 @@ class Mach {
   /**
    * Creates a new {@link Mock}.
    * @param {function|string} [thing] Either an existing function to mock or the name for the mock.
-   * @returns {module:mach.js/src/Mock~MockFunction} Mocked function.
+   * @returns {import('./Mock.js').MockFunction} Mocked function.
    */
   static mockFunction(thing) {
     let name;
