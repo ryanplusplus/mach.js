@@ -173,7 +173,9 @@ class Expectation {
 
   /**
    * Executes the test code and verifies the expectations that were built up.
-   * @param {function} thunk Test code.
+   * @template T
+   * @param {function(): T} thunk Test code.
+   * @returns {T}
    */
   when(thunk) {
     return this._tree.execute(thunk);

@@ -23,7 +23,7 @@ var _tree;
 class Mock {
   /**
    * Creates a new mocked function.
-   * @param {string} [name=<anonymous>] Name of the function.
+   * @param {string} [name='anonymous'] Name of the function.
    */
   constructor(name) {
     /**
