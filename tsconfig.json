@@ -9,7 +9,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "index.js"
+    "index.js",
+    "src/**/*.js"
   ],
   "exclude": [
     "node_modules",
