@@ -1,6 +1,6 @@
 {
   "name": "mach.js",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Simple mocking framework for JavaScript inspired by CppUMock and designed for readability",
   "main": "index.js",
   "types": "dist/index.d.ts",

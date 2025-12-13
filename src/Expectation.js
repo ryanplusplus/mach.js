@@ -42,7 +42,7 @@ class Expectation {
 
   /**
    * Updates this expectatations {@link ExpectedCall} to return the specified value.
-   * @param {object} returnValue Value that will be returned when the expected call is executed.
+   * @param {*} returnValue Value that will be returned when the expected call is executed.
    * @returns {Expectation} This expectation, which allows chaining.
    */
   andWillReturn(returnValue) {
