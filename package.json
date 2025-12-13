@@ -1,11 +1,11 @@
 {
   "name": "mach.js",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "Simple mocking framework for JavaScript inspired by CppUMock and designed for readability",
   "main": "index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "postinstall": "tsc",
+    "prepare": "tsc",
     "lint": "eslint '*.js' 'src/**/*.js' 'spec/**/*.js' 'sample/**/*.js'",
     "test": "node --test \"spec/**/*_test.js\" --test-concurrency true",
     "test-jest": "jest",
@@ -30,11 +30,11 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",
-    "eslint": "^9.39.1"
+    "eslint": "^9.39.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "fast-deep-equal": "^3.1.3",
-    "typescript": "^5.9.3"
+    "fast-deep-equal": "^3.1.3"
   },
   "packageManager": "yarn@4.12.0"
 }
