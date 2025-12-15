@@ -34,6 +34,6 @@ void describe('Same', () => {
   });
 
   void it('should stringify nicely', () => {
-    assert.strictEqual(new Same(0).toString(), 'Same {value: 0, matcher: (a, b) => eq(a, b)}');
+    assert.strictEqual(new Same(0).toString(), 'Same { value: 0, matcher: (a, b) => eq(a, b) }');
   });
 });

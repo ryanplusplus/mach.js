@@ -12,7 +12,7 @@ class Same {
   /**
    * Creates a new {@link Same}
    * @param {object} value Expected argument.
-   * @param {function} matcher Function to do equality comparison with actual argument.
+   * @param {function} [matcher] Function to do equality comparison with actual argument.
    */
   constructor(value, matcher) {
     /**
@@ -31,7 +31,7 @@ class Same {
   }
 
   toString() {
-    return 'Same {value: ' + this.value + ', matcher: ' + this.matcher + '}';
+    return 'Same { value: ' + this.value + ', matcher: ' + this.matcher + ' }';
   }
 }
 
