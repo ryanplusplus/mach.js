@@ -6,7 +6,10 @@
     "outDir": "./dist",
     "declarationMap": false,
     "maxNodeModuleJsDepth": 0,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "machjs/*": ["./src/*"]
+    }
   },
   "include": [
     "index.js",
