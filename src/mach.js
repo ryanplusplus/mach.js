@@ -51,6 +51,10 @@ class Mach {
 
   /**
    * Alias for {@link Mach#Same}
+   * Creates a new {@link Same} which is used as an expected argument for a {@link Mock} expectation.
+   * @param {object} value Expected argument to a {@link Mock}
+   * @param {function} [matcher] Custom equality function in the form `(expected, actual) => boolean`
+   * @returns {Same} Same object to use as an expected argument in an expectation.
    */
   static match(value, matcher) {
     return Mach.same(value, matcher);
